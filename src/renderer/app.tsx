@@ -1,10 +1,9 @@
+import { ISetting, IApi, ISdk, UserSdkList, IImage } from 'types';
 import React, { createContext, useEffect, useState } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { ConfigProvider, message } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
-
-import { IImage, IBasic, IApi } from 'types';
 
 import { MenuBar } from '@/renderer/components/MenuBar';
 import Home from '@/renderer/pages/Home';
@@ -12,9 +11,11 @@ import Setting from '@/renderer/pages/Setting';
 
 const defaultAppContextValue = {
   images: [] as Partial<IImage>[],
-  basic: {} as IBasic,
+  basic: {} as ISetting,
   defaultApi: {} as IApi,
-  apiList: [] as IApi[]
+  sdks: [] as ISdk[],
+  userApiList: [] as IApi[],
+  userSdkList: [] as UserSdkList
 };
 
 export const AppContext = createContext(defaultAppContextValue);
@@ -31,6 +32,8 @@ const App = () => {
     ipcRenderer.send('setting-basic-get');
     ipcRenderer.send('setting-default-api-get');
     ipcRenderer.send('setting-api-list-get');
+    ipcRenderer.send('default-sdk-list-get');
+    ipcRenderer.send('sdk-list-get');
   };
 
   const ipcOnInit = () => {
@@ -74,9 +77,31 @@ const App = () => {
       setData(preData => {
         return {
           ...preData,
-          apiList: data
+          userApiList: data
         };
       });
+    });
+    ipcRenderer.on('setting-api-update-replay', () => {
+      message.success('API更新成功');
+    });
+    ipcRenderer.on('default-sdk-list-get-replay', (_, { data }) => {
+      setData(preData => {
+        return {
+          ...preData,
+          sdks: data
+        };
+      });
+    });
+    ipcRenderer.on('sdk-list-get-replay', (_, { data }) => {
+      setData(preData => {
+        return {
+          ...preData,
+          userSdkList: data
+        };
+      });
+    });
+    ipcRenderer.on('sdk-update-replay', () => {
+      message.success('SDK更新成功');
     });
   };
 

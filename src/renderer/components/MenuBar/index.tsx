@@ -15,6 +15,7 @@ export function MenuBar() {
     const fileList = event.currentTarget.files || [];
     const filesPath = Array.from(fileList).map(file => file.path);
     ipcRenderer.send('image-upload', filesPath);
+    event.currentTarget.value = '';
   };
 
   const handleOpenHomeWindow = () => {
