@@ -11,8 +11,8 @@ module.exports = {
   target: 'electron-renderer',
   entry: [path.resolve(__dirname, '../src/renderer/index.tsx')],
   output: {
-    path: path.resolve(__dirname, '../dist'),
-    publicPath: '/',
+    path: path.resolve(__dirname, '../dist/renderer'),
+    publicPath: './',
     filename: devMode ? 'js/[name]-[hash:6].bundle.js' : 'js/[name]-[chunkhash:6].bundle.js'
   },
   resolve: {

@@ -4,13 +4,13 @@ const webpackConfig = require('./webpack.renderer.base.config');
 const path = require('path');
 
 module.exports = WebpackMerge(webpackConfig, {
+  // context: path.resolve(__dirname, '../'),
   mode: 'development',
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   devServer: {
     disableHostCheck: true,
     compress: true,
     clientLogLevel: 'none',
-    contentBase: path.resolve(__dirname, '../dist'),
     hot: true,
     // hotOnly: true,
     inline: true,

@@ -1,18 +1,19 @@
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const devMode = process.env.NODE_ENV === 'development';
 
 module.exports = {
   target: 'electron-main',
-  // entry: [path.resolve(__dirname, '../src/main/index.ts'), path.resolve(__dirname, '../src/main/preload.ts')],
   entry: {
-    main: path.resolve(__dirname, '../src/main/index.ts'),
+    index: path.resolve(__dirname, '../src/main/index.ts'),
     preload: path.resolve(__dirname, '../src/main/preload.ts')
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, '../dist'),
-    publicPath: '/'
+    path: path.resolve(__dirname, '../dist/main'),
+    publicPath: './'
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
@@ -37,8 +38,20 @@ module.exports = {
           {
             loader: 'babel-loader'
           }
+          // {
+          //   loader: 'ts-loader',
+          //   options: {
+          //     compilerOptions: {
+          //       noEmit: false
+          //     }
+          //   }
+          // }
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new CopyPlugin([{ from: path.resolve(__dirname, '../assets'), to: path.resolve(__dirname, '../dist/assets') }])
+  ]
 };
