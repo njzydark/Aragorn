@@ -1,10 +1,18 @@
 import { IImage } from 'types';
 
 export class History {
+  private static instance: History;
   images: Partial<IImage>[];
 
-  constructor() {
+  private constructor() {
     this.images = [];
+  }
+
+  static getInstance() {
+    if (!History.instance) {
+      History.instance = new History();
+    }
+    return History.instance;
   }
 
   add(image: Partial<IImage>) {

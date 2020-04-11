@@ -1,8 +1,11 @@
-import { IBasic, IApi } from 'types';
+import { ISetting, IApi, ISdk, UserSdk, UserSdkList } from 'types';
+import { v4 as uuidv4 } from 'uuid';
+import { sdks } from './sdk';
 
-const defaultBasic: IBasic = {
+// 默认设置
+const defaultBasic: ISetting = {
   urlType: 'URL',
-  defaultApiName: '',
+  defaultUploaderName: '',
   proxy: '',
   autoCopy: true,
   autoRecover: false,
@@ -12,39 +15,45 @@ const defaultBasic: IBasic = {
   autoUpdate: false
 };
 
+// 默认自定义API配置
 const defaultApi: IApi = {
   name: '',
+  type: 'custom',
   url: '',
   method: 'POST',
   contentType: 'multipart/form-data',
   fileFieldName: 'file',
   requestParams: '',
   requestBody: '',
-  responseUrlFieldName: 'url',
-  createTime: new Date().getTime()
-};
-
-const testApi: IApi = {
-  name: '本地测试',
-  url: 'http://localhost:3001/upload',
-  method: 'POST',
-  contentType: 'multipart/form-data',
-  fileFieldName: 'file',
-  requestParams: '',
-  requestBody: '',
-  responseUrlFieldName: 'url',
-  createTime: new Date().getTime()
+  responseUrlFieldName: 'url'
 };
 
 export class Setting {
-  basic: IBasic;
+  private static instance: Setting;
+  /** 基础设置信息 */
+  basic: ISetting;
+  /** 默认Api配置信息 */
   defaultApi: IApi;
-  apiList: IApi[];
+  /** 用户配置的所有自定义Api */
+  userApiList: IApi[];
+  /** SDK下拉列表 */
+  sdks: ISdk[];
+  /** 用户配置的所有SDK */
+  userSdkList: UserSdkList;
 
-  constructor() {
+  private constructor() {
     this.basic = defaultBasic;
     this.defaultApi = defaultApi;
-    this.apiList = [testApi];
+    this.userApiList = [];
+    this.sdks = sdks;
+    this.userSdkList = [];
+  }
+
+  static getInstance() {
+    if (!Setting.instance) {
+      Setting.instance = new Setting();
+    }
+    return Setting.instance;
   }
 
   getBasic() {
@@ -52,49 +61,91 @@ export class Setting {
     return this.basic;
   }
 
-  updateBasic(basic: IBasic) {
+  updateBasic(basic: ISetting) {
     console.log('更新基础设置');
     this.basic = basic;
     return this.basic;
   }
 
   getDefaultApi() {
-    console.log('获取默认API配置');
+    console.log('获取默认API配置信息');
     return this.defaultApi;
   }
 
   getApiList() {
-    console.log('获取所有API配置');
-    return this.apiList;
+    console.log('获取用户所有的自定义API');
+    return this.userApiList;
   }
 
   addApi(api: IApi) {
-    console.log('添加API配置');
-    api.createTime = new Date().getTime();
-    this.apiList.push(api);
-    return this.apiList;
+    console.log(`添加名称为${api.name}的自定义API`);
+    api.type = 'custom';
+    api.uuid = uuidv4();
+    this.userApiList.push(api);
+    return api;
   }
 
-  getApi(createTime: number) {
-    console.log('获取API配置');
-    return this.apiList.find(item => item.createTime === createTime);
+  getApi(api: IApi) {
+    console.log(`获取${api.name}的API配置信息`);
+    return this.userApiList.find(item => item.uuid === api.uuid);
   }
 
   updateApi(api: IApi) {
-    console.log('更新API配置');
+    console.log(`更新${api.name}的API配置信息`);
     // TODO: 更新逻辑要优化
-    this.apiList = this.apiList.map(item => {
-      if (item.createTime === api.createTime) {
+    this.userApiList = this.userApiList.map(item => {
+      if (item.uuid === api.uuid) {
         item = api;
       }
       return item;
     });
-    return this.apiList;
+    return this.userApiList;
   }
 
-  deleteApi(createTime: number) {
-    console.log('删除API配置');
-    this.apiList = this.apiList.filter(item => item.createTime != createTime);
-    return this.apiList;
+  deleteApi(uuid: string) {
+    console.log(`删除uuid为${uuid}的API配置信息`);
+    this.userApiList = this.userApiList.filter(item => item.uuid != uuid);
+    return this.userApiList;
+  }
+
+  getDefaultSdkList() {
+    console.log('获取SDK下拉列表');
+    return this.sdks;
+  }
+
+  getSdkList() {
+    console.log('获取用户配置的所有SDK');
+    return this.userSdkList;
+  }
+
+  addSdk(sdk: UserSdk) {
+    console.log(`添加名称为${sdk.name}的SDK配置信息`);
+    sdk.uuid = uuidv4();
+    sdk.type = 'sdk';
+    this.userSdkList.push(sdk);
+    return sdk;
+  }
+
+  getSdk(sdk: UserSdk) {
+    console.log(`获取名称为${sdk.name}的SDK配置信息`);
+    return this.userSdkList.find(item => item.uuid === sdk.uuid);
+  }
+
+  updateSdk(sdk: UserSdk) {
+    console.log(`更新名称为${sdk.name}的SDK配置信息`);
+    // TODO: 更新逻辑要优化
+    this.userSdkList = this.userSdkList.map(item => {
+      if (item.uuid === sdk.uuid) {
+        item = sdk;
+      }
+      return item;
+    });
+    return this.userSdkList;
+  }
+
+  deleteSdk(uuid: string) {
+    console.log(`删除UUID为${uuid}的SDK配置信息`);
+    this.userSdkList = this.userSdkList.filter(item => item.uuid != uuid);
+    return this.userSdkList;
   }
 }
