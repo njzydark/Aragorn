@@ -1,4 +1,5 @@
 const path = require('path');
+const { ContextReplacementPlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -52,6 +53,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new CopyPlugin([{ from: path.resolve(__dirname, '../assets'), to: path.resolve(__dirname, '../dist/assets') }])
+    new CopyPlugin([{ from: path.resolve(__dirname, '../assets'), to: path.resolve(__dirname, '../dist/assets') }]),
+    new ContextReplacementPlugin(/any-promise/)
   ]
 };
