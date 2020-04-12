@@ -27,7 +27,7 @@ export default function Basic() {
 
   const handleFinish = values => {
     console.log(values);
-    ipcRenderer.send('setting-basic-update', values);
+    ipcRenderer.send('setting-configuration-update', values);
   };
 
   return (

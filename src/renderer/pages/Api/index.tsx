@@ -30,28 +30,32 @@ export default function Api() {
 
   const history = useHistory();
   useEffect(() => {
-    function handleApiAdd(_, { data }) {
-      setCurMenuKey(data.uuid);
-      history.push(`/api/${data.uuid}`);
+    function handleApiAdd(_, api) {
+      setCurMenuKey(api.uuid);
+      history.push(`/api/${api.uuid}`);
       message.success('API添加成功');
     }
-    function handleApiUpdate() {
-      message.success('API更新成功');
+    function handleApiUpdate(res) {
+      if (res) {
+        message.success('API更新成功');
+      }
     }
-    function handleApiDelete() {
-      setCurMenuKey('api');
-      history.push(`/api`);
-      message.success('API删除成功');
+    function handleApiDelete(res) {
+      if (res) {
+        setCurMenuKey('api');
+        history.push(`/api`);
+        message.success('API删除成功');
+      }
     }
 
-    ipcRenderer.on('setting-api-add-replay', handleApiAdd);
-    ipcRenderer.on('setting-api-update-replay', handleApiUpdate);
-    ipcRenderer.on('setting-api-delete-replay', handleApiDelete);
+    ipcRenderer.on('api-add-reply', handleApiAdd);
+    ipcRenderer.on('api-update-reply', handleApiUpdate);
+    ipcRenderer.on('api-delete-reply', handleApiDelete);
 
     return () => {
-      ipcRenderer.removeListener('setting-api-add-replay', handleApiAdd);
-      ipcRenderer.removeListener('setting-api-update-replay', handleApiUpdate);
-      ipcRenderer.removeListener('setting-api-delete-replay', handleApiDelete);
+      ipcRenderer.removeListener('api-add-reply', handleApiAdd);
+      ipcRenderer.removeListener('api-update-reply', handleApiUpdate);
+      ipcRenderer.removeListener('api-delete-reply', handleApiDelete);
     };
   }, []);
 
@@ -61,15 +65,15 @@ export default function Api() {
 
   const handleFinish = api => {
     if (uuid) {
-      ipcRenderer.send('setting-api-update', api);
+      ipcRenderer.send('api-update', api);
     } else {
-      ipcRenderer.send('setting-api-add', api);
+      ipcRenderer.send('api-add', api);
     }
   };
 
   const handleDelete = () => {
     const uuid = form.getFieldValue('uuid');
-    ipcRenderer.send('setting-api-delete', uuid);
+    ipcRenderer.send('api-delete', uuid);
   };
 
   // TODO: 链接测试

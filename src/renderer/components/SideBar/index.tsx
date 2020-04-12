@@ -98,10 +98,10 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
     }
   };
 
-  const handleImageUpload = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const fileList = event.currentTarget.files || [];
     const filesPath = Array.from(fileList).map(file => file.path);
-    ipcRenderer.send('image-upload', filesPath);
+    ipcRenderer.send('file-upload-by-side-menu', filesPath);
     event.currentTarget.value = '';
   };
 
@@ -133,15 +133,7 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
             ))}
           </Fragment>
         ))}
-        <input
-          ref={uploadRef}
-          id="image-upload"
-          type="file"
-          accept="image/*"
-          multiple
-          hidden
-          onChange={handleImageUpload}
-        />
+        <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
       </div>
     </div>
   );

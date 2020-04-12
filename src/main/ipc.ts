@@ -22,184 +22,114 @@ export class Ipc {
   }
 
   init() {
-    // 上传按钮事件
-    ipcMain.on('image-upload', (_, files) => {
-      Upload.win = Ipc.win;
-      new Upload(files).toUpload();
-    });
-
-    // 获取基础设置
-    ipcMain.on('setting-basic-get', event => {
-      const configuration = setting.get();
-      if (configuration) {
-        event.reply('setting-basic-get-replay', {
-          type: 'get',
-          data: configuration
-        });
-      }
-    });
-
-    // 更新基础设置
-    ipcMain.on('setting-basic-update', (event, configuration) => {
-      const updatedConfiguration = setting.update(configuration);
-      if (updatedConfiguration) {
-        event.reply('setting-basic-update-replay', {
-          type: 'update',
-          data: updatedConfiguration
-        });
-      }
-    });
-
-    // 获取所有图片信息
-    ipcMain.on('images-get', event => {
-      const images = history.get();
-      event.reply('images-get-replay', images);
-    });
-
-    this.handleCustomApiHandle();
-    this.handleSdkHandle();
+    this.uploadHandle();
+    this.settingHandle();
+    this.apiHandle();
+    this.sdkHandle();
   }
 
-  protected handleCustomApiHandle() {
-    ipcMain.on('setting-default-api-get', event => {
+  protected uploadHandle() {
+    ipcMain.on('file-upload-by-side-menu', (_, filesPath: string[]) => {
+      Upload.win = Ipc.win;
+      new Upload(filesPath).toUpload();
+    });
+
+    ipcMain.on('uploaded-images-get', event => {
+      const images = history.get();
+      event.reply('uploaded-images-get-reply', images);
+    });
+  }
+
+  protected settingHandle() {
+    ipcMain.on('setting-configuration-get', event => {
+      const configuration = setting.get();
+      event.reply('setting-configuration-get-reply', configuration);
+    });
+
+    ipcMain.on('setting-configuration-update', (event, newConfiguration) => {
+      const configuration = setting.update(newConfiguration);
+      if (configuration) {
+        event.reply('setting-configuration-update-reply', configuration);
+      }
+    });
+  }
+
+  protected apiHandle() {
+    ipcMain.on('default-api-get', event => {
       const defaultApi = api.getDefault();
       if (defaultApi) {
-        event.reply('setting-default-api-get-replay', {
-          type: 'get',
-          data: defaultApi
-        });
+        event.reply('default-api-get-reply', defaultApi);
       }
     });
 
-    ipcMain.on('setting-api-list-get', event => {
-      const apiList = api.getList();
-      if (apiList) {
-        event.reply('setting-api-list-get-replay', {
-          type: 'get',
-          data: apiList
-        });
+    ipcMain.on('user-api-list-get', event => {
+      const userApiList = api.getList();
+      if (userApiList) {
+        event.reply('user-api-list-get-reply', userApiList);
       }
     });
 
-    ipcMain.on('setting-api-add', (event, arg) => {
-      const data = api.add(arg);
-      if (data) {
-        event.reply('setting-api-list-get-replay', {
-          type: 'get',
-          data: api.userApiList
-        });
-        event.reply('setting-api-add-replay', {
-          type: 'add',
-          data
-        });
+    ipcMain.on('api-add', (event, newApi) => {
+      const addedApi = api.add(newApi);
+      if (addedApi) {
+        event.reply('user-api-list-get-reply', api.userApiList);
+        event.reply('api-add-reply', addedApi);
       }
     });
 
-    ipcMain.on('setting-api-get', (event, arg) => {
-      const data = api.get(arg);
-      if (data) {
-        event.reply('setting-api-get-replay', {
-          type: 'get',
-          data
-        });
+    ipcMain.on('api-update', (event, newApi) => {
+      const userApiList = api.update(newApi);
+      if (userApiList) {
+        event.reply('user-api-list-get-reply', userApiList);
+        event.reply('api-update-reply', true);
       }
     });
 
-    ipcMain.on('setting-api-update', (event, arg) => {
-      const apiList = api.update(arg);
-      if (apiList) {
-        event.reply('setting-api-list-get-replay', {
-          type: 'get',
-          data: apiList
-        });
-        event.reply('setting-api-update-replay', {
-          type: 'update'
-        });
-      }
-    });
-
-    ipcMain.on('setting-api-delete', (event, uuid: string) => {
-      const apiList = api.delete(uuid);
-      if (apiList) {
-        event.reply('setting-api-list-get-replay', {
-          type: 'get',
-          data: apiList
-        });
-        event.reply('setting-api-delete-replay', {
-          type: 'delete'
-        });
+    ipcMain.on('api-delete', (event, uuid: string) => {
+      const userApiList = api.delete(uuid);
+      if (userApiList) {
+        event.reply('user-api-list-get-reply', userApiList);
+        event.reply('api-delete-reply', true);
       }
     });
   }
 
-  protected handleSdkHandle() {
-    ipcMain.on('default-sdk-list-get', event => {
-      const defaultSdkList = sdk.getSdks();
-      if (defaultSdkList) {
-        event.reply('default-sdk-list-get-replay', {
-          type: 'get',
-          data: defaultSdkList
-        });
+  protected sdkHandle() {
+    ipcMain.on('sdks-get', event => {
+      const sdks = sdk.getSdks();
+      if (sdks) {
+        event.reply('sdks-get-reply', sdks);
       }
     });
 
-    ipcMain.on('sdk-list-get', event => {
-      const sdkList = sdk.getList();
-      if (sdkList) {
-        event.reply('sdk-list-get-replay', {
-          type: 'get',
-          data: sdkList
-        });
+    ipcMain.on('user-sdk-list-get', event => {
+      const userSdkList = sdk.getList();
+      if (userSdkList) {
+        event.reply('user-sdk-list-get-reply', userSdkList);
       }
     });
 
-    ipcMain.on('sdk-add', (event, arg) => {
-      const data = sdk.add(arg);
-      if (data) {
-        event.reply('sdk-list-get-replay', {
-          type: 'get',
-          data: sdk.userSdkList
-        });
-        event.reply('sdk-add-replay', {
-          type: 'add',
-          data
-        });
+    ipcMain.on('sdk-add', (event, newSdk) => {
+      const addedSdk = sdk.add(newSdk);
+      if (addedSdk) {
+        event.reply('user-sdk-list-get-reply', sdk.userSdkList);
+        event.reply('sdk-add-reply', addedSdk);
       }
     });
 
-    ipcMain.on('sdk-get', (event, arg) => {
-      const data = sdk.get(arg);
-      if (data) {
-        event.reply('sdk-get-replay', {
-          type: 'get',
-          data
-        });
-      }
-    });
-
-    ipcMain.on('sdk-update', (event, arg) => {
-      const sdkList = sdk.update(arg);
-      if (sdkList) {
-        event.reply('sdk-list-get-replay', {
-          type: 'get',
-          data: sdkList
-        });
-        event.reply('sdk-update-replay', {
-          type: 'update'
-        });
+    ipcMain.on('sdk-update', (event, newSdk) => {
+      const userSdkList = sdk.update(newSdk);
+      if (userSdkList) {
+        event.reply('user-sdk-list-get-reply', userSdkList);
+        event.reply('sdk-update-reply', true);
       }
     });
 
     ipcMain.on('sdk-delete', (event, uuid: string) => {
-      const sdkList = sdk.delete(uuid);
-      if (sdkList) {
-        event.reply('sdk-list-get-replay', {
-          type: 'get',
-          data: sdkList
-        });
-        event.reply('sdk-delete-replay', {
-          type: 'delete'
-        });
+      const userSdkList = sdk.delete(uuid);
+      if (userSdkList) {
+        event.reply('user-sdk-list-get-reply', userSdkList);
+        event.reply('sdk-delete-reply', true);
       }
     });
   }

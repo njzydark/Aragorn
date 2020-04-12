@@ -30,12 +30,12 @@ export class Setting {
   }
 
   get() {
-    console.log('获取基础设置');
+    console.log('获取App设置');
     return this.configuration;
   }
 
   update(configuration: SettingConfiguration) {
-    console.log('更新基础设置');
+    console.log('更新App设置');
     this.configuration = configuration;
     return this.configuration;
   }

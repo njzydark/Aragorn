@@ -45,28 +45,32 @@ export default function Sdk() {
 
   const history = useHistory();
   useEffect(() => {
-    function handleSdkAdd(_, { data }) {
-      setCurMenuKey(data.uuid);
-      history.push(`/sdk/${data.uuid}`);
+    function handleSdkAdd(_, sdk) {
+      setCurMenuKey(sdk.uuid);
+      history.push(`/sdk/${sdk.uuid}`);
       message.success('SDK添加成功');
     }
-    function handleSdkUpdate() {
-      message.success('SDK更新成功');
+    function handleSdkUpdate(res) {
+      if (res) {
+        message.success('SDK更新成功');
+      }
     }
-    function handleSdkDelete() {
-      setCurMenuKey('sdk');
-      history.push(`/sdk`);
-      message.success('SDK删除成功');
+    function handleSdkDelete(res) {
+      if (res) {
+        setCurMenuKey('sdk');
+        history.push(`/sdk`);
+        message.success('SDK删除成功');
+      }
     }
 
-    ipcRenderer.on('sdk-add-replay', handleSdkAdd);
-    ipcRenderer.on('sdk-update-replay', handleSdkUpdate);
-    ipcRenderer.on('sdk-delete-replay', handleSdkDelete);
+    ipcRenderer.on('sdk-add-reply', handleSdkAdd);
+    ipcRenderer.on('sdk-update-reply', handleSdkUpdate);
+    ipcRenderer.on('sdk-delete-reply', handleSdkDelete);
 
     return () => {
-      ipcRenderer.removeListener('sdk-add-replay', handleSdkAdd);
-      ipcRenderer.removeListener('sdk-update-replay', handleSdkUpdate);
-      ipcRenderer.removeListener('sdk-delete-replay', handleSdkDelete);
+      ipcRenderer.removeListener('sdk-add-reply', handleSdkAdd);
+      ipcRenderer.removeListener('sdk-update-reply', handleSdkUpdate);
+      ipcRenderer.removeListener('sdk-delete-reply', handleSdkDelete);
     };
   }, []);
 

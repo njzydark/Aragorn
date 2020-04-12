@@ -42,16 +42,16 @@ const App = () => {
   }, []);
 
   const ipcSendInit = () => {
-    ipcRenderer.send('images-get');
-    ipcRenderer.send('setting-basic-get');
-    ipcRenderer.send('setting-default-api-get');
-    ipcRenderer.send('setting-api-list-get');
-    ipcRenderer.send('default-sdk-list-get');
-    ipcRenderer.send('sdk-list-get');
+    ipcRenderer.send('uploaded-images-get');
+    ipcRenderer.send('setting-configuration-get');
+    ipcRenderer.send('default-api-get');
+    ipcRenderer.send('user-api-list-get');
+    ipcRenderer.send('sdks-get');
+    ipcRenderer.send('user-sdk-list-get');
   };
 
   const ipcOnInit = () => {
-    ipcRenderer.on('images-get-replay', (_, images: IImage[]) => {
+    ipcRenderer.on('uploaded-images-get-reply', (_, images: IImage[]) => {
       images.map(image => {
         image.sizes = ['(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw'];
       });
@@ -62,52 +62,52 @@ const App = () => {
         };
       });
     });
-    ipcRenderer.on('setting-basic-get-replay', (_, { data }) => {
+    ipcRenderer.on('setting-configuration-get-reply', (_, configuration) => {
       setData(preData => {
         return {
           ...preData,
-          configuration: data
+          configuration
         };
       });
     });
-    ipcRenderer.on('setting-basic-update-replay', (_, { data }) => {
+    ipcRenderer.on('setting-configuration-update-reply', (_, configuration) => {
       message.success('系统基础设置更新成功');
       setData(preData => {
         return {
           ...preData,
-          configuration: data
+          configuration
         };
       });
     });
-    ipcRenderer.on('setting-default-api-get-replay', (_, { data }) => {
+    ipcRenderer.on('default-api-get-reply', (_, defaultApi) => {
       setData(preData => {
         return {
           ...preData,
-          defaultApi: data
+          defaultApi
         };
       });
     });
-    ipcRenderer.on('setting-api-list-get-replay', (_, { data }) => {
+    ipcRenderer.on('user-api-list-get-reply', (_, userApiList) => {
       setData(preData => {
         return {
           ...preData,
-          userApiList: data
+          userApiList
         };
       });
     });
-    ipcRenderer.on('default-sdk-list-get-replay', (_, { data }) => {
+    ipcRenderer.on('sdks-get-reply', (_, sdks) => {
       setData(preData => {
         return {
           ...preData,
-          sdks: data
+          sdks
         };
       });
     });
-    ipcRenderer.on('sdk-list-get-replay', (_, { data }) => {
+    ipcRenderer.on('user-sdk-list-get-reply', (_, userSdkList) => {
       setData(preData => {
         return {
           ...preData,
-          userSdkList: data
+          userSdkList
         };
       });
     });

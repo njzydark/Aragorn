@@ -118,7 +118,7 @@ export class Upload {
     // 将图片信息添加到历史记录中
     const images = history.add(channelData);
     if (!Upload.win.isDestroyed()) {
-      Upload.win.webContents.send('images-get-replay', images);
+      Upload.win.webContents.send('uploaded-images-get-reply', images);
     }
     // 根据urlType转换图片链接格式
     switch (setting.configuration.urlType) {

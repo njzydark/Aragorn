@@ -22,7 +22,7 @@ export class Sdk {
   }
 
   getSdks() {
-    console.log('获取SDK下拉列表');
+    console.log('获取所有内置的sdk');
     return this.sdks;
   }
 
