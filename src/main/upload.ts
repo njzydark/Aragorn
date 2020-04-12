@@ -13,11 +13,10 @@ const history = History.getInstance();
 export class Upload {
   /** 文件路径列表 */
   private files: string[];
-  win: BrowserWindow;
+  static win: BrowserWindow;
 
-  constructor(files: string[], win: BrowserWindow) {
+  constructor(files: string[]) {
     this.files = files;
-    this.win = win;
   }
 
   toUpload() {
@@ -114,8 +113,8 @@ export class Upload {
     };
     // 将图片信息添加到历史记录中
     const images = history.add(channelData);
-    if (!this.win.isDestroyed()) {
-      this.win.webContents.send('images-get-replay', images);
+    if (!Upload.win.isDestroyed()) {
+      Upload.win.webContents.send('images-get-replay', images);
     }
     // 根据urlType转换图片链接格式
     switch (setting.basic.urlType) {

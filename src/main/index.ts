@@ -34,6 +34,7 @@ app.on('ready', () => {
   tray.addListener('click', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       mainWindow = createWindow();
+      Ipc.win = mainWindow;
     } else {
       mainWindow.show();
     }
@@ -41,12 +42,13 @@ app.on('ready', () => {
 
   // 托盘拖拽上传
   tray.addListener('drop-files', (_, files) => {
-    new Upload(files, mainWindow).toUpload();
+    Upload.win = mainWindow;
+    new Upload(files).toUpload();
   });
 
   mainWindow = createWindow();
-
-  Ipc.getInstance(mainWindow).init();
+  Ipc.win = mainWindow;
+  Ipc.getInstance().init();
 });
 
 app.on('window-all-closed', function() {
@@ -60,6 +62,7 @@ app.on('activate', function() {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     mainWindow = createWindow();
+    Ipc.win = mainWindow;
   }
 });
 

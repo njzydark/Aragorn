@@ -8,15 +8,11 @@ const history = History.getInstance();
 
 export class Ipc {
   private static instance: Ipc;
-  win: BrowserWindow;
+  static win: BrowserWindow;
 
-  private constructor(win: BrowserWindow) {
-    this.win = win;
-  }
-
-  static getInstance(win: BrowserWindow) {
+  static getInstance() {
     if (!Ipc.instance) {
-      Ipc.instance = new Ipc(win);
+      Ipc.instance = new Ipc();
     }
     return Ipc.instance;
   }
@@ -24,7 +20,8 @@ export class Ipc {
   init() {
     // 上传按钮事件
     ipcMain.on('image-upload', (_, files) => {
-      new Upload(files, Ipc.instance.win).toUpload();
+      Upload.win = Ipc.win;
+      new Upload(files).toUpload();
     });
 
     // 获取基础设置
