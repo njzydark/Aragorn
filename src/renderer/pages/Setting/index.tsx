@@ -14,7 +14,7 @@ const switchtemLayout = {
 };
 
 export default function Basic() {
-  const { basic, userApiList, userSdkList } = useContext(AppContext);
+  const { configuration, userApiList, userSdkList } = useContext(AppContext);
   const [form] = Form.useForm();
 
   const handleSubmit = () => {
@@ -42,7 +42,7 @@ export default function Basic() {
           layout="horizontal"
           labelAlign="left"
           form={form}
-          initialValues={basic}
+          initialValues={configuration}
           onFinish={handleFinish}
         >
           <Row>

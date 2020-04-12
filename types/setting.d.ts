@@ -1,7 +1,7 @@
 import { ISdk } from './sdk';
 
 /** App设置 */
-export interface ISetting {
+export type SettingConfiguration = {
   /** 上传成功后链接复制的格式 */
   urlType: 'URL' | 'HTML' | 'Markdown';
   /** 默认的上传方式名称 */
@@ -20,7 +20,7 @@ export interface ISetting {
   autoStart: boolean;
   /** 自动检查更新 */
   autoUpdate: boolean;
-}
+};
 
 /**
  * 用户的SDK配置

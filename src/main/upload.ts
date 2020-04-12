@@ -6,9 +6,13 @@ import FormData from 'form-data';
 import { imageSize } from 'image-size';
 import { Setting } from './setting';
 import { History } from './history';
+import { Api } from './api';
+import { Sdk } from './sdk';
 
 const setting = Setting.getInstance();
 const history = History.getInstance();
+const api = Api.getInstance();
+const sdk = Sdk.getInstance();
 
 export class Upload {
   /** 文件路径列表 */
@@ -21,10 +25,10 @@ export class Upload {
 
   toUpload() {
     const {
-      basic: { defaultUploaderName },
-      userApiList,
-      userSdkList
+      configuration: { defaultUploaderName }
     } = setting;
+    const { userApiList } = api;
+    const { userSdkList, sdks } = sdk;
     const uploaderList = [...userApiList, ...userSdkList];
     const uploader = uploaderList.find(uploader => uploader.name === defaultUploaderName);
     if (!uploader) {
@@ -37,13 +41,13 @@ export class Upload {
       this.handleUploadByApi(uploader);
     }
     if (uploader.type === 'sdk') {
-      this.handleUploadBySdk(uploader);
+      this.handleUploadBySdk(uploader, sdks);
     }
   }
 
-  protected async handleUploadBySdk(uploader: UserSdk) {
+  protected async handleUploadBySdk(uploader: UserSdk, sdks: ISdk[]) {
     try {
-      const sdk = setting.sdks.find(item => item.sdkName === uploader.sdkName) as ISdk;
+      const sdk = sdks.find(item => item.sdkName === uploader.sdkName) as ISdk;
       sdk.configurationList = uploader.configurationList;
       const res = await sdk.upload(this.files);
       if (res.success) {
@@ -117,7 +121,7 @@ export class Upload {
       Upload.win.webContents.send('images-get-replay', images);
     }
     // 根据urlType转换图片链接格式
-    switch (setting.basic.urlType) {
+    switch (setting.configuration.urlType) {
       case 'URL':
         break;
       case 'HTML':
@@ -129,9 +133,9 @@ export class Upload {
       default:
         return url;
     }
-    if (setting.basic.autoCopy) {
+    if (setting.configuration.autoCopy) {
       let preClipBoardText = '';
-      if (setting.basic.autoRecover) {
+      if (setting.configuration.autoRecover) {
         preClipBoardText = clipboard.readText();
       }
       // 开启自动复制
@@ -139,16 +143,16 @@ export class Upload {
       const notification = new Notification({
         title: '上传成功',
         body: '链接已自动复制到粘贴板',
-        silent: !setting.basic.sound
+        silent: !setting.configuration.sound
       });
-      setting.basic.showNotifaction && notification.show();
-      setting.basic.autoRecover &&
+      setting.configuration.showNotifaction && notification.show();
+      setting.configuration.autoRecover &&
         setTimeout(() => {
           clipboard.writeText(preClipBoardText);
           const notification = new Notification({
             title: '粘贴板已恢复',
             body: '已自动恢复上次粘贴板中的内容',
-            silent: !setting.basic.sound
+            silent: !setting.configuration.sound
           });
           notification.show();
         }, 5000);
@@ -156,9 +160,9 @@ export class Upload {
       const notification = new Notification({
         title: '上传成功',
         body: url,
-        silent: !setting.basic.sound
+        silent: !setting.configuration.sound
       });
-      setting.basic.showNotifaction && notification.show();
+      setting.configuration.showNotifaction && notification.show();
     }
   }
 }

@@ -1,10 +1,14 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { Setting } from './setting';
 import { History } from './history';
+import { Api } from './api';
+import { Sdk } from './sdk';
 import { Upload } from './upload';
 
 const setting = Setting.getInstance();
 const history = History.getInstance();
+const api = Api.getInstance();
+const sdk = Sdk.getInstance();
 
 export class Ipc {
   private static instance: Ipc;
@@ -26,22 +30,22 @@ export class Ipc {
 
     // 获取基础设置
     ipcMain.on('setting-basic-get', event => {
-      const basic = setting.getBasic();
-      if (basic) {
+      const configuration = setting.get();
+      if (configuration) {
         event.reply('setting-basic-get-replay', {
           type: 'get',
-          data: basic
+          data: configuration
         });
       }
     });
 
     // 更新基础设置
-    ipcMain.on('setting-basic-update', (event, basic) => {
-      const updatedBasic = setting.updateBasic(basic);
-      if (updatedBasic) {
+    ipcMain.on('setting-basic-update', (event, configuration) => {
+      const updatedConfiguration = setting.update(configuration);
+      if (updatedConfiguration) {
         event.reply('setting-basic-update-replay', {
           type: 'update',
-          data: updatedBasic
+          data: updatedConfiguration
         });
       }
     });
@@ -58,7 +62,7 @@ export class Ipc {
 
   protected handleCustomApiHandle() {
     ipcMain.on('setting-default-api-get', event => {
-      const defaultApi = setting.getDefaultApi();
+      const defaultApi = api.getDefault();
       if (defaultApi) {
         event.reply('setting-default-api-get-replay', {
           type: 'get',
@@ -68,7 +72,7 @@ export class Ipc {
     });
 
     ipcMain.on('setting-api-list-get', event => {
-      const apiList = setting.getApiList();
+      const apiList = api.getList();
       if (apiList) {
         event.reply('setting-api-list-get-replay', {
           type: 'get',
@@ -77,12 +81,12 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('setting-api-add', (event, api) => {
-      const data = setting.addApi(api);
+    ipcMain.on('setting-api-add', (event, arg) => {
+      const data = api.add(arg);
       if (data) {
         event.reply('setting-api-list-get-replay', {
           type: 'get',
-          data: setting.userApiList
+          data: api.userApiList
         });
         event.reply('setting-api-add-replay', {
           type: 'add',
@@ -91,8 +95,8 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('setting-api-get', (event, api) => {
-      const data = setting.getApi(api);
+    ipcMain.on('setting-api-get', (event, arg) => {
+      const data = api.get(arg);
       if (data) {
         event.reply('setting-api-get-replay', {
           type: 'get',
@@ -101,8 +105,8 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('setting-api-update', (event, api) => {
-      const apiList = setting.updateApi(api);
+    ipcMain.on('setting-api-update', (event, arg) => {
+      const apiList = api.update(arg);
       if (apiList) {
         event.reply('setting-api-list-get-replay', {
           type: 'get',
@@ -115,7 +119,7 @@ export class Ipc {
     });
 
     ipcMain.on('setting-api-delete', (event, uuid: string) => {
-      const apiList = setting.deleteApi(uuid);
+      const apiList = api.delete(uuid);
       if (apiList) {
         event.reply('setting-api-list-get-replay', {
           type: 'get',
@@ -130,7 +134,7 @@ export class Ipc {
 
   protected handleSdkHandle() {
     ipcMain.on('default-sdk-list-get', event => {
-      const defaultSdkList = setting.getDefaultSdkList();
+      const defaultSdkList = sdk.getSdks();
       if (defaultSdkList) {
         event.reply('default-sdk-list-get-replay', {
           type: 'get',
@@ -140,7 +144,7 @@ export class Ipc {
     });
 
     ipcMain.on('sdk-list-get', event => {
-      const sdkList = setting.getSdkList();
+      const sdkList = sdk.getList();
       if (sdkList) {
         event.reply('sdk-list-get-replay', {
           type: 'get',
@@ -149,12 +153,12 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('sdk-add', (event, sdk) => {
-      const data = setting.addSdk(sdk);
+    ipcMain.on('sdk-add', (event, arg) => {
+      const data = sdk.add(arg);
       if (data) {
         event.reply('sdk-list-get-replay', {
           type: 'get',
-          data: setting.userSdkList
+          data: sdk.userSdkList
         });
         event.reply('sdk-add-replay', {
           type: 'add',
@@ -163,8 +167,8 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('sdk-get', (event, sdk) => {
-      const data = setting.getSdk(sdk);
+    ipcMain.on('sdk-get', (event, arg) => {
+      const data = sdk.get(arg);
       if (data) {
         event.reply('sdk-get-replay', {
           type: 'get',
@@ -173,8 +177,8 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('sdk-update', (event, sdk) => {
-      const sdkList = setting.updateSdk(sdk);
+    ipcMain.on('sdk-update', (event, arg) => {
+      const sdkList = sdk.update(arg);
       if (sdkList) {
         event.reply('sdk-list-get-replay', {
           type: 'get',
@@ -187,7 +191,7 @@ export class Ipc {
     });
 
     ipcMain.on('sdk-delete', (event, uuid: string) => {
-      const sdkList = setting.deleteSdk(uuid);
+      const sdkList = sdk.delete(uuid);
       if (sdkList) {
         event.reply('sdk-list-get-replay', {
           type: 'get',

@@ -1,4 +1,4 @@
-import { ISetting, IApi, ISdk, UserSdkList, IImage } from 'types';
+import { SettingConfiguration, IApi, ISdk, UserSdkList, IImage } from 'types';
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
@@ -15,7 +15,7 @@ import About from '@/renderer/pages/About';
 
 const defaultAppContextValue = {
   images: [] as Partial<IImage>[],
-  basic: {} as ISetting,
+  configuration: {} as SettingConfiguration,
   defaultApi: {} as IApi,
   sdks: [] as ISdk[],
   userApiList: [] as IApi[],
@@ -66,7 +66,7 @@ const App = () => {
       setData(preData => {
         return {
           ...preData,
-          basic: data
+          configuration: data
         };
       });
     });
@@ -75,7 +75,7 @@ const App = () => {
       setData(preData => {
         return {
           ...preData,
-          basic: data
+          configuration: data
         };
       });
     });
