@@ -1,9 +1,10 @@
 import { UserSdk } from 'types';
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, message } from 'antd';
 import { AppContext } from '@/renderer/app';
+import './index.less';
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -11,7 +12,7 @@ const formItemLayout = {
 };
 
 export default function Sdk() {
-  const { sdks, userSdkList } = useContext(AppContext);
+  const { sdks, userSdkList, setCurMenuKey } = useContext(AppContext);
   const { uuid } = useParams();
   const [sdk, setSdk] = useState({} as UserSdk);
   const [form] = Form.useForm();
@@ -41,6 +42,33 @@ export default function Sdk() {
       setSdk({} as any);
     }
   }, [uuid]);
+
+  const history = useHistory();
+  useEffect(() => {
+    function handleSdkAdd(_, { data }) {
+      setCurMenuKey(data.uuid);
+      history.push(`/sdk/${data.uuid}`);
+      message.success('SDK添加成功');
+    }
+    function handleSdkUpdate() {
+      message.success('SDK更新成功');
+    }
+    function handleSdkDelete() {
+      setCurMenuKey('sdk');
+      history.push(`/sdk`);
+      message.success('SDK删除成功');
+    }
+
+    ipcRenderer.on('sdk-add-replay', handleSdkAdd);
+    ipcRenderer.on('sdk-update-replay', handleSdkUpdate);
+    ipcRenderer.on('sdk-delete-replay', handleSdkDelete);
+
+    return () => {
+      ipcRenderer.removeListener('sdk-add-replay', handleSdkAdd);
+      ipcRenderer.removeListener('sdk-update-replay', handleSdkUpdate);
+      ipcRenderer.removeListener('sdk-delete-replay', handleSdkDelete);
+    };
+  }, []);
 
   const handleSdkSelect = (sdkName: string) => {
     const sdk = sdks.find(api => api.sdkName === sdkName);
@@ -95,12 +123,12 @@ export default function Sdk() {
   const handleTest = () => {};
 
   return (
-    <>
+    <div className="sdk-wrapper">
       <header>
         <h3>配置SDK</h3>
         <hr />
       </header>
-      <section>
+      <main>
         <Form {...formItemLayout} layout="horizontal" form={form} initialValues={sdk} onFinish={handleFinish}>
           {uuid && (
             <Form.Item name="uuid" style={{ display: 'none' }}>
@@ -140,7 +168,7 @@ export default function Sdk() {
             </Form.Item>
           ))}
         </Form>
-      </section>
+      </main>
       <footer>
         <Button type="primary" onClick={handleSubmit} style={{ marginRight: 10 }}>
           保存并应用
@@ -154,6 +182,6 @@ export default function Sdk() {
           测试连接
         </Button>
       </footer>
-    </>
+    </div>
   );
 }

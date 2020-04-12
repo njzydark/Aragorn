@@ -12,6 +12,7 @@ function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 950,
     height: 700,
+    titleBarStyle: 'hidden',
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
       nodeIntegration: true

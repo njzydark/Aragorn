@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { AppContext } from '@/renderer/app';
 import Gallery from 'react-photo-gallery';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import './index.less';
 
 export default function Home() {
   const { images } = useContext(AppContext);

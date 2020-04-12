@@ -1,13 +1,17 @@
 import { ISetting, IApi, ISdk, UserSdkList, IImage } from 'types';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { ConfigProvider, message } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
+import './app.less';
 
-import { MenuBar } from '@/renderer/components/MenuBar';
+import { SideBar } from '@/renderer/components/SideBar';
 import Home from '@/renderer/pages/Home';
+import Sdk from './pages/Sdk';
+import Api from '@/renderer/pages/Api';
 import Setting from '@/renderer/pages/Setting';
+import About from '@/renderer/pages/About';
 
 const defaultAppContextValue = {
   images: [] as Partial<IImage>[],
@@ -15,13 +19,23 @@ const defaultAppContextValue = {
   defaultApi: {} as IApi,
   sdks: [] as ISdk[],
   userApiList: [] as IApi[],
-  userSdkList: [] as UserSdkList
+  userSdkList: [] as UserSdkList,
+  curMenuKey: '',
+  setCurMenuKey: (() => {}) as React.Dispatch<React.SetStateAction<string>>
 };
 
 export const AppContext = createContext(defaultAppContextValue);
 
 const App = () => {
-  const [data, setData] = useState(defaultAppContextValue);
+  // 侧边菜单默认选中项的key
+  const [curMenuKey, setCurMenuKey] = useState('home');
+  // 全局context值
+  const [data, setData] = useState({
+    ...defaultAppContextValue,
+    curMenuKey,
+    setCurMenuKey
+  });
+
   useEffect(() => {
     ipcSendInit();
     ipcOnInit();
@@ -81,9 +95,6 @@ const App = () => {
         };
       });
     });
-    ipcRenderer.on('setting-api-update-replay', () => {
-      message.success('API更新成功');
-    });
     ipcRenderer.on('default-sdk-list-get-replay', (_, { data }) => {
       setData(preData => {
         return {
@@ -100,20 +111,23 @@ const App = () => {
         };
       });
     });
-    ipcRenderer.on('sdk-update-replay', () => {
-      message.success('SDK更新成功');
-    });
   };
 
   return (
     <ConfigProvider locale={zhCN}>
       <AppContext.Provider value={data}>
         <HashRouter>
-          <Switch>
-            <Route path="/" component={Home} exact />
-            <Route path="/setting" component={Setting} />
-          </Switch>
-          <MenuBar />
+          <SideBar curMenuKey={curMenuKey} />
+          <div className="main-content-wrapper">
+            <Switch>
+              <Route path="/" component={Home} exact />
+              <Route path="/home" component={Home} exact />
+              <Route path="/sdk/:uuid?" component={Sdk} exact />
+              <Route path="/api/:uuid?" component={Api} exact />
+              <Route path="/setting" component={Setting} exact />
+              <Route path="/about" component={About} exact />
+            </Switch>
+          </div>
         </HashRouter>
       </AppContext.Provider>
     </ConfigProvider>

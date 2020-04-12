@@ -1,9 +1,10 @@
 import { IApi } from 'types';
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, message } from 'antd';
 import { AppContext } from '@/renderer/app';
+import './index.less';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -11,7 +12,7 @@ const formItemLayout = {
 };
 
 export default function Api() {
-  const { defaultApi, userApiList } = useContext(AppContext);
+  const { defaultApi, userApiList, setCurMenuKey } = useContext(AppContext);
   const { uuid } = useParams();
   const [api, setApi] = useState({} as IApi);
   const [form] = Form.useForm();
@@ -26,6 +27,33 @@ export default function Api() {
       setApi(defaultApi);
     }
   }, [uuid]);
+
+  const history = useHistory();
+  useEffect(() => {
+    function handleApiAdd(_, { data }) {
+      setCurMenuKey(data.uuid);
+      history.push(`/api/${data.uuid}`);
+      message.success('API添加成功');
+    }
+    function handleApiUpdate() {
+      message.success('API更新成功');
+    }
+    function handleApiDelete() {
+      setCurMenuKey('api');
+      history.push(`/api`);
+      message.success('API删除成功');
+    }
+
+    ipcRenderer.on('setting-api-add-replay', handleApiAdd);
+    ipcRenderer.on('setting-api-update-replay', handleApiUpdate);
+    ipcRenderer.on('setting-api-delete-replay', handleApiDelete);
+
+    return () => {
+      ipcRenderer.removeListener('setting-api-add-replay', handleApiAdd);
+      ipcRenderer.removeListener('setting-api-update-replay', handleApiUpdate);
+      ipcRenderer.removeListener('setting-api-delete-replay', handleApiDelete);
+    };
+  }, []);
 
   const handleSubmit = () => {
     form.submit();
@@ -48,12 +76,12 @@ export default function Api() {
   const handleTest = () => {};
 
   return (
-    <>
+    <div className="api-wrapper">
       <header>
         <h3>自定义API</h3>
         <hr />
       </header>
-      <section>
+      <main>
         <Form {...formItemLayout} layout="horizontal" form={form} initialValues={api} onFinish={handleFinish}>
           <>
             {uuid && (
@@ -97,7 +125,7 @@ export default function Api() {
             <Input />
           </Form.Item>
         </Form>
-      </section>
+      </main>
       <footer>
         <Button type="primary" onClick={handleSubmit} style={{ marginRight: 10 }}>
           保存并应用
@@ -111,6 +139,6 @@ export default function Api() {
           测试连接
         </Button>
       </footer>
-    </>
+    </div>
   );
 }
