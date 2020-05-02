@@ -20,7 +20,7 @@ function createWindow(): BrowserWindow {
   });
 
   if (isDev) {
-    window.loadURL('http://localhost:8080');
+    window.loadURL('http://localhost:8083');
   } else {
     window.loadFile(path.resolve(__dirname, '../renderer/index.html'));
   }
@@ -42,7 +42,6 @@ app.on('ready', () => {
 
   // 托盘拖拽上传
   tray.addListener('drop-files', (_, files) => {
-    Upload.win = mainWindow;
     new Upload(files).toUpload();
   });
 

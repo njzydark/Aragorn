@@ -30,7 +30,6 @@ export class Ipc {
 
   protected uploadHandle() {
     ipcMain.on('file-upload-by-side-menu', (_, filesPath: string[]) => {
-      Upload.win = Ipc.win;
       new Upload(filesPath).toUpload();
     });
 
