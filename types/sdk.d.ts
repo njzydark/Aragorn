@@ -1,3 +1,5 @@
+import { UploadResponse } from 'types';
+
 /**
  * 对象存储SDK
  */
@@ -9,7 +11,7 @@ export interface ISdk {
   /** 配置项 */
   configurationList: SdkConfigurationList;
   /** 上传方法 */
-  upload: (files: string[]) => Promise<{ success: boolean; info?: { url: string }; err?: Error }>;
+  upload: (files: string[]) => Promise<UploadResponse>;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { SettingConfiguration, IApi, ISdk, UserSdkList, IImage } from 'types';
+import { SettingConfiguration, IApi, ISdk, UserSdkList, UploadFileInfo } from 'types';
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
@@ -14,7 +14,7 @@ import Setting from '@/renderer/pages/Setting';
 import About from '@/renderer/pages/About';
 
 const defaultAppContextValue = {
-  images: [] as Partial<IImage>[],
+  images: [] as Partial<UploadFileInfo>[],
   configuration: {} as SettingConfiguration,
   defaultApi: {} as IApi,
   sdks: [] as ISdk[],
@@ -51,7 +51,7 @@ const App = () => {
   };
 
   const ipcOnInit = () => {
-    ipcRenderer.on('uploaded-images-get-reply', (_, images: IImage[]) => {
+    ipcRenderer.on('uploaded-images-get-reply', (_, images: UploadFileInfo[]) => {
       images.map(image => {
         image.sizes = ['(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw'];
       });

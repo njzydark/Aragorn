@@ -1,8 +1,8 @@
-import { IImage } from 'types';
+import { UploadFileInfo } from 'types';
 
 export class History {
   private static instance: History;
-  images: Partial<IImage>[];
+  images: Partial<UploadFileInfo>[];
 
   private constructor() {
     this.images = [];
@@ -15,7 +15,7 @@ export class History {
     return History.instance;
   }
 
-  add(image: Partial<IImage>) {
+  add(image: Partial<UploadFileInfo>) {
     this.images.unshift(image);
     return this.images;
   }

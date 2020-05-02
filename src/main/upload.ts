@@ -1,9 +1,10 @@
-import { IApi, ISdk, UserSdk } from 'types';
+import { IApi, ISdk, UserSdk, UploadFileInfo } from 'types';
 import { Notification, clipboard } from 'electron';
 import { createReadStream } from 'fs';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
 import { imageSize } from 'image-size';
+import { v4 as uuidv4 } from 'uuid';
 import { Ipc } from './ipc';
 import { Setting } from './setting';
 import { History } from './history';
@@ -51,11 +52,11 @@ export class Upload {
       sdk.configurationList = uploader.configurationList;
       const res = await sdk.upload(this.files);
       if (res.success) {
-        this.handleUploadSuccess(res.info?.url || '', this.files[0]);
+        this.handleUploadSuccess(res.data as UploadFileInfo, this.files[0]);
       } else {
         const notification = new Notification({
           title: 'SDK方式上传失败',
-          body: res.err?.message || '错误信息未捕获'
+          body: res.desc || '错误信息未捕获'
         });
         notification.show();
       }
@@ -87,7 +88,12 @@ export class Upload {
           const { data: res } = await axios(requestOpetion);
           let imageUrl = res?.data?.[uploader.responseUrlFieldName];
           if (imageUrl) {
-            this.handleUploadSuccess(imageUrl, this.files[0]);
+            const fileInfo: UploadFileInfo = {
+              name: uuidv4(),
+              url: imageUrl,
+              date: new Date().getTime()
+            };
+            this.handleUploadSuccess(fileInfo, this.files[0]);
           } else {
             console.log('请求失败');
             console.dir(requestOpetion);
@@ -104,15 +110,15 @@ export class Upload {
     });
   }
 
-  protected handleUploadSuccess(url: string, file: string) {
+  protected handleUploadSuccess(fileInfo: UploadFileInfo, file: string) {
     console.log('上传成功');
     // 获取图片尺寸
     const dimensions = imageSize(file);
     const channelData = {
-      src: url,
+      ...fileInfo,
+      src: fileInfo.url,
       width: dimensions.width,
       height: dimensions.height,
-      date: new Date().getTime(),
       path: file
     };
     // 将图片信息添加到历史记录中
@@ -121,17 +127,18 @@ export class Upload {
       Ipc.win.webContents.send('uploaded-images-get-reply', images);
     }
     // 根据urlType转换图片链接格式
+    let clipboardUrl = fileInfo.url;
     switch (setting.configuration.urlType) {
       case 'URL':
         break;
       case 'HTML':
-        url = `<img src="${url}" />`;
+        clipboardUrl = `<img src="${fileInfo.url}" />`;
         break;
       case 'Markdown':
-        url = `![${url}](${url})`;
+        clipboardUrl = `![${fileInfo.url}](${fileInfo.url})`;
         break;
       default:
-        return url;
+        return fileInfo.url;
     }
     if (setting.configuration.autoCopy) {
       let preClipBoardText = '';
@@ -139,7 +146,7 @@ export class Upload {
         preClipBoardText = clipboard.readText();
       }
       // 开启自动复制
-      clipboard.writeText(url);
+      clipboard.writeText(clipboardUrl || '');
       const notification = new Notification({
         title: '上传成功',
         body: '链接已自动复制到粘贴板',
@@ -159,7 +166,7 @@ export class Upload {
     } else {
       const notification = new Notification({
         title: '上传成功',
-        body: url,
+        body: clipboardUrl || '',
         silent: !setting.configuration.sound
       });
       setting.configuration.showNotifaction && notification.show();
