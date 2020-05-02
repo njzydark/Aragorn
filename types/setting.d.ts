@@ -4,8 +4,8 @@ import { ISdk } from './sdk';
 export type SettingConfiguration = {
   /** 上传成功后链接复制的格式 */
   urlType: 'URL' | 'HTML' | 'Markdown';
-  /** 默认的上传方式名称 */
-  defaultUploaderName?: string;
+  /** 默认的上传方式 */
+  defaultUploader?: string;
   /** 代理设置 */
   proxy: string;
   /** 自动复制 */
@@ -29,6 +29,7 @@ export type UserSdk = ISdk & {
   uuid?: string;
   name: string;
   type: 'sdk';
+  isDefault?: boolean;
 };
 
 /**

@@ -2,7 +2,7 @@ import { UserSdk } from 'types';
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { Form, Input, Button, Select, message } from 'antd';
+import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@/renderer/app';
 import './index.less';
 
@@ -37,7 +37,8 @@ export default function Sdk() {
     } else {
       form.setFieldsValue({
         name: '',
-        sdkName: ''
+        sdkName: '',
+        isDefault: true
       } as any);
       setSdk({} as any);
     }
@@ -113,6 +114,7 @@ export default function Sdk() {
       if (uuid) {
         ipcRenderer.send('sdk-update', newSdk);
       } else {
+        newSdk.isDefault = values.isDefault;
         ipcRenderer.send('sdk-add', newSdk);
       }
     }
@@ -171,6 +173,11 @@ export default function Sdk() {
               ) : null}
             </Form.Item>
           ))}
+          {!uuid && (
+            <Form.Item name="isDefault" label="默认上传方式" valuePropName="checked">
+              <Switch />
+            </Form.Item>
+          )}
         </Form>
       </main>
       <footer>

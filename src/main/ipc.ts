@@ -4,6 +4,7 @@ import { History } from './history';
 import { Api } from './api';
 import { Sdk } from './sdk';
 import { Upload } from './upload';
+import { IApi, UserSdk } from 'types';
 
 const setting = Setting.getInstance();
 const history = History.getInstance();
@@ -68,15 +69,17 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('api-add', (event, newApi) => {
+    ipcMain.on('api-add', (event, newApi: IApi) => {
       const addedApi = api.add(newApi);
       if (addedApi) {
+        addedApi.isDefault && setting.setDefaultUploader(addedApi.uuid);
         event.reply('user-api-list-get-reply', api.userApiList);
         event.reply('api-add-reply', addedApi);
+        event.reply('setting-configuration-get-reply', setting.get());
       }
     });
 
-    ipcMain.on('api-update', (event, newApi) => {
+    ipcMain.on('api-update', (event, newApi: IApi) => {
       const userApiList = api.update(newApi);
       if (userApiList) {
         event.reply('user-api-list-get-reply', userApiList);
@@ -89,6 +92,8 @@ export class Ipc {
       if (userApiList) {
         event.reply('user-api-list-get-reply', userApiList);
         event.reply('api-delete-reply', true);
+        setting.deleteDefaultUpload(uuid);
+        event.reply('setting-configuration-get-reply', setting.get());
       }
     });
   }
@@ -108,15 +113,17 @@ export class Ipc {
       }
     });
 
-    ipcMain.on('sdk-add', (event, newSdk) => {
+    ipcMain.on('sdk-add', (event, newSdk: UserSdk) => {
       const addedSdk = sdk.add(newSdk);
       if (addedSdk) {
+        addedSdk.isDefault && setting.setDefaultUploader(addedSdk.uuid);
         event.reply('user-sdk-list-get-reply', sdk.userSdkList);
         event.reply('sdk-add-reply', addedSdk);
+        event.reply('setting-configuration-get-reply', setting.get());
       }
     });
 
-    ipcMain.on('sdk-update', (event, newSdk) => {
+    ipcMain.on('sdk-update', (event, newSdk: UserSdk) => {
       const userSdkList = sdk.update(newSdk);
       if (userSdkList) {
         event.reply('user-sdk-list-get-reply', userSdkList);
@@ -129,6 +136,8 @@ export class Ipc {
       if (userSdkList) {
         event.reply('user-sdk-list-get-reply', userSdkList);
         event.reply('sdk-delete-reply', true);
+        setting.deleteDefaultUpload(uuid);
+        event.reply('setting-configuration-get-reply', setting.get());
       }
     });
   }

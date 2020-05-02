@@ -58,21 +58,21 @@ export default function Basic() {
           </Row>
           <Row>
             <Col>
-              <Form.Item name="defaultUploaderName" label="默认图床" {...inputItemLayout}>
+              <Form.Item name="defaultUploader" label="默认上传方式" {...inputItemLayout}>
                 <Select>
-                  {userApiList.length > 0 && (
-                    <Select.OptGroup label="自定义接口">
-                      {userApiList.map(item => (
-                        <Select.Option key={item.name} value={item.name}>
+                  {userSdkList.length > 0 && (
+                    <Select.OptGroup label="SDK">
+                      {userSdkList.map(item => (
+                        <Select.Option key={item.uuid} value={item.uuid as string}>
                           {item.name}
                         </Select.Option>
                       ))}
                     </Select.OptGroup>
                   )}
-                  {userSdkList.length > 0 && (
-                    <Select.OptGroup label="SDK">
-                      {userSdkList.map(item => (
-                        <Select.Option key={item.name} value={item.name}>
+                  {userApiList.length > 0 && (
+                    <Select.OptGroup label="API">
+                      {userApiList.map(item => (
+                        <Select.Option key={item.uuid} value={item.uuid as string}>
                           {item.name}
                         </Select.Option>
                       ))}

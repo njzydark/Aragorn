@@ -3,7 +3,7 @@ import { SettingConfiguration } from 'types';
 // 默认设置
 const defaultSettingConfigurtion: SettingConfiguration = {
   urlType: 'URL',
-  defaultUploaderName: '',
+  defaultUploader: '',
   proxy: '',
   autoCopy: true,
   autoRecover: false,
@@ -38,5 +38,15 @@ export class Setting {
     console.log('更新App设置');
     this.configuration = configuration;
     return this.configuration;
+  }
+
+  setDefaultUploader(uuid?: string) {
+    this.configuration.defaultUploader = uuid;
+  }
+
+  deleteDefaultUpload(uuid: string) {
+    if (this.configuration.defaultUploader === uuid) {
+      this.configuration.defaultUploader = '';
+    }
   }
 }

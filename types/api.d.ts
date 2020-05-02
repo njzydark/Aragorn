@@ -22,4 +22,6 @@ export interface IApi {
   requestBody?: string;
   /** 响应的图片地址对应的字段名 */
   responseUrlFieldName: string;
+  /** 是否为默认上传方式 */
+  isDefault?: boolean;
 }

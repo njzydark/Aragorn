@@ -25,12 +25,12 @@ export class Upload {
 
   toUpload() {
     const {
-      configuration: { defaultUploaderName }
+      configuration: { defaultUploader }
     } = setting;
     const { userApiList } = api;
     const { userSdkList, sdks } = sdk;
     const uploaderList = [...userApiList, ...userSdkList];
-    const uploader = uploaderList.find(uploader => uploader.name === defaultUploaderName);
+    const uploader = uploaderList.find(uploader => uploader.uuid === defaultUploader);
     if (!uploader) {
       const message = uploaderList.length > 0 ? '请配置默认上传方式' : '请添加上传方式';
       const notification = new Notification({ title: '上传操作异常', body: message });
@@ -118,7 +118,7 @@ export class Upload {
     // 将图片信息添加到历史记录中
     const images = history.add(channelData);
     if (!Ipc.win.isDestroyed()) {
-      Ipc.win.webContents.send('uploaded-images-get-reply', images)
+      Ipc.win.webContents.send('uploaded-images-get-reply', images);
     }
     // 根据urlType转换图片链接格式
     switch (setting.configuration.urlType) {

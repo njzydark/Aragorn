@@ -2,7 +2,7 @@ import { IApi } from 'types';
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { Form, Input, Button, Select, message } from 'antd';
+import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@/renderer/app';
 import './index.less';
 
@@ -23,6 +23,7 @@ export default function Api() {
       form.setFieldsValue(api as any);
       setApi(api as IApi);
     } else {
+      defaultApi.isDefault = true;
       form.setFieldsValue(defaultApi as any);
       setApi(defaultApi);
     }
@@ -128,6 +129,11 @@ export default function Api() {
           <Form.Item name="responseUrlFieldName" label="ResponseUrlFieldName">
             <Input />
           </Form.Item>
+          {!uuid && (
+            <Form.Item name="isDefault" label="默认上传方式" valuePropName="checked">
+              <Switch />
+            </Form.Item>
+          )}
         </Form>
       </main>
       <footer>
