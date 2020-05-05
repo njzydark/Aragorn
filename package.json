@@ -66,13 +66,12 @@
     "classnames": "^2.2.6",
     "dayjs": "^1.8.23",
     "form-data": "^3.0.0",
-    "image-size": "^0.8.3",
+    "mime-types": "^2.1.27",
     "qiniu": "^7.3.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-images": "^1.1.0",
-    "react-photo-gallery": "^8.0.0",
     "react-router-dom": "^5.1.2",
+    "upyun": "^3.4.1",
     "uuid": "^7.0.3"
   },
   "repository": {
