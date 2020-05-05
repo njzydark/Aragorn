@@ -1,7 +1,7 @@
 {
   "name": "aragorn",
   "version": "1.0.0",
-  "description": "A pure tool to upload image by your api",
+  "description": "A upload tool by custom api or oos sdk",
   "main": "dist/main/index.js",
   "scripts": {
     "start": "electron .",
@@ -9,7 +9,9 @@
     "main:prod": "cross-env NODE_ENV=production webpack --mode production --config build/webpack.main.config.js",
     "renderer:dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.renderer.dev.config.js",
     "renderer:prod": "cross-env NODE_ENV=production webpack --config build/webpack.renderer.prod.config.js",
-    "renderer:analyz": "cross-env NODE_ENV=production webpack --config build/webpack.renderer.analyz.config.js"
+    "renderer:analyz": "cross-env NODE_ENV=production webpack --config build/webpack.renderer.analyz.config.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "keywords": [
     "image",
@@ -39,6 +41,7 @@
     "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
     "electron": "^8.2.0",
+    "electron-builder": "^22.6.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^3.2.0",
     "less": "^3.11.1",
@@ -74,12 +77,26 @@
     "upyun": "^3.4.1",
     "uuid": "^7.0.3"
   },
+  "build": {
+    "appId": "com.electron.aragorn",
+    "productName": "Aragorn",
+    "directories": {
+      "output": "output"
+    },
+    "files": [
+      "dist",
+      "!node_modules"
+    ],
+    "mac": {
+      "icon": "assets/icon.icns"
+    }
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/0njzy0/Aragorn.git"
+    "url": "git+https://github.com/njzydark/Aragorn.git"
   },
   "bugs": {
-    "url": "https://github.com/0njzy0/Aragorn/issues"
+    "url": "https://github.com/njzydark/Aragorn/issues"
   },
-  "homepage": "https://github.com/0njzy0/Aragorn#readme"
+  "homepage": "https://github.com/njzydark/Aragorn#readme"
 }
