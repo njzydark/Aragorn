@@ -29,7 +29,7 @@ function createWindow(): BrowserWindow {
 }
 
 app.on('ready', () => {
-  tray = new Tray(path.resolve(__dirname, '../assets/icon.png'));
+  tray = new Tray(path.resolve(__dirname, '../assets/trayIconTemplate.png'));
 
   tray.addListener('click', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
