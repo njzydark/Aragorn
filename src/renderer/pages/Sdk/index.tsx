@@ -47,8 +47,8 @@ export default function Sdk() {
   const history = useHistory();
   useEffect(() => {
     function handleSdkAdd(_, sdk) {
-      setCurMenuKey(sdk.uuid);
-      history.push(`/sdk/${sdk.uuid}`);
+      setCurMenuKey('history');
+      history.push('/');
       message.success('SDK添加成功');
     }
     function handleSdkUpdate(res) {

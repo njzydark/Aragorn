@@ -32,8 +32,8 @@ export default function Api() {
   const history = useHistory();
   useEffect(() => {
     function handleApiAdd(_, api) {
-      setCurMenuKey(api.uuid);
-      history.push(`/api/${api.uuid}`);
+      setCurMenuKey('history');
+      history.push('/');
       message.success('API添加成功');
     }
     function handleApiUpdate(res) {

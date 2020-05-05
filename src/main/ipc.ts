@@ -34,9 +34,9 @@ export class Ipc {
       new Upload(filesPath).toUpload();
     });
 
-    ipcMain.on('uploaded-images-get', event => {
-      const images = history.get();
-      event.reply('uploaded-images-get-reply', images);
+    ipcMain.on('uploaded-files-get', event => {
+      const uploadedFiles = history.get();
+      event.reply('uploaded-files-get-reply', uploadedFiles);
     });
   }
 

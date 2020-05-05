@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 // 默认自定义API配置
 const defaultApi: IApi = {
   name: '',
-  type: 'custom',
+  type: 'api',
   url: '',
   method: 'POST',
   contentType: 'multipart/form-data',
@@ -45,7 +45,7 @@ export class Api {
 
   add(api: IApi) {
     console.log(`添加名称为${api.name}的自定义API`);
-    api.type = 'custom';
+    api.type = 'api';
     api.uuid = uuidv4();
     this.userApiList.push(api);
     return api;

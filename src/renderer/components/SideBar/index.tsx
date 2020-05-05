@@ -10,7 +10,8 @@ import {
   faToolbox,
   faSitemap,
   IconDefinition,
-  faUpload
+  faUpload,
+  faHistory
 } from '@fortawesome/free-solid-svg-icons';
 import { AppContext } from '@/renderer/app';
 import './index.less';
@@ -35,9 +36,9 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
   // 默认菜单项
   const [menus, setMenus] = useState([
     {
-      name: '首页',
-      key: 'home',
-      icon: faHome
+      name: '历史记录',
+      key: 'history',
+      icon: faHistory
     },
     {
       name: 'SDK',

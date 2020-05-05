@@ -7,7 +7,7 @@ export interface IApi {
   /** API名称 */
   name: string;
   /** 类型 */
-  type: 'custom';
+  type: 'api';
   /** API地址 */
   url: string;
   /** 请求类型 默认 POST */

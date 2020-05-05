@@ -1,9 +1,9 @@
-import { IApi, ISdk, UserSdk, UploadFileInfo } from 'types';
+import { IApi, ISdk, UserSdk, UploadedFileInfo, UploadResponseData } from 'types';
 import { Notification, clipboard } from 'electron';
 import { createReadStream } from 'fs';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
-import { imageSize } from 'image-size';
+import mime from 'mime-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Ipc } from './ipc';
 import { Setting } from './setting';
@@ -38,7 +38,7 @@ export class Upload {
       notification.show();
       return;
     }
-    if (uploader.type === 'custom') {
+    if (uploader.type === 'api') {
       this.handleUploadByApi(uploader);
     }
     if (uploader.type === 'sdk') {
@@ -52,7 +52,7 @@ export class Upload {
       sdk.configurationList = uploader.configurationList;
       const res = await sdk.upload(this.files);
       if (res.success) {
-        this.handleUploadSuccess(res.data as UploadFileInfo, this.files[0]);
+        this.handleUploadSuccess(res.data as UploadResponseData, uploader);
       } else {
         const notification = new Notification({
           title: 'SDK方式上传失败',
@@ -88,12 +88,11 @@ export class Upload {
           const { data: res } = await axios(requestOpetion);
           let imageUrl = res?.data?.[uploader.responseUrlFieldName];
           if (imageUrl) {
-            const fileInfo: UploadFileInfo = {
+            const fileInfo: UploadResponseData = {
               name: uuidv4(),
-              url: imageUrl,
-              date: new Date().getTime()
+              url: imageUrl
             };
-            this.handleUploadSuccess(fileInfo, this.files[0]);
+            this.handleUploadSuccess(fileInfo, uploader);
           } else {
             console.log('请求失败');
             console.dir(requestOpetion);
@@ -110,21 +109,20 @@ export class Upload {
     });
   }
 
-  protected handleUploadSuccess(fileInfo: UploadFileInfo, file: string) {
+  protected handleUploadSuccess(fileInfo: UploadResponseData, uploader: UserSdk | IApi) {
     console.log('上传成功');
-    // 获取图片尺寸
-    const dimensions = imageSize(file);
-    const channelData = {
+    const filePath = this.files[0];
+    const uploadedFileInfo: UploadedFileInfo = {
       ...fileInfo,
-      src: fileInfo.url,
-      width: dimensions.width,
-      height: dimensions.height,
-      path: file
+      type: mime.lookup(filePath) || '-',
+      uploader,
+      path: filePath,
+      date: new Date().getTime()
     };
     // 将图片信息添加到历史记录中
-    const images = history.add(channelData);
+    const uploadedFiles = history.add(uploadedFileInfo);
     if (!Ipc.win.isDestroyed()) {
-      Ipc.win.webContents.send('uploaded-images-get-reply', images);
+      Ipc.win.webContents.send('uploaded-files-get-reply', uploadedFiles);
     }
     // 根据urlType转换图片链接格式
     let clipboardUrl = fileInfo.url;

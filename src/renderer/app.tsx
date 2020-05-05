@@ -1,4 +1,4 @@
-import { SettingConfiguration, IApi, ISdk, UserSdkList, UploadFileInfo } from 'types';
+import { SettingConfiguration, IApi, ISdk, UserSdkList, UploadedFileInfo } from 'types';
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
@@ -7,14 +7,14 @@ import zhCN from 'antd/es/locale/zh_CN';
 import './app.less';
 
 import { SideBar } from '@/renderer/components/SideBar';
-import Home from '@/renderer/pages/Home';
+import History from './pages/History';
 import Sdk from './pages/Sdk';
 import Api from '@/renderer/pages/Api';
 import Setting from '@/renderer/pages/Setting';
 import About from '@/renderer/pages/About';
 
 const defaultAppContextValue = {
-  images: [] as Partial<UploadFileInfo>[],
+  uploadedFiles: [] as UploadedFileInfo[],
   configuration: {} as SettingConfiguration,
   defaultApi: {} as IApi,
   sdks: [] as ISdk[],
@@ -28,7 +28,7 @@ export const AppContext = createContext(defaultAppContextValue);
 
 const App = () => {
   // 侧边菜单默认选中项的key
-  const [curMenuKey, setCurMenuKey] = useState('home');
+  const [curMenuKey, setCurMenuKey] = useState('history');
   // 全局context值
   const [data, setData] = useState({
     ...defaultAppContextValue,
@@ -42,7 +42,7 @@ const App = () => {
   }, []);
 
   const ipcSendInit = () => {
-    ipcRenderer.send('uploaded-images-get');
+    ipcRenderer.send('uploaded-files-get');
     ipcRenderer.send('setting-configuration-get');
     ipcRenderer.send('default-api-get');
     ipcRenderer.send('user-api-list-get');
@@ -51,14 +51,11 @@ const App = () => {
   };
 
   const ipcOnInit = () => {
-    ipcRenderer.on('uploaded-images-get-reply', (_, images: UploadFileInfo[]) => {
-      images.map(image => {
-        image.sizes = ['(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw'];
-      });
+    ipcRenderer.on('uploaded-files-get-reply', (_, uploadedFiles: UploadedFileInfo[]) => {
       setData(preData => {
         return {
           ...preData,
-          images
+          uploadedFiles
         };
       });
     });
@@ -120,8 +117,8 @@ const App = () => {
           <SideBar curMenuKey={curMenuKey} />
           <div className="main-content-wrapper">
             <Switch>
-              <Route path="/" component={Home} exact />
-              <Route path="/home" component={Home} exact />
+              <Route path="/" component={History} exact />
+              <Route path="/history" component={History} exact />
               <Route path="/sdk/:uuid?" component={Sdk} exact />
               <Route path="/api/:uuid?" component={Api} exact />
               <Route path="/setting" component={Setting} exact />

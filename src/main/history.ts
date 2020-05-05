@@ -1,11 +1,11 @@
-import { UploadFileInfo } from 'types';
+import { UploadedFileInfo } from 'types';
 
 export class History {
   private static instance: History;
-  images: Partial<UploadFileInfo>[];
+  uploadedFiles: UploadedFileInfo[];
 
   private constructor() {
-    this.images = [];
+    this.uploadedFiles = [];
   }
 
   static getInstance() {
@@ -15,12 +15,12 @@ export class History {
     return History.instance;
   }
 
-  add(image: Partial<UploadFileInfo>) {
-    this.images.unshift(image);
-    return this.images;
+  add(uploadedFile: UploadedFileInfo) {
+    this.uploadedFiles.unshift(uploadedFile);
+    return this.uploadedFiles;
   }
 
   get() {
-    return this.images;
+    return this.uploadedFiles;
   }
 }
