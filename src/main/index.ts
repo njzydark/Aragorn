@@ -20,7 +20,7 @@ function createWindow(): BrowserWindow {
   });
 
   if (isDev) {
-    window.loadURL('http://localhost:8083');
+    window.loadURL('http://localhost:8831');
   } else {
     window.loadFile(path.resolve(__dirname, '../renderer/index.html'));
   }

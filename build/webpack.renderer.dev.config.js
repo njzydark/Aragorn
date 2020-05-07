@@ -8,6 +8,7 @@ module.exports = WebpackMerge(webpackConfig, {
   mode: 'development',
   devtool: 'source-map',
   devServer: {
+    port: 8831,
     disableHostCheck: true,
     compress: true,
     clientLogLevel: 'none',
