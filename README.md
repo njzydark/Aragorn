@@ -2,6 +2,16 @@
 
 一款基于 `Electron+React+TS` 开发的上传工具，通过自定义 Api 上传参数或者使用对象存储 SDK 来进行文件上传
 
+## DEV
+
+```bash
+npm run renderer:dev
+npm run main:dev
+npm run start
+```
+
+PS: 项目已经配置好了`task.json`和`launch.json`，可以直接在vscode中执行task，然后以debug模式启动
+
 ## TODO
 
 - [x] 托盘拖拽上传
