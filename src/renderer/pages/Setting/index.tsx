@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { Row, Col, Form, Input, Button, Select, Radio, Switch } from 'antd';
 import { AppContext } from '@/renderer/app';
-import './index.less';
 
 const inputItemLayout = {
   labelCol: { span: 6 },

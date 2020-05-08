@@ -1,6 +1,4 @@
-@side-bar-bg: #353538;
-@side-bar-color: #fff;
-@side-bar-menu-bg: #4a494c;
+@import '../../style/color.less';
 
 .side-bar-wrapper {
   position: relative;
@@ -10,11 +8,11 @@
   height: 100%;
   width: 230px;
   padding: 30px 0 5px;
-  background-color: @side-bar-bg;
+  background-color: @main-bg-color;
   overflow: hidden;
   .title {
     flex-shrink: 0;
-    color: @side-bar-color;
+    color: @text-color;
     text-align: center;
     font-size: 24px;
     font-weight: bold;
@@ -27,7 +25,7 @@
     div.menu-item {
       display: block;
       padding: 5px 10px;
-      color: @side-bar-color;
+      color: @text-color-secondary;
       svg {
         width: 20px;
         margin-right: 8px;
@@ -41,9 +39,10 @@
       }
       &:hover,
       &.active {
+        color: @primary-text-color;
         cursor: pointer;
         border-radius: 8px;
-        background-color: @side-bar-menu-bg;
+        background-color: @primary-color;
       }
     }
   }
@@ -53,7 +52,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: @side-bar-color;
+    color: @main-bg-color;
     font-size: 18px;
   }
   &::before {
@@ -64,5 +63,23 @@
     left: 0;
     height: 30px;
     -webkit-app-region: drag;
+  }
+  .flat-btn {
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    right: 0;
+    left: 0;
+    margin: auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: @primary-color;
+    color: @primary-text-color;
+    text-align: center;
+    line-height: 56px;
+    font-size: 20px;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 18px 0px rgba(0, 0, 0, 0.12);
   }
 }

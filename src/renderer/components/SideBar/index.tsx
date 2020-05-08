@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCog,
   faInfo,
-  faHome,
   faToolbox,
   faSitemap,
   IconDefinition,
@@ -53,11 +52,6 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
       children: []
     },
     {
-      name: '上传',
-      key: 'upload',
-      icon: faUpload
-    },
-    {
       name: '设置',
       key: 'setting',
       icon: faCog
@@ -89,14 +83,15 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
   }, [userApiList, userSdkList]);
 
   const history = useHistory();
-  const uploadRef = useRef<HTMLInputElement>(null);
   const jump = (key: string, parentKey?: string) => {
-    if (key === 'upload') {
-      uploadRef.current?.click();
-    } else {
-      setCurMenuKey(key);
-      history.push(parentKey ? `/${parentKey}/${key}` : `/${key}`);
-    }
+    setCurMenuKey(key);
+    history.push(parentKey ? `/${parentKey}/${key}` : `/${key}`);
+  };
+
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const handleFlatBtnClick = () => {
+    console.log(uploadRef);
+    uploadRef.current?.click();
   };
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
@@ -135,6 +130,9 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
           </Fragment>
         ))}
         <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
+      </div>
+      <div className="flat-btn" onClick={handleFlatBtnClick}>
+        <FontAwesomeIcon icon={faUpload} />
       </div>
     </div>
   );

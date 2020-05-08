@@ -1,3 +1,5 @@
+@import './style/color.less';
+
 * {
   margin: 0;
   padding: 0;
@@ -11,6 +13,7 @@
 html,
 body {
   height: 100%;
+  background-color: @app-bg-color;
 }
 
 #root {
@@ -24,9 +27,8 @@ body {
   flex: auto;
   height: 100%;
   overflow: auto;
-  background-color: #fff;
   padding: 20px;
-  padding-top: 33px;
+  padding-top: 30px;
   &::before {
     content: '';
     position: absolute;
@@ -36,4 +38,33 @@ body {
     height: 30px;
     -webkit-app-region: drag;
   }
+  & > div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    header {
+      flex-shrink: 0;
+      font-size: 18px;
+      margin-bottom: 20px;
+      hr {
+        border: 1px solid @divider-color;
+      }
+    }
+    main {
+      padding: 20px;
+      background-color: @main-bg-color;
+      flex: auto;
+      overflow: scroll;
+    }
+    footer {
+      padding: 20px;
+      background-color: @main-bg-color;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.ant-btn-primary {
+  background-color: @primary-color;
+  border-radius: 4px;
 }

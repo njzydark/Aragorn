@@ -4,7 +4,6 @@ import { useParams, useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@/renderer/app';
-import './index.less';
 
 const formItemLayout = {
   labelCol: { span: 4 },
