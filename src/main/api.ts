@@ -1,5 +1,6 @@
 import { IApi } from 'types';
 import { v4 as uuidv4 } from 'uuid';
+import store from './store';
 
 // 默认自定义API配置
 const defaultApi: IApi = {
@@ -23,7 +24,7 @@ export class Api {
 
   private constructor() {
     this.defaultApi = defaultApi;
-    this.userApiList = [];
+    this.userApiList = store.get('userApiList', []);
   }
 
   static getInstance() {
@@ -48,6 +49,7 @@ export class Api {
     api.type = 'api';
     api.uuid = uuidv4();
     this.userApiList.push(api);
+    store.set('userApiList', this.userApiList);
     return api;
   }
 
@@ -65,12 +67,14 @@ export class Api {
       }
       return item;
     });
+    store.set('userApiList', this.userApiList);
     return this.userApiList;
   }
 
   delete(uuid: string) {
     console.log(`删除uuid为${uuid}的API配置信息`);
     this.userApiList = this.userApiList.filter(item => item.uuid != uuid);
+    store.set('userApiList', this.userApiList);
     return this.userApiList;
   }
 }

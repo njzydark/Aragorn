@@ -1,4 +1,5 @@
 import { SettingConfiguration } from 'types';
+import store from './store';
 
 // 默认设置
 const defaultSettingConfigurtion: SettingConfiguration = {
@@ -19,7 +20,7 @@ export class Setting {
   configuration: SettingConfiguration;
 
   private constructor() {
-    this.configuration = defaultSettingConfigurtion;
+    this.configuration = store.get('userSetting') || defaultSettingConfigurtion;
   }
 
   static getInstance() {
@@ -37,16 +38,19 @@ export class Setting {
   update(configuration: SettingConfiguration) {
     console.log('更新App设置');
     this.configuration = configuration;
+    store.set('userSetting', this.configuration);
     return this.configuration;
   }
 
   setDefaultUploader(uuid?: string) {
     this.configuration.defaultUploader = uuid;
+    store.set('userSetting', this.configuration);
   }
 
   deleteDefaultUpload(uuid: string) {
     if (this.configuration.defaultUploader === uuid) {
       this.configuration.defaultUploader = '';
+      store.set('userSetting', this.configuration);
     }
   }
 }

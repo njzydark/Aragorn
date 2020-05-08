@@ -1,11 +1,12 @@
 import { UploadedFileInfo } from 'types';
+import store from './store';
 
 export class History {
   private static instance: History;
   uploadedFiles: UploadedFileInfo[];
 
   private constructor() {
-    this.uploadedFiles = [];
+    this.uploadedFiles = store.get('uploadedFiles', []);
   }
 
   static getInstance() {
@@ -17,6 +18,7 @@ export class History {
 
   add(uploadedFile: UploadedFileInfo) {
     this.uploadedFiles.unshift(uploadedFile);
+    store.set('uploadedFiles', this.uploadedFiles);
     return this.uploadedFiles;
   }
 

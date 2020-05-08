@@ -1,6 +1,7 @@
 import { ISdk, UserSdkList, UserSdk } from 'types';
 import { v4 as uuidv4 } from 'uuid';
 import { sdks } from './sdk/index';
+import store from './store';
 
 export class Sdk {
   private static instance: Sdk;
@@ -11,7 +12,7 @@ export class Sdk {
 
   private constructor() {
     this.sdks = sdks;
-    this.userSdkList = [];
+    this.userSdkList = store.get('userSdkList', []);
   }
 
   static getInstance() {
@@ -36,6 +37,7 @@ export class Sdk {
     sdk.uuid = uuidv4();
     sdk.type = 'sdk';
     this.userSdkList.push(sdk);
+    store.set('userSdkList', this.userSdkList);
     return sdk;
   }
 
@@ -53,12 +55,14 @@ export class Sdk {
       }
       return item;
     });
+    store.set('userSdkList', this.userSdkList);
     return this.userSdkList;
   }
 
   delete(uuid: string) {
     console.log(`删除UUID为${uuid}的SDK配置信息`);
     this.userSdkList = this.userSdkList.filter(item => item.uuid != uuid);
+    store.set('userSdkList', this.userSdkList);
     return this.userSdkList;
   }
 }
