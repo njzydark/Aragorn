@@ -49,7 +49,7 @@ export class Upload {
   protected async handleUploadBySdk(uploader: UserSdk, sdks: ISdk[]) {
     try {
       const sdk = sdks.find(item => item.sdkName === uploader.sdkName) as ISdk;
-      sdk.configurationList = uploader.configurationList;
+      sdk.nowConfigurationList = uploader.configurationList;
       const res = await sdk.upload(this.files);
       if (res.success) {
         this.handleUploadSuccess(res.data as UploadResponseData, uploader);
