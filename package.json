@@ -10,6 +10,7 @@
     "renderer:dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.renderer.dev.config.js",
     "renderer:prod": "cross-env NODE_ENV=production webpack --config build/webpack.renderer.prod.config.js",
     "renderer:analyz": "cross-env NODE_ENV=production webpack --config build/webpack.renderer.analyz.config.js",
+    "build": "npm run main:prod && npm run renderer:prod",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -68,6 +69,8 @@
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "dayjs": "^1.8.23",
+    "electron-store": "^5.1.1",
+    "electron-updater": "^4.3.1",
     "form-data": "^3.0.0",
     "mime-types": "^2.1.27",
     "qiniu": "^7.3.0",
@@ -84,11 +87,17 @@
       "output": "output"
     },
     "files": [
-      "dist",
-      "!node_modules"
+      "dist"
+    ],
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://localhost:3001/update"
+      }
     ],
     "mac": {
-      "icon": "assets/icon.icns"
+      "icon": "assets/icon.icns",
+      "identity": null
     }
   },
   "repository": {
