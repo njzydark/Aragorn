@@ -22,7 +22,6 @@ module.exports = WebpackMerge(webpackConfig, {
           mangle: {
             safari10: true
           },
-          // Added for profiling in devtools
           keep_classnames: true,
           keep_fnames: true,
           output: {

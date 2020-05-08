@@ -13,15 +13,15 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, '../dist/main'),
-    publicPath: './'
+    path: path.resolve(__dirname, '../dist/main')
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     modules: [path.resolve(__dirname, '../'), 'node_modules', 'src'],
     alias: {
-      '@': path.resolve(__dirname, '../src/'),
-      fonts: path.resolve(__dirname, '../src/assets/font')
+      '@': path.resolve(__dirname, '../src'),
+      '@main': path.resolve(__dirname, '../src/main'),
+      '@renderer': path.resolve(__dirname, '../src/renderer')
     }
   },
   node: {

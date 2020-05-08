@@ -12,15 +12,15 @@ module.exports = {
   entry: [path.resolve(__dirname, '../src/renderer/index.tsx')],
   output: {
     path: path.resolve(__dirname, '../dist/renderer'),
-    publicPath: './',
     filename: devMode ? 'js/[name]-[hash:6].bundle.js' : 'js/[name]-[chunkhash:6].bundle.js'
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     modules: [path.resolve(__dirname, '../'), 'node_modules', 'src'],
     alias: {
-      '@': path.resolve(__dirname, '../src/'),
-      fonts: path.resolve(__dirname, '../src/assets/font')
+      '@': path.resolve(__dirname, '../src'),
+      '@main': path.resolve(__dirname, '../src/main'),
+      '@renderer': path.resolve(__dirname, '../src/renderer')
     }
   },
   optimization: {
@@ -62,6 +62,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
+              publicPath: '../',
               hmr: devMode
             }
           },
@@ -76,8 +77,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: '[name].[ext]',
-              outputPath: 'fonts/'
+              name: 'fonts/[name].[ext]'
             }
           }
         ]
@@ -106,6 +106,8 @@ module.exports = {
       ignoreOrder: true
     }),
     new AntdDayjsWebpackPlugin(),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, '../src/renderer/public/index.html')
+    })
   ]
 };
