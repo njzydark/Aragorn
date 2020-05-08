@@ -8,8 +8,10 @@ export interface ISdk {
   sdkName: string;
   /** SDK文档地址 */
   docUrl?: string;
-  /** 配置项 */
+  /** 默认配置项 */
   configurationList: SdkConfigurationList;
+  /** 上传时的配置项 */
+  nowConfigurationList: SdkConfigurationList;
   /** 上传方法 */
   upload: (files: string[]) => Promise<UploadResponse>;
 }
