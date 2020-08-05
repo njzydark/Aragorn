@@ -1,8 +1,8 @@
-import { SettingConfiguration, IApi, ISdk, UserSdkList, UploadedFileInfo } from 'types';
+import { SettingConfiguration, IApi, ISdk, UserSdkList, UploadedFileInfo, UpdaterChannelData } from 'types';
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { ConfigProvider, message } from 'antd';
+import { ConfigProvider, message, notification, Progress } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import './app.less';
 
@@ -51,6 +51,13 @@ const App = () => {
   };
 
   const ipcOnInit = () => {
+    ipcRenderer.on('app-updater-message', (_, data: UpdaterChannelData) => {
+      notification.info({
+        message: data.message,
+        description: data.percent ? <Progress percent={data.percent} /> : data.description,
+        key: 'updaterMessage'
+      });
+    });
     ipcRenderer.on('uploaded-files-get-reply', (_, uploadedFiles: UploadedFileInfo[]) => {
       setData(preData => {
         return {

@@ -1,4 +1,5 @@
 import { ipcMain, BrowserWindow } from 'electron';
+import { Updater } from './updater';
 import { Setting } from './setting';
 import { History } from './history';
 import { Api } from './api';
@@ -6,6 +7,7 @@ import { Sdk } from './sdk';
 import { Upload } from './upload';
 import { IApi, UserSdk } from 'types';
 
+const updater = Updater.getInstance();
 const setting = Setting.getInstance();
 const history = History.getInstance();
 const api = Api.getInstance();
@@ -23,10 +25,17 @@ export class Ipc {
   }
 
   init() {
+    this.appUpdateHandlee();
     this.uploadHandle();
     this.settingHandle();
     this.apiHandle();
     this.sdkHandle();
+  }
+
+  protected appUpdateHandlee() {
+    ipcMain.on('check-update', () => {
+      updater.checkUpdate();
+    });
   }
 
   protected uploadHandle() {
@@ -140,5 +149,9 @@ export class Ipc {
         event.reply('setting-configuration-get-reply', setting.get());
       }
     });
+  }
+
+  static sendMessage(channel: string, channelData: any) {
+    Ipc.win.webContents.send(channel, channelData);
   }
 }
