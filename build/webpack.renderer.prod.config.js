@@ -1,9 +1,9 @@
-const WebpackMerge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const webpackConfig = require('./webpack.renderer.base.config');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-module.exports = WebpackMerge(webpackConfig, {
+module.exports = WebpackMerge(merge, {
   mode: 'production',
   optimization: {
     minimize: true,
