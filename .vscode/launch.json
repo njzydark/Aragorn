@@ -3,12 +3,22 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Aragorn App Debug",
+      "configurations": [
+        "Aragorn App Main",
+        "Aragorn App Renderer"
+      ]
+    }
+  ],
   "configurations": [
     {
-      "name": "Electron Main",
-      "program": "${workspaceFolder}/dist/main/index.js",
+      "name": "Aragorn App Main",
+      "program": "${workspaceFolder}/packages/aragorn-app-main/dist/main/index.js",
       "request": "launch",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "cwd": "${workspaceFolder}/packages/aragorn-app-main",
+      "runtimeExecutable": "${workspaceFolder}/packages/aragorn-app-main/node_modules/.bin/electron",
       "runtimeArgs": [
         "--remote-debugging-port=9223"
       ],
@@ -18,20 +28,11 @@
       "type": "pwa-node"
     },
     {
-      "name": "Electron Renderer",
+      "name": "Aragorn App Renderer",
       "port": 9223,
       "request": "attach",
       "type": "pwa-chrome",
-      "webRoot": "${workspaceFolder}",
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Electron Debug",
-      "configurations": [
-        "Electron Main",
-        "Electron Renderer"
-      ]
+      "webRoot": "${workspaceFolder}/packages/aragorn-app-renderer"
     }
   ]
 }

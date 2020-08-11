@@ -1,0 +1,64 @@
+{
+  "name": "aragorn-app-main",
+  "version": "1.0.0",
+  "description": "electron main",
+  "author": "njzy <njzydark@gmail.com>",
+  "homepage": "https://github.com/njzydark/Aragorn/tree/master/packages/electron-main#readme",
+  "license": "MIT",
+  "main": "dist/main/index.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "cross-env NODE_ENV=development webpack --watch --mode development --config webpack.config.js --info-verbosity verbose",
+    "build": "cross-env NODE_ENV=production webpack --mode production --config webpack.config.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "aragorn-core": "^1.0.0",
+    "aragorn-types": "^1.0.0",
+    "axios": "^0.19.2",
+    "electron-store": "^6.0.0",
+    "form-data": "^3.0.0",
+    "mime-types": "^2.1.27",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "cross-env": "^7.0.2",
+    "electron": "9.2.0",
+    "electron-builder": "^22.8.0",
+    "electron-updater": "^4.3.4",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "build": {
+    "appId": "com.electron.aragorn",
+    "productName": "Aragorn",
+    "directories": {
+      "output": "output"
+    },
+    "files": [
+      "dist",
+      "!node_modules"
+    ],
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://localhost:3001/update"
+      }
+    ],
+    "mac": {
+      "icon": "assets/icon.icns",
+      "identity": null
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njzydark/Aragorn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njzydark/Aragorn/issues"
+  }
+}

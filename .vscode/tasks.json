@@ -4,28 +4,26 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "start dev",
+      "label": "App Dev",
       "dependsOn": [
-        "main dev",
-        "renderer dev"
+        "App Main Dev",
+        "App Renderer Dev"
       ]
     },
     {
       "type": "npm",
-      "script": "main:dev",
+      "script": "dev",
+      "path": "packages/aragorn-app-main/",
       "isBackground": true,
-      "problemMatcher": [
-        "$ts-webpack-watch"
-      ],
-      "label": "main dev",
-      "detail": "cross-env NODE_ENV=development webpack --watch --mode development --config build/webpack.main.config.js"
+      "label": "App Main Dev",
+      "problemMatcher": []
     },
     {
       "type": "npm",
-      "script": "renderer:dev",
+      "script": "dev",
+      "path": "packages/aragorn-app-renderer/",
       "isBackground": true,
-      "label": "renderer dev",
-      "detail": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.renderer.dev.config.js"
+      "label": "App Renderer Dev"
     }
   ]
 }
