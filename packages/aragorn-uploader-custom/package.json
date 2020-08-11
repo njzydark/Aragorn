@@ -1,0 +1,33 @@
+{
+  "name": "aragorn-uploader-custom",
+  "version": "1.0.0",
+  "description": "custom uploader",
+  "author": "njzy <njzydark@gmail.com>",
+  "homepage": "https://github.com/njzydark/Aragorn#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf -rf ./dist",
+    "compile": "tsc -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njzydark/Aragorn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njzydark/Aragorn/issues"
+  },
+  "dependencies": {
+    "aragorn-types": "^1.0.0",
+    "axios": "^0.19.2",
+    "form-data": "^3.0.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  }
+}

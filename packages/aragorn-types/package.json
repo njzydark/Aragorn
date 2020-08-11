@@ -1,0 +1,16 @@
+{
+  "name": "aragorn-types",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "njzy <njzydark@gmail.com>",
+  "homepage": "https://github.com/njzydark/Aragorn#readme",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njzydark/Aragorn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njzydark/Aragorn/issues"
+  }
+}

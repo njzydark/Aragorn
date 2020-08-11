@@ -1,0 +1,35 @@
+{
+  "name": "aragorn-core",
+  "version": "1.0.0",
+  "description": "A core of aragorn to upload and manage file",
+  "author": "njzy <njzydark@gmail.com>",
+  "homepage": "https://github.com/njzydark/Aragorn#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf -rf ./dist",
+    "compile": "tsc -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njzydark/Aragorn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njzydark/Aragorn/issues"
+  },
+  "dependencies": {
+    "aragorn-types": "^1.0.0",
+    "aragorn-uploader-alioss": "^1.0.0",
+    "aragorn-uploader-custom": "^1.0.0",
+    "aragorn-uploader-qiniu": "^1.0.0",
+    "aragorn-uploader-ucloud": "^1.0.0",
+    "aragorn-uploader-upyun": "^1.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  }
+}
