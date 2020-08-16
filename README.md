@@ -2,6 +2,8 @@
 
 一款基于 `Electron + React + TS` 开发的文件上传软件，主要是利用相关厂商的对象存储 SDK 来进行文件上传
 
+![aragorn](assets/aragorn.png)
+
 ## 上传器 - Uploader
 
 为了软件的扩展性，对象存储 SDK 的配置项是通过一个名为 `上传器` 的概念向用户提供的，不同厂商的 SDK 都有相对应的上传器供用户使用
