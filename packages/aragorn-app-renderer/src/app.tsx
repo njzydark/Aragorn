@@ -3,40 +3,36 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { ConfigProvider, message, notification, Progress } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
-import './app.less';
 
 import { SideBar } from '@renderer/components/SideBar';
-import History from './pages/History';
-import UploaderProfileComponent from './pages/UploaderProfile';
-import Setting from '@renderer/pages/Setting';
+import { Dashboard } from '@renderer/pages/Dashboard';
+import { Uploader } from '@renderer/pages/Uploader';
+import { Profile } from '@renderer/pages/Profile';
+import { Storage } from '@renderer/pages/Storage';
 import About from '@renderer/pages/About';
+import Setting from '@renderer/pages/Setting';
+
 import { UploadedFileInfo } from '@main/upload';
 import { SettingConfiguration } from '@main/setting';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import { UpdaterChannelData } from '@main/updater';
-import { Uploader } from 'aragorn-types';
+import { Uploader as IUploader } from 'aragorn-types';
+
+import './app.less';
 
 const defaultAppContextValue = {
   uploadedFiles: [] as UploadedFileInfo[],
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   configuration: {} as SettingConfiguration,
   uploaderProfiles: [] as UploaderProfile[],
-  uploaders: [] as Uploader[],
-  curMenuKey: '',
-  setCurMenuKey: (() => {}) as React.Dispatch<React.SetStateAction<string>>
+  uploaders: [] as IUploader[]
 };
 
 export const AppContext = createContext(defaultAppContextValue);
 
 const App = () => {
-  // 侧边菜单默认选中项的key
-  const [curMenuKey, setCurMenuKey] = useState('history');
   // 全局context值
-  const [data, setData] = useState({
-    ...defaultAppContextValue,
-    curMenuKey,
-    setCurMenuKey
-  });
+  const [data, setData] = useState(defaultAppContextValue);
 
   useEffect(() => {
     ipcSendInit();
@@ -105,14 +101,15 @@ const App = () => {
     <ConfigProvider locale={zhCN}>
       <AppContext.Provider value={data}>
         <HashRouter>
-          <SideBar curMenuKey={curMenuKey} />
+          <SideBar />
           <div className="main-content-wrapper">
             <Switch>
-              <Route path="/" component={History} exact />
-              <Route path="/history" component={History} exact />
-              <Route path="/uploaderProfile/:id?" component={UploaderProfileComponent} exact />
-              <Route path="/setting" component={Setting} exact />
+              <Route path="/" component={Dashboard} exact />
+              <Route path="/uploader" component={Uploader} exact />
+              <Route path="/profile/:id?" component={Profile} exact />
+              <Route path="/storage/:id?" component={Storage} exact />
               <Route path="/about" component={About} exact />
+              <Route path="/setting" component={Setting} exact />
             </Switch>
           </div>
         </HashRouter>

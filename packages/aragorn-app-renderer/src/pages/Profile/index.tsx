@@ -4,50 +4,61 @@ import { ipcRenderer } from 'electron';
 import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@renderer/app';
 import { UploaderProfile } from '@main/uploaderProfileManager';
+import './index.less';
 
 const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 14 }
 };
 
-export default function UploaderProfileComponent() {
-  const { uploaders, uploaderProfiles, setCurMenuKey } = useContext(AppContext);
+export const Profile = () => {
+  const {
+    uploaders,
+    uploaderProfiles,
+    configuration: { defaultUploaderProfileId }
+  } = useContext(AppContext);
+
   const { id } = useParams<{ id: string }>();
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const [uploaderProfile, setUploaderProfile] = useState({} as UploaderProfile);
+
+  const [currentProfileId, setCurrentProfileId] = useState('');
+
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (id) {
-      const uploaderProfile = uploaderProfiles.find(item => item.id === id);
-      const formInitalValue = uploaderProfile?.uploaderOptions.reduce(
-        (pre, cur) => {
-          pre[cur.name] = cur.value;
-          return pre;
-        },
-        {
-          id: uploaderProfile.id,
-          name: uploaderProfile.name,
-          uploaderName: uploaderProfile.uploaderName
-        }
-      );
-      form.setFieldsValue(formInitalValue as any);
-      setUploaderProfile(uploaderProfile as UploaderProfile);
-    } else {
-      form.setFieldsValue({
-        name: '',
-        uploaderName: '',
-        isDefault: true
-      } as any);
-      setUploaderProfile({} as any);
-    }
-  }, [id]);
+    const currentId = id || defaultUploaderProfileId;
+    setCurrentProfile(currentId);
+  }, []);
+
+  const handleUploaderProfileChange = val => {
+    setCurrentProfile(val);
+  };
+
+  const setCurrentProfile = currentId => {
+    const uploaderProfile = uploaderProfiles.find(item => item.id === currentId);
+    const formInitalValue = uploaderProfile?.uploaderOptions.reduce(
+      (pre, cur) => {
+        pre[cur.name] = cur.value;
+        return pre;
+      },
+      {
+        id: uploaderProfile.id,
+        name: uploaderProfile.name,
+        uploaderName: uploaderProfile.uploaderName
+      }
+    );
+    form.setFieldsValue(formInitalValue as any);
+    setUploaderProfile(uploaderProfile as UploaderProfile);
+    setCurrentProfileId(currentId as string);
+  };
 
   const history = useHistory();
+
   useEffect(() => {
     function handleUploaderProfileAdd(res) {
       if (res) {
-        setCurMenuKey('history');
         history.push('/');
         message.success('上传器配置添加成功');
       }
@@ -59,7 +70,6 @@ export default function UploaderProfileComponent() {
     }
     function handleUploaderProfileDelete(res) {
       if (res) {
-        setCurMenuKey('uploaderProfile');
         history.push(`/uploaderProfile`);
         message.success('上传器配置删除成功');
       }
@@ -75,24 +85,6 @@ export default function UploaderProfileComponent() {
       ipcRenderer.removeListener('uploader-profile-delete-reply', handleUploaderProfileDelete);
     };
   }, []);
-
-  const handleUploaderSelect = (uploaderName: string) => {
-    const uploader = uploaders.find(item => item.name === uploaderName);
-    if (uploader) {
-      const formInitalValue = uploader?.defaultOptions.reduce(
-        (pre, cur) => {
-          pre[cur.name] = cur.value;
-          return pre;
-        },
-        {
-          uploaderName: uploader.name
-        }
-      );
-      console.log(formInitalValue);
-      form.setFieldsValue(formInitalValue as any);
-      setUploaderProfile(data => ({ ...data, uploaderOptions: uploader.defaultOptions }));
-    }
-  };
 
   const handleSubmit = () => {
     form.submit();
@@ -111,13 +103,9 @@ export default function UploaderProfileComponent() {
         name: values.name,
         uploaderName: values.uploaderName,
         uploaderOptions,
-        isDefault: id ? false : values.isDefault
+        isDefault: false
       };
-      if (id) {
-        ipcRenderer.send('uploader-profile-update', uploaderProfile);
-      } else {
-        ipcRenderer.send('uploader-profile-add', uploaderProfile);
-      }
+      ipcRenderer.send('uploader-profile-update', uploaderProfile);
     }
   };
 
@@ -126,33 +114,37 @@ export default function UploaderProfileComponent() {
     ipcRenderer.send('uploader-profile-delete', id);
   };
 
-  // TODO: 配置测试
-  const handleTest = () => {};
-
   return (
-    <div className="sdk-wrapper">
+    <div className="profile-page">
       <header>
         <h3>上传器配置</h3>
         <hr />
       </header>
-      <main>
+      <div className="header-menu">
+        <Select style={{ minWidth: 120 }} value={currentProfileId} onChange={handleUploaderProfileChange}>
+          {uploaderProfiles.map(item => (
+            <Select.Option key={item.name} value={item.id}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+        <Button danger onClick={handleDelete} style={{ marginLeft: 'auto' }}>
+          删除
+        </Button>
+        <Button type="primary" onClick={handleSubmit}>
+          更新配置
+        </Button>
+      </div>
+      <div className="content-wrapper">
         <Form {...formItemLayout} layout="horizontal" form={form} onFinish={handleFinish}>
-          {id && (
-            <Form.Item name="id" style={{ display: 'none' }}>
-              <Input />
-            </Form.Item>
-          )}
-          <Form.Item name="name" label="配置名称" rules={[{ required: true, message: '配置名称不能为空' }]}>
+          <Form.Item name="id" style={{ display: 'none' }}>
             <Input />
           </Form.Item>
-          <Form.Item name="uploaderName" label="上传器" rules={[{ required: true, message: '上传器不能为空' }]}>
-            <Select onSelect={handleUploaderSelect} disabled={id !== undefined}>
-              {uploaders.map(item => (
-                <Select.Option key={item.name} value={item.name}>
-                  {item.name}
-                </Select.Option>
-              ))}
-            </Select>
+          <Form.Item name="uploaderName" style={{ display: 'none' }}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="name" label="配置名称" rules={[{ required: true, message: '配置名称不能为空' }]}>
+            <Input />
           </Form.Item>
           {uploaderProfile?.uploaderOptions?.map(item => (
             <Form.Item
@@ -160,6 +152,7 @@ export default function UploaderProfileComponent() {
               name={item.name}
               label={item.label}
               rules={[{ required: item.required, message: `${item.name}不能为空` }]}
+              valuePropName={item.valueType === 'switch' ? 'checked' : 'value'}
             >
               {item.valueType === 'input' ? (
                 <Input />
@@ -176,26 +169,8 @@ export default function UploaderProfileComponent() {
               ) : null}
             </Form.Item>
           ))}
-          {!id && (
-            <Form.Item name="isDefault" label="默认配置" valuePropName="checked">
-              <Switch />
-            </Form.Item>
-          )}
         </Form>
-      </main>
-      <footer>
-        <Button type="primary" onClick={handleSubmit} style={{ marginRight: 10 }}>
-          保存并应用
-        </Button>
-        {id && (
-          <Button danger style={{ marginRight: 10 }} onClick={handleDelete}>
-            删除
-          </Button>
-        )}
-        <Button style={{ marginRight: 10 }} onClick={handleTest}>
-          测试连接
-        </Button>
-      </footer>
+      </div>
     </div>
   );
-}
+};

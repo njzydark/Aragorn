@@ -1,0 +1,61 @@
+.dashboard-page {
+  .main-content {
+    flex: auto;
+    overflow: auto;
+  }
+  .profile-wrapper {
+    margin-bottom: 20px;
+    .title {
+      font-size: 16px;
+      color: #000;
+      opacity: 0.66;
+      margin-bottom: 15px;
+    }
+    .card-wrapper {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      justify-content: flex-start;
+      .card {
+        width: 144px;
+        height: 112px;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        color: #000;
+        img {
+          width: 50px;
+          height: 50px;
+          filter: invert(0.6);
+        }
+        span {
+          margin-top: 10px;
+        }
+        &:not(:last-of-type) {
+          margin-right: 20px;
+        }
+      }
+      .card-active {
+        background: #5960ff;
+        color: #fff;
+        img {
+          filter: invert(0);
+        }
+      }
+    }
+  }
+  .history-wrapper {
+    .title {
+      font-size: 16px;
+      color: #000;
+      opacity: 0.66;
+      margin-bottom: 15px;
+    }
+    .row-item:hover {
+      color: #5960ff;
+    }
+  }
+}

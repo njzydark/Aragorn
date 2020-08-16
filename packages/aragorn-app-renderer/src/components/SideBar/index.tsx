@@ -1,80 +1,61 @@
-import React, { Fragment, useState, useEffect, useContext, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faInfo, faToolbox, IconDefinition, faUpload, faHistory } from '@fortawesome/free-solid-svg-icons';
-import { AppContext } from '@renderer/app';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import './index.less';
 
-interface SubMenu {
-  name: string;
-  key?: string;
-}
+import DashBorad from '../../assets/dashboard.png';
+import Uploader from '../../assets/uploader.png';
+import Profile from '../../assets/profile.png';
+import Storage from '../../assets/storage.png';
+import Upload from '../../assets/upload.png';
+import Setting from '../../assets/setting.png';
 
-interface Menu {
-  name: string;
-  key: string;
-  icon: IconDefinition;
-  children?: SubMenu[];
-}
+const menuData = [
+  {
+    name: 'dashboard',
+    path: '/',
+    img: DashBorad
+  },
+  {
+    name: 'uploader',
+    path: '/uploader',
+    img: Uploader
+  },
+  {
+    name: 'profile',
+    path: '/profile',
+    img: Profile
+  },
+  {
+    name: 'storage',
+    path: '/storage',
+    img: Storage
+  },
+  {
+    name: 'upload',
+    path: '',
+    img: Upload
+  },
+  {
+    name: 'setting',
+    path: '/setting',
+    img: Setting
+  }
+];
 
-interface Props {
-  curMenuKey?: string;
-}
+export const SideBar = () => {
+  const [current, setCurrent] = useState('dashboard');
 
-export function SideBar({ curMenuKey = 'home' }: Props) {
-  // 默认菜单项
-  const [menus, setMenus] = useState([
-    {
-      name: '历史记录',
-      key: 'history',
-      icon: faHistory
-    },
-    {
-      name: '上传器配置',
-      key: 'uploaderProfile',
-      icon: faToolbox,
-      children: []
-    },
-    {
-      name: '设置',
-      key: 'setting',
-      icon: faCog
-    },
-    {
-      name: '关于',
-      key: 'about',
-      icon: faInfo
-    }
-  ] as Menu[]);
+  let location = useLocation();
 
-  // 获取用户配置的api和sdk列表
-  const { uploaderProfiles, setCurMenuKey } = useContext(AppContext);
   useEffect(() => {
-    const uploaderProfileSubMens = uploaderProfiles.map(item => ({ name: item.name, key: item.id }));
-    setMenus(preMenus => {
-      const menus = preMenus.map(menu => {
-        if (menu.key === 'uploaderProfile') {
-          menu.children = uploaderProfileSubMens;
-        }
-        return menu;
-      });
-      return menus;
-    });
-  }, [uploaderProfiles]);
+    const menuName = location.pathname.split('/')[1] || 'dashboard';
+    setCurrent(menuName);
+  }, [location]);
 
   const history = useHistory();
-  const jump = (key: string, parentKey?: string) => {
-    setCurMenuKey(key);
-    history.push(parentKey ? `/${parentKey}/${key}` : `/${key}`);
-  };
 
   const uploadRef = useRef<HTMLInputElement>(null);
-  const handleFlatBtnClick = () => {
-    console.log(uploadRef);
-    uploadRef.current?.click();
-  };
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const fileList = event.currentTarget.files || [];
@@ -83,39 +64,38 @@ export function SideBar({ curMenuKey = 'home' }: Props) {
     event.currentTarget.value = '';
   };
 
+  const handleSideChange = item => {
+    if (item.path) {
+      setCurrent(item.name);
+      history.push(item.path);
+    }
+    if (item.name === 'upload') {
+      uploadRef.current?.click();
+    }
+  };
+
   return (
-    <div className="side-bar-wrapper">
-      <div className="title">Aragorn</div>
+    <div className="side-bar">
+      <div className="logo" />
       <div className="menu-list">
-        {menus.map(menu => (
-          <Fragment key={menu.key}>
-            <div
-              className={classnames(
-                'menu-item',
-                { 'has-sub-menu': menu?.children?.length !== 0 },
-                { active: menu.key === curMenuKey }
-              )}
-              onClick={() => jump(menu.key)}
-            >
-              <FontAwesomeIcon icon={menu.icon} />
-              {menu.name}
-            </div>
-            {menu?.children?.map(item => (
-              <div
-                key={menu.key + item.key}
-                className={classnames('menu-item', 'sub-menu', { active: item.key === curMenuKey })}
-                onClick={() => jump(item.key as string, menu.key)}
-              >
-                {item.name}
-              </div>
-            ))}
-          </Fragment>
+        {menuData.slice(0, -1).map(item => (
+          <div
+            key={item.name}
+            className={item.name === current ? 'menu-item menu-active' : 'menu-item'}
+            onClick={() => handleSideChange(item)}
+          >
+            <img src={item.img} />
+          </div>
         ))}
-        <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
       </div>
-      <div className="flat-btn" onClick={handleFlatBtnClick}>
-        <FontAwesomeIcon icon={faUpload} />
+      <div className="footer">
+        {menuData.slice(-1).map(item => (
+          <div key={item.name} className="menu-item" onClick={() => handleSideChange(item)}>
+            <img src={item.img} />
+          </div>
+        ))}
       </div>
+      <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
     </div>
   );
-}
+};
