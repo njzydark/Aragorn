@@ -7,10 +7,11 @@ import { Setting } from './setting';
 import { History } from './history';
 import { UploaderProfileManager } from './uploaderProfileManager';
 import { AragornCore } from 'aragorn-core';
-import { UploadResponseData } from 'aragorn-types';
 
 /** 上传成功之后的文件信息 */
-export interface UploadedFileInfo extends Omit<UploadResponseData, 'url'> {
+export interface UploadedFileInfo {
+  id?: string;
+  name?: string;
   url?: string;
   /** 文件类型 MimeType */
   type: string;
@@ -42,23 +43,49 @@ export class UploaderManager {
 
   uploaders = core.getAllUploaders();
 
-  async upload(files: string[]) {
+  async uploadByDifferentUploaderProfileIds(data: { id: string; path: string }[]) {
+    const uploaderProfileIds = [...new Set(data.map(item => item.id))];
+    const newData = uploaderProfileIds.map(id => {
+      const filesPath = data.filter(item => item.id === id).map(item => item.path);
+      return {
+        id,
+        filesPath
+      };
+    });
+    newData.forEach(item => {
+      this.upload(item.filesPath, item.id);
+    });
+  }
+
+  async upload(files: string[], customUploaderProfileId = '') {
     try {
       const {
         configuration: { defaultUploaderProfileId }
       } = setting;
       const uploaderProfiles = uploaderProfileManager.getAll();
-      const uploaderProfile = uploaderProfiles.find(uploaderProfile => uploaderProfile.id === defaultUploaderProfileId);
+      const uploaderProfile = uploaderProfiles.find(
+        uploaderProfile => uploaderProfile.id === (customUploaderProfileId || defaultUploaderProfileId)
+      );
+
       if (!uploaderProfile) {
-        const message = uploaderProfiles.length > 0 ? '请配置默认的上传器' : '请添加上传器配置';
-        const notification = new Notification({ title: '上传操作异常', body: message });
-        return notification.show();
+        let notification;
+        if (customUploaderProfileId) {
+          notification = new Notification({ title: '上传操作异常', body: `上传器配置不存在` });
+        } else {
+          const message = uploaderProfiles.length > 0 ? '请配置默认的上传器' : '请添加上传器配置';
+          notification = new Notification({ title: '上传操作异常', body: message });
+        }
+        notification.show();
+        return false;
       }
+
       const uploader = core.getUploaderByName(uploaderProfile.uploaderName);
+
       if (!uploader) {
         const message = `没有找到${uploaderProfile.uploaderName}上传器`;
         const notification = new Notification({ title: '上传操作异常', body: message });
-        return notification.show();
+        notification.show();
+        return false;
       }
 
       uploader.changeOptions(uploaderProfile.uploaderOptions);
@@ -71,6 +98,7 @@ export class UploaderManager {
         const fileName = uuidv4() + fileExtName;
         const fileType = mime.lookup(file) || '-';
         const baseInfo = {
+          id: uuidv4(),
           name: fileName,
           type: fileType,
           path: file,

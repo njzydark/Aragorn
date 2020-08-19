@@ -25,8 +25,8 @@ export const Dashboard = () => {
     history.push('/uploader');
   };
 
-  const handleProfileClick = item => {
-    history.push(`/profile/${item.id}`);
+  const handleProfileClick = id => {
+    history.push(`/profile/${id}`);
   };
 
   const handleCopy = url => {
@@ -49,13 +49,13 @@ export const Dashboard = () => {
     setRowKeys([]);
   };
 
-  // const handleReUpload = () => {
-  //   const data = selectRows.map(item => {
-  //     return { id: item.uploaderProfileId, path: item.path };
-  //   });
-  //   ipcRenderer.send('file-reupload', data);
-  //   setRowKeys([]);
-  // };
+  const handleReUpload = () => {
+    const data = selectRows.map(item => {
+      return { id: item.uploaderProfileId, path: item.path };
+    });
+    ipcRenderer.send('file-reupload', data);
+    setRowKeys([]);
+  };
 
   const columns = [
     {
@@ -92,6 +92,17 @@ export const Dashboard = () => {
       width: 120
     },
     {
+      title: '上传器配置',
+      dataIndex: 'uploaderProfileId',
+      ellipsis: true,
+      width: 120,
+      render: val => (
+        <a onClick={() => handleProfileClick(val)}>
+          {uploaderProfiles.find(item => item.id === val)?.name || '未找到'}
+        </a>
+      )
+    },
+    {
       title: '状态',
       dataIndex: 'url',
       ellipsis: true,
@@ -111,8 +122,6 @@ export const Dashboard = () => {
     }
   ];
 
-  console.log(uploadedFiles);
-
   return (
     <div className="dashboard-page">
       <header>
@@ -127,7 +136,7 @@ export const Dashboard = () => {
               <div
                 key={item.id}
                 className={item.id === defaultUploaderProfileId ? 'card card-active' : 'card'}
-                onClick={() => handleProfileClick(item)}
+                onClick={() => handleProfileClick(item.id)}
               >
                 <img src={NewProfileIcon} />
                 <span>{item.name}</span>
@@ -145,9 +154,9 @@ export const Dashboard = () => {
               <Button disabled={selectRowKeys.length === 0} onClick={handleClear}>
                 清除
               </Button>
-              {/* <Button disabled={selectRowKeys.length === 0} onClick={handleReUpload}>
+              <Button disabled={selectRowKeys.length === 0} onClick={handleReUpload}>
                 重新上传
-              </Button> */}
+              </Button>
             </Space>
             <Table
               size="small"

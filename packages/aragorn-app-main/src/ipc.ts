@@ -46,6 +46,10 @@ export class Ipc {
       new UploaderManager().upload(filesPath);
     });
 
+    ipcMain.on('file-reupload', (_, data) => {
+      new UploaderManager().uploadByDifferentUploaderProfileIds(data);
+    });
+
     ipcMain.on('uploaded-files-get', event => {
       const uploadedFiles = history.get();
       event.reply('uploaded-files-get-reply', uploadedFiles);
