@@ -1,5 +1,5 @@
 import store from './store';
-import { UploadedFileInfo } from './upload';
+import { UploadedFileInfo } from './uploaderManager';
 
 export class History {
   private static instance: History;
@@ -17,8 +17,8 @@ export class History {
     this.uploadedFiles = store.get('uploadedFiles', []) as UploadedFileInfo[];
   }
 
-  add(uploadedFile: UploadedFileInfo) {
-    this.uploadedFiles.unshift(uploadedFile);
+  add(uploadedFiles: UploadedFileInfo[]) {
+    this.uploadedFiles.unshift(...uploadedFiles);
     store.set('uploadedFiles', this.uploadedFiles);
     return this.uploadedFiles;
   }

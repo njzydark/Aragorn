@@ -2,7 +2,7 @@ import { ipcMain, BrowserWindow } from 'electron';
 import { Updater } from './updater';
 import { Setting } from './setting';
 import { History } from './history';
-import { Upload } from './upload';
+import { UploaderManager } from './uploaderManager';
 import { UploaderProfileManager, UploaderProfile } from './uploaderProfileManager';
 import { AragornCore } from 'aragorn-core';
 
@@ -43,7 +43,7 @@ export class Ipc {
 
   protected uploadHandle() {
     ipcMain.on('file-upload-by-side-menu', (_, filesPath: string[]) => {
-      new Upload(filesPath).toUpload();
+      new UploaderManager().upload(filesPath);
     });
 
     ipcMain.on('uploaded-files-get', event => {

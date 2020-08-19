@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Tray } from 'electron';
 import path from 'path';
 import { Ipc } from './ipc';
-import { Upload } from './upload';
+import { UploaderManager } from './uploaderManager';
 
 let tray: Tray;
 let mainWindow: BrowserWindow;
@@ -42,7 +42,7 @@ app.on('ready', () => {
 
   // 托盘拖拽上传
   tray.addListener('drop-files', (_, files) => {
-    new Upload(files).toUpload();
+    new UploaderManager().upload(files);
   });
 
   mainWindow = createWindow();
