@@ -1,8 +1,7 @@
-import { Uploader, UploaderOptions } from 'aragorn-types';
+import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
 import { createReadStream } from 'fs';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
-import { v4 as uuidv4 } from 'uuid';
 import { options as defaultOptions } from './options';
 
 interface Config {
@@ -24,12 +23,11 @@ export class CustomUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(files: string[]) {
+  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
     try {
-      const file = files[0];
       const formData = new FormData();
       const uploaderOptions = this.getConfig();
-      formData.append(uploaderOptions.fileFieldName, createReadStream(file));
+      formData.append(uploaderOptions.fileFieldName, createReadStream(filePath));
       const length = await new Promise((resolve, reject) => {
         formData.getLength(async (err, length) => {
           if (err) {
@@ -55,9 +53,7 @@ export class CustomUploader implements Uploader {
       if (imageUrl) {
         return {
           success: true,
-          desc: '上传成功',
           data: {
-            name: uuidv4(),
             url: imageUrl
           }
         };

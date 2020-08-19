@@ -1,8 +1,6 @@
-import { Uploader, UploaderOptions } from 'aragorn-types';
+import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
 import qiniu from 'qiniu';
-import path from 'path';
 import { ReadStream, createReadStream } from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { options as defaultOptions } from './options';
 
 export class QiniuUploader implements Uploader {
@@ -15,17 +13,14 @@ export class QiniuUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(files: string[]) {
-    const fileExtName = path.extname(files[0]);
-    const fileName = uuidv4() + fileExtName;
-    const file = createReadStream(files[0]);
+  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+    const file = createReadStream(filePath);
     try {
       const { key }: any = await this.qiniuUpload(fileName, file);
       const url = this.qiniuDownload(key);
       if (url) {
         return {
           success: true,
-          desc: '上传成功',
           data: {
             name: fileName,
             url
@@ -53,10 +48,8 @@ export class QiniuUploader implements Uploader {
     return new Promise((resolve, reject) => {
       formUploader.putStream(token, fileName, file, putExtra, function (respErr, respBody, respInfo) {
         if (respErr) {
-          console.log(respErr);
           reject(respErr);
         }
-        console.log('qiniu-upload', respInfo);
         resolve(respBody);
       });
     });

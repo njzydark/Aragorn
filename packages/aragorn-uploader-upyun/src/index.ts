@@ -1,8 +1,6 @@
-import { Uploader, UploaderOptions } from 'aragorn-types';
-import path from 'path';
+import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
 import upyun from 'upyun';
 import { ReadStream, createReadStream } from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { options as defaultOptions } from './options';
 
 interface Config {
@@ -24,26 +22,22 @@ export class UpyunUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(files: string[]) {
-    const fileExtName = path.extname(files[0]);
-    const fileName = uuidv4() + fileExtName;
-    const file = createReadStream(files[0]);
+  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+    const file = createReadStream(filePath);
     const { domain, directory } = this.getConfig();
     try {
       const res = await this.ypyunUpload(fileName, file);
       if (res) {
         return {
           success: true,
-          desc: '上传成功',
           data: {
-            name: fileName,
             url: directory ? `${domain}/${directory}/${fileName}` : `${domain}/${fileName}`
           }
         };
       } else {
         return {
           success: false,
-          desc: '又拍云上传失败'
+          desc: '上传失败'
         };
       }
     } catch (err) {

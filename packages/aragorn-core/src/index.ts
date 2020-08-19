@@ -6,10 +6,10 @@ import { UCloudUploader } from 'aragorn-uploader-ucloud';
 import { UpyunUploader } from 'aragorn-uploader-upyun';
 
 const alioss = new AliOssUploader();
-const custom = new CustomUploader();
 const qiniu = new QiniuUploader();
 const ucloud = new UCloudUploader();
 const upyun = new UpyunUploader();
+const custom = new CustomUploader();
 
 export class AragornCore {
   protected uploaders: Uploader[];
