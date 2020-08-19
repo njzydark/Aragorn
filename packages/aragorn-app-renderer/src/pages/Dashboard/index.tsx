@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { clipboard, shell, ipcRenderer } from 'electron';
-import { Table, message, Popover } from 'antd';
+import { Table, message, Popover, Space, Button, Badge } from 'antd';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AppContext } from '@renderer/app';
 import PlusIcon from '../../assets/plus.png';
 import NewProfileIcon from '../../assets/newProfile.svg';
 import './index.less';
+import { UploadedFileInfo } from '@main/uploaderManager';
 
 export const Dashboard = () => {
   const {
@@ -16,6 +17,9 @@ export const Dashboard = () => {
   } = useContext(AppContext);
 
   const history = useHistory();
+
+  const [selectRowKeys, setRowKeys] = useState([]);
+  const [selectRows, setSelectRows] = useState([] as UploadedFileInfo[]);
 
   const handleProfileAdd = () => {
     history.push('/uploader');
@@ -33,6 +37,25 @@ export const Dashboard = () => {
   const handleOpen = path => {
     shell.showItemInFolder(path);
   };
+
+  const handleTableRowChange = (selectedRowKeys, selectedRows) => {
+    setRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
+  };
+
+  const handleClear = () => {
+    const ids = selectRows.map(item => item.id);
+    ipcRenderer.send('clear-upload-history', ids);
+    setRowKeys([]);
+  };
+
+  // const handleReUpload = () => {
+  //   const data = selectRows.map(item => {
+  //     return { id: item.uploaderProfileId, path: item.path };
+  //   });
+  //   ipcRenderer.send('file-reupload', data);
+  //   setRowKeys([]);
+  // };
 
   const columns = [
     {
@@ -67,6 +90,18 @@ export const Dashboard = () => {
       dataIndex: 'type',
       ellipsis: true,
       width: 120
+    },
+    {
+      title: '状态',
+      dataIndex: 'url',
+      ellipsis: true,
+      width: 80,
+      render: val => (
+        <>
+          <Badge status={val ? 'success' : 'error'} />
+          {val ? '成功' : '失败'}
+        </>
+      )
     },
     {
       title: '上传时间',
@@ -106,7 +141,22 @@ export const Dashboard = () => {
         <div className="history-wrapper">
           <div className="title">最近上传</div>
           <div className="card-wrapper">
-            <Table size="small" rowKey="name" dataSource={uploadedFiles} columns={columns} pagination={false} />
+            <Space style={{ marginBottom: 10 }}>
+              <Button disabled={selectRowKeys.length === 0} onClick={handleClear}>
+                清除
+              </Button>
+              {/* <Button disabled={selectRowKeys.length === 0} onClick={handleReUpload}>
+                重新上传
+              </Button> */}
+            </Space>
+            <Table
+              size="small"
+              rowKey="id"
+              dataSource={uploadedFiles}
+              columns={columns}
+              pagination={false}
+              rowSelection={{ onChange: handleTableRowChange, selectedRowKeys: selectRowKeys }}
+            />
           </div>
         </div>
       </div>

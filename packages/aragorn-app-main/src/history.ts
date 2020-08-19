@@ -23,6 +23,17 @@ export class History {
     return this.uploadedFiles;
   }
 
+  clear(ids: string[]) {
+    ids.forEach(id => {
+      const index = this.uploadedFiles.findIndex(item => item.id === id);
+      if (index > -1) {
+        this.uploadedFiles.splice(index, 1);
+      }
+    });
+    store.set('uploadedFiles', this.uploadedFiles);
+    return this.uploadedFiles;
+  }
+
   get() {
     return this.uploadedFiles;
   }

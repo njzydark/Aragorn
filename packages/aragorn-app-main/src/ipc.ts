@@ -50,6 +50,11 @@ export class Ipc {
       const uploadedFiles = history.get();
       event.reply('uploaded-files-get-reply', uploadedFiles);
     });
+
+    ipcMain.on('clear-upload-history', (event, ids: string[]) => {
+      const uploadedFiles = history.clear(ids);
+      event.reply('uploaded-files-get-reply', uploadedFiles);
+    });
   }
 
   protected settingHandle() {
