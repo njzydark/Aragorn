@@ -78,7 +78,7 @@ export class Ipc {
   protected uploaderHandle() {
     ipcMain.on('uploaders-get', event => {
       const uploaders = core.getAllUploaders();
-      event.reply('uploaders-get-reply', uploaders);
+      event.reply('uploaders-get-reply', JSON.parse(JSON.stringify(uploaders)));
     });
 
     ipcMain.on('uploader-profiles-get', event => {
