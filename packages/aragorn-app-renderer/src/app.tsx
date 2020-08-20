@@ -12,7 +12,7 @@ import { Storage } from '@renderer/pages/Storage';
 import About from '@renderer/pages/About';
 import Setting from '@renderer/pages/Setting';
 
-import { UploadedFileInfo } from '@main/upload';
+import { UploadedFileInfo } from '@main/uploaderManager';
 import { SettingConfiguration } from '@main/setting';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import { UpdaterChannelData } from '@main/updater';
