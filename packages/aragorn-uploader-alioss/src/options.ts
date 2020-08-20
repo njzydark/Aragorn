@@ -64,22 +64,10 @@ export const options: UploaderOptions = [
     required: true
   },
   {
-    label: '超时时间',
-    name: 'timeout',
-    value: 60,
-    valueType: 'input'
-  },
-  {
-    label: 'OSS域名',
+    label: '自定义域名',
     name: 'endpoint',
     value: '',
     valueType: 'input'
-  },
-  {
-    label: '自定义域名',
-    name: 'cname',
-    value: false,
-    valueType: 'switch'
   },
   {
     label: '请求者付费',
@@ -90,12 +78,6 @@ export const options: UploaderOptions = [
   {
     label: 'HTTPS',
     name: 'secure',
-    value: false,
-    valueType: 'switch'
-  },
-  {
-    label: '阿里云内网访问',
-    name: 'internal',
     value: false,
     valueType: 'switch'
   }
