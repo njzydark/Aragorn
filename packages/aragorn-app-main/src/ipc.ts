@@ -32,7 +32,7 @@ export class Ipc {
     this.appUpdateHandlee();
     this.uploadHandle();
     this.settingHandle();
-    this.uploaderHandle();
+    this.uploaderProfileHandle();
   }
 
   protected appUpdateHandlee() {
@@ -80,7 +80,7 @@ export class Ipc {
     });
   }
 
-  protected uploaderHandle() {
+  protected uploaderProfileHandle() {
     ipcMain.on('uploaders-get', event => {
       const uploaders = core.getAllUploaders();
       event.reply('uploaders-get-reply', JSON.parse(JSON.stringify(uploaders)));
