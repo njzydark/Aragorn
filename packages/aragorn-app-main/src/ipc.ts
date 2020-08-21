@@ -73,6 +73,11 @@ export class Ipc {
         event.reply('setting-configuration-update-reply', configuration);
       }
     });
+
+    ipcMain.on('set-default-uploader-profile', (event, id) => {
+      const configuration = setting.setDefaultUploaderProfile(id);
+      event.reply('setting-configuration-get-reply', configuration);
+    });
   }
 
   protected uploaderHandle() {

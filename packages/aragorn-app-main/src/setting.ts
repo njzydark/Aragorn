@@ -64,6 +64,7 @@ export class Setting {
   setDefaultUploaderProfile(id: string) {
     this.configuration.defaultUploaderProfileId = id;
     this.save();
+    return this.configuration;
   }
 
   deleteDefaultUploaderProfile(id: string) {

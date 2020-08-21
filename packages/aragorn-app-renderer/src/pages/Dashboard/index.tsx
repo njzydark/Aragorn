@@ -26,7 +26,11 @@ export const Dashboard = () => {
   };
 
   const handleProfileClick = id => {
-    history.push(`/profile/${id}`);
+    if (id === defaultUploaderProfileId) {
+      history.push(`/profile/${id}`);
+    } else {
+      ipcRenderer.send('set-default-uploader-profile', id);
+    }
   };
 
   const handleCopy = url => {
