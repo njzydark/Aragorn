@@ -20,18 +20,32 @@ export class UpyunUploader implements Uploader {
 
   changeOptions(newOptions: UploaderOptions) {
     this.options = newOptions;
+    const { serviceName, operatorName, operatorPassword } = this.getConfig();
+    const service = new upyun.Service(serviceName, operatorName, operatorPassword);
+    this.client = new upyun.Client(service);
   }
 
-  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
-    const file = createReadStream(filePath);
-    const { domain, directory } = this.getConfig();
+  async upload(
+    filePath: string,
+    fileName: string,
+    directoryPath?: string,
+    isFromFileManage?: boolean
+  ): Promise<SuccessResponse | FailResponse> {
     try {
-      const res = await this.ypyunUpload(fileName, file);
+      const file = createReadStream(filePath);
+      const { domain, directory } = this.getConfig();
+      let newFileName = '';
+      if (isFromFileManage) {
+        newFileName = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
+      } else {
+        newFileName = directory ? `/${directory}/${fileName}` : `/${fileName}`;
+      }
+      const res = await this.client.putFile(newFileName, file);
       if (res) {
         return {
           success: true,
           data: {
-            url: directory ? `${domain}/${directory}/${fileName}` : `${domain}/${fileName}`
+            url: `${domain}${newFileName}`
           }
         };
       } else {
@@ -48,12 +62,46 @@ export class UpyunUploader implements Uploader {
     }
   }
 
-  protected async ypyunUpload(fileName: string, file: ReadStream) {
-    const { serviceName, operatorName, operatorPassword, directory } = this.getConfig();
-    const service = new upyun.Service(serviceName, operatorName, operatorPassword);
-    this.client = new upyun.Client(service);
-    const putFileUrl = directory ? `/${directory}/${fileName}` : `/${fileName}`;
-    return await this.client.putFile(putFileUrl, file);
+  async getFileList(directoryPath?: string) {
+    const res = await this.client.listDir(directoryPath);
+    const { domain } = this.getConfig();
+    if (res?.files?.length > 0) {
+      res.files.map(item => {
+        if (item.type === 'F') {
+          item.type = 'directory';
+        } else {
+          item.url = directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`;
+          item.lastModified = item.time ? item.time * 1000 : '';
+        }
+        return item;
+      });
+      return res.files;
+    } else {
+      return [];
+    }
+  }
+
+  async deleteFile(fileNames: string[]) {
+    try {
+      if (fileNames.length === 1) {
+        await this.client.deleteFile(fileNames[0]);
+      } else {
+        const promises = fileNames.map(async filename => await this.client.deleteFile(filename));
+        await Promise.all(promises);
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async createDirectory(directoryPath: string) {
+    try {
+      await this.client.makeDir(`${directoryPath}/`);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
   protected async ypyunDownload(fileName: string) {
