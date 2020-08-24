@@ -70,6 +70,12 @@ export const options: UploaderOptions = [
     valueType: 'input'
   },
   {
+    label: '文件存放目录',
+    name: 'directory',
+    value: '',
+    valueType: 'input'
+  },
+  {
     label: '请求者付费',
     name: 'isRequestPay',
     value: false,

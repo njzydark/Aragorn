@@ -10,6 +10,7 @@ type Config = {
   region: string;
   endpoint?: string;
   cname?: boolean;
+  directory?: string;
   isRequestPay?: boolean;
   secure?: false;
 };
@@ -28,10 +29,10 @@ export class AliOssUploader implements Uploader {
     this.client = new OSS(this.config);
   }
 
-  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+  async upload(filePath: string, fileName: string, directoryPath?: string): Promise<SuccessResponse | FailResponse> {
     const file = createReadStream(filePath);
     try {
-      const url = (await this.ossUpload(fileName, file)) as string;
+      const url = (await this.ossUpload(fileName, file, directoryPath)) as string;
       if (url) {
         return {
           success: true,
@@ -54,15 +55,25 @@ export class AliOssUploader implements Uploader {
     }
   }
 
-  async list() {
+  async getFileList(directoryPath?: string) {
     try {
-      const res = await this.client.list({});
-      console.log(res);
-      return {
-        success: true,
-        desc: '列表数据获取成功',
-        data: res.objects
-      };
+      const res = await this.client.list({ delimiter: '/', prefix: directoryPath ? directoryPath + '/' : '' });
+      let dirData = [];
+      if (res?.prefixes?.length > 0) {
+        dirData = res.prefixes.map(item => {
+          return {
+            name: item
+              .split('/')
+              .filter(item => item)
+              .pop(),
+            type: 'directory'
+          };
+        });
+      }
+      let data = res.objects || [];
+      data = data.filter(item => /.*[^\/]$/g.test(item?.name));
+      data.unshift(...dirData);
+      return data;
     } catch (err) {
       return {
         success: false,
@@ -71,10 +82,38 @@ export class AliOssUploader implements Uploader {
     }
   }
 
-  protected async ossUpload(fileName: string, file: ReadStream) {
-    let putRes = await this.client.put(fileName, file);
+  async deleteFile(fileNames: string[]) {
+    try {
+      if (fileNames.length === 0) {
+        await this.client.delete(fileNames[0]);
+      } else {
+        await this.client.deleteMulti(fileNames);
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async createDirectory(directoryPath: string) {
+    try {
+      await this.client.put(`${directoryPath}/`, Buffer.from(''));
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  protected async ossUpload(fileName: string, file: ReadStream, directoryPath?: string) {
+    const { directory } = this.config;
+    const newFileName = directoryPath
+      ? `${directoryPath}/${fileName}`
+      : directory
+      ? `${directory}/${fileName}`
+      : fileName;
+    let putRes = await this.client.put(newFileName, file);
     if (putRes?.res?.status === 200) {
-      return this.client.generateObjectUrl(fileName);
+      return this.client.generateObjectUrl(newFileName);
     }
   }
 
