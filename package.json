@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "setup": "lerna bootstrap && npm run packages:build",
+    "build": "npm run setup && npm run packages:build && npm run app:build",
     "packages:build": "lerna run build --sort --scope aragorn-* --ignore aragorn-app-*",
     "app:dev": "lerna run dev --parallel --scope aragorn-app-*",
     "app:build": "lerna run build --parallel --scope aragorn-app-*",

@@ -1,6 +1,6 @@
 {
   "name": "aragorn-app-main",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "electron main",
   "author": "njzy <njzydark@gmail.com>",
   "homepage": "https://github.com/njzydark/Aragorn/tree/master/packages/electron-main#readme",
@@ -34,7 +34,7 @@
     "webpack-cli": "^3.3.12"
   },
   "build": {
-    "appId": "com.electron.aragorn",
+    "appId": "com.njzydark.aragorn",
     "productName": "Aragorn",
     "directories": {
       "output": "output"
@@ -44,10 +44,7 @@
       "!node_modules"
     ],
     "publish": [
-      {
-        "provider": "generic",
-        "url": "http://localhost:3001/update"
-      }
+      "github"
     ],
     "mac": {
       "icon": "assets/icon.icns",
