@@ -1,4 +1,4 @@
-import store from './store';
+import { historyStore } from './store';
 import { UploadedFileInfo } from './uploaderManager';
 
 export class History {
@@ -14,12 +14,12 @@ export class History {
   uploadedFiles: UploadedFileInfo[];
 
   private constructor() {
-    this.uploadedFiles = store.get('uploadedFiles', []) as UploadedFileInfo[];
+    this.uploadedFiles = historyStore.get('history', []) as UploadedFileInfo[];
   }
 
   add(uploadedFiles: UploadedFileInfo[]) {
     this.uploadedFiles.unshift(...uploadedFiles);
-    store.set('uploadedFiles', this.uploadedFiles);
+    historyStore.set('history', this.uploadedFiles);
     return this.uploadedFiles;
   }
 
@@ -30,7 +30,7 @@ export class History {
         this.uploadedFiles.splice(index, 1);
       }
     });
-    store.set('uploadedFiles', this.uploadedFiles);
+    historyStore.set('history', this.uploadedFiles);
     return this.uploadedFiles;
   }
 

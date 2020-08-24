@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import store from './store';
+import { uploaderProfilesStore } from './store';
 import { UploaderOptions } from 'aragorn-types';
 
 export interface UploaderProfile {
@@ -23,7 +23,7 @@ export class UploaderProfileManager {
   protected uploaderProfiles: UploaderProfile[] = [];
 
   constructor() {
-    this.uploaderProfiles = store.get('uploaderProfiles', []) as UploaderProfile[];
+    this.uploaderProfiles = uploaderProfilesStore.get('uploaderProfiles', []) as UploaderProfile[];
   }
 
   getAll() {
@@ -65,6 +65,6 @@ export class UploaderProfileManager {
   }
 
   protected save() {
-    store.set('uploaderProfiles', this.uploaderProfiles);
+    uploaderProfilesStore.set('uploaderProfiles', this.uploaderProfiles);
   }
 }

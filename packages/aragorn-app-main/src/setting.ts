@@ -1,4 +1,4 @@
-import store from './store';
+import { settingStore } from './store';
 
 export interface SettingConfiguration {
   /** 上传成功后链接复制的格式 */
@@ -46,7 +46,7 @@ export class Setting {
   configuration: SettingConfiguration;
 
   constructor() {
-    this.configuration = (store.get('userSetting') as SettingConfiguration) || defaultSettingConfigurtion;
+    this.configuration = (settingStore.get('setting') as SettingConfiguration) || defaultSettingConfigurtion;
   }
 
   get() {
@@ -75,6 +75,6 @@ export class Setting {
   }
 
   protected save() {
-    store.set('userSetting', this.configuration);
+    settingStore.set('setting', this.configuration);
   }
 }
