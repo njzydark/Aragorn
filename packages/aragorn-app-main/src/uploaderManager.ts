@@ -57,7 +57,7 @@ export class UploaderManager {
     });
   }
 
-  async upload(files: string[], customUploaderProfileId = '') {
+  async upload(files: string[], customUploaderProfileId = '', directoryPath?: string, isFromFileManage = false) {
     try {
       const {
         configuration: { defaultUploaderProfileId }
@@ -105,7 +105,7 @@ export class UploaderManager {
           date: new Date().getTime(),
           uploaderProfileId: uploaderProfile.id
         };
-        const res = await uploader.upload(file, fileName);
+        const res = await uploader.upload(file, fileName, directoryPath);
         if (res.success) {
           successRes.push({ ...baseInfo, ...res.data });
         } else {
@@ -117,6 +117,10 @@ export class UploaderManager {
 
       this.handleAddHistory([...failRes, ...successRes]);
 
+      if (isFromFileManage) {
+        Ipc.win.webContents.send('file-upload-reply');
+      }
+
       if (files.length > 1) {
         this.handleBatchUploaded(successRes.length, failRes.length);
       } else {
@@ -125,6 +129,49 @@ export class UploaderManager {
     } catch (err) {
       const notification = new Notification({ title: '上传操作异常', body: err.message });
       notification.show();
+    }
+  }
+
+  async getFileList(uploaderProfileId: string, directoryPath?: string) {
+    const uploader = this.getUploader(uploaderProfileId);
+    if (uploader?.getFileList) {
+      const data = await uploader.getFileList(directoryPath);
+      Ipc.win.webContents.send('file-list-get-reply', data);
+    } else {
+      Ipc.win.webContents.send('file-list-get-reply', []);
+    }
+  }
+
+  async deleteFile(uploaderProfileId: string, fileNames: string[]) {
+    const uploader = this.getUploader(uploaderProfileId);
+    if (uploader?.deleteFile) {
+      const res = await uploader.deleteFile(fileNames);
+      Ipc.win.webContents.send('file-delete-reply', res);
+    } else {
+      Ipc.win.webContents.send('file-delete-reply', false);
+    }
+  }
+
+  async createDirectory(uploaderProfileId: string, directoryPath: string) {
+    const uploader = this.getUploader(uploaderProfileId);
+    if (uploader?.createDirectory) {
+      const data = await uploader.createDirectory(directoryPath);
+      Ipc.win.webContents.send('directory-create-reply', data);
+    } else {
+      Ipc.win.webContents.send('directory-create-reply', false);
+    }
+  }
+
+  protected getUploader(id: string) {
+    const uploaderProfiles = uploaderProfileManager.getAll();
+    const uploaderProfile = uploaderProfiles.find(uploaderProfile => uploaderProfile.id === id);
+    if (!uploaderProfile) {
+      return;
+    }
+    const uploader = core.getUploaderByName(uploaderProfile.uploaderName);
+    if (uploader) {
+      uploader.changeOptions(uploaderProfile.uploaderOptions);
+      return uploader;
     }
   }
 

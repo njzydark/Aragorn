@@ -27,8 +27,8 @@ const menuData = [
     img: Profile
   },
   {
-    name: 'storage',
-    path: '/storage',
+    name: 'fileManage',
+    path: '/fileManage',
     img: Storage
   },
   {

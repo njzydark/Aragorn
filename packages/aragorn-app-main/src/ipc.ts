@@ -33,6 +33,7 @@ export class Ipc {
     this.uploadHandle();
     this.settingHandle();
     this.uploaderProfileHandle();
+    this.fileManageHandle();
   }
 
   protected appUpdateHandlee() {
@@ -117,6 +118,24 @@ export class Ipc {
         setting.deleteDefaultUploaderProfile(id);
         event.reply('setting-configuration-get-reply', setting.get());
       }
+    });
+  }
+
+  protected fileManageHandle() {
+    ipcMain.on('file-list-get', (_, uploaderProfileId: string, directoryPath?: string) => {
+      new UploaderManager().getFileList(uploaderProfileId, directoryPath);
+    });
+
+    ipcMain.on('file-delete', (_, uploaderProfileId: string, fileNames: string[]) => {
+      new UploaderManager().deleteFile(uploaderProfileId, fileNames);
+    });
+
+    ipcMain.on('file-upload', (_, uploaderProfileId: string, filesPath: string[], directoryPath?: string) => {
+      new UploaderManager().upload(filesPath, uploaderProfileId, directoryPath, true);
+    });
+
+    ipcMain.on('directory-create', (_, uploaderProfileId: string, directoryPath: string) => {
+      new UploaderManager().createDirectory(uploaderProfileId, directoryPath);
     });
   }
 }

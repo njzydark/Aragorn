@@ -14,7 +14,13 @@ export interface Uploader {
   /** 改变options */
   changeOptions: (newOptions: UploaderOptions) => void;
   /** 上传方法 */
-  upload: (filePath: string, fileName: string) => Promise<SuccessResponse | FailResponse>;
+  upload: (filePath: string, fileName: string, directoryPath?: string) => Promise<SuccessResponse | FailResponse>;
+  /** 获取存储空间所有文件 */
+  getFileList?: (directoryPath?: string) => Promise<ListFile[]>;
+  /** 删除文件 */
+  deleteFile?: (fileNames: string[]) => Promise<Boolean>;
+  /** 创建目录 */
+  createDirectory?: (directoryPath: string) => Promise<Boolean>;
 }
 
 interface UploaderOption {
@@ -52,4 +58,13 @@ export interface SuccessResponse {
 export interface FailResponse {
   success: false;
   desc: string;
+}
+
+export interface ListFile {
+  name: string;
+  size?: number;
+  url?: string;
+  lastModified?: Date;
+  type?: 'directory' | 'normal';
+  [property: string]: any;
 }
