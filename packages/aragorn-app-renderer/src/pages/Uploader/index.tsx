@@ -5,6 +5,7 @@ import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@renderer/app';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import './index.less';
+import { Uploader as IUploader } from 'aragorn-types';
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -13,13 +14,11 @@ const formItemLayout = {
 
 export const Uploader = () => {
   const { uploaders } = useContext(AppContext);
-  const [currentUploaderName, setCurrentUploaderName] = useState('');
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const [uploaderProfile, setUploaderProfile] = useState({} as UploaderProfile);
-  const [form] = Form.useForm();
+
+  const [curUploader, setCurUploader] = useState({} as IUploader);
 
   useEffect(() => {
-    if (uploaders.length > 0 && currentUploaderName === '') {
+    if (uploaders.length > 0) {
       handleUploaderSelect(uploaders[0].name);
     }
   }, [uploaders]);
@@ -33,31 +32,18 @@ export const Uploader = () => {
         message.success('上传器配置添加成功');
       }
     }
-    function handleUploaderProfileUpdate(res) {
-      if (res) {
-        message.success('上传器配置更新成功');
-      }
-    }
-    function handleUploaderProfileDelete(res) {
-      if (res) {
-        history.push(`/uploaderProfile`);
-        message.success('上传器配置删除成功');
-      }
-    }
 
     ipcRenderer.on('uploader-profile-add-reply', handleUploaderProfileAdd);
-    ipcRenderer.on('uploader-profile-update-reply', handleUploaderProfileUpdate);
-    ipcRenderer.on('uploader-profile-delete-reply', handleUploaderProfileDelete);
 
     return () => {
       ipcRenderer.removeListener('uploader-profile-add-reply', handleUploaderProfileAdd);
-      ipcRenderer.removeListener('uploader-profile-update-reply', handleUploaderProfileUpdate);
-      ipcRenderer.removeListener('uploader-profile-delete-reply', handleUploaderProfileDelete);
     };
   }, []);
 
+  const [form] = Form.useForm();
+
   const handleUploaderSelect = (uploaderName: string) => {
-    setCurrentUploaderName(uploaderName);
+    form.resetFields();
     const uploader = uploaders.find(item => item.name === uploaderName);
     if (uploader) {
       const formInitalValue = uploader?.defaultOptions.reduce(
@@ -72,9 +58,8 @@ export const Uploader = () => {
           isDefault: true
         }
       );
-      console.log(formInitalValue);
       form.setFieldsValue(formInitalValue as any);
-      setUploaderProfile({ id: '', name: '', uploaderName: uploader.name, uploaderOptions: uploader.defaultOptions });
+      setCurUploader(uploader);
     }
   };
 
@@ -101,11 +86,6 @@ export const Uploader = () => {
     }
   };
 
-  const handleDelete = () => {
-    const id = form.getFieldValue('id');
-    ipcRenderer.send('uploader-profile-delete', id);
-  };
-
   // TODO: 配置测试
   const handleTest = () => {};
 
@@ -117,7 +97,7 @@ export const Uploader = () => {
           {uploaders.map(item => (
             <div
               key={item.name}
-              className={item.name === currentUploaderName ? 'item item-active' : 'item'}
+              className={item.name === curUploader?.name ? 'item item-active' : 'item'}
               onClick={() => handleUploaderSelect(item.name)}
             >
               {item.name}
@@ -138,7 +118,7 @@ export const Uploader = () => {
             <Form.Item name="uploaderName" style={{ display: 'none' }}>
               <Input />
             </Form.Item>
-            {uploaderProfile?.uploaderOptions?.map(item => (
+            {curUploader?.options?.map(item => (
               <Form.Item
                 key={item.name}
                 name={item.name}
