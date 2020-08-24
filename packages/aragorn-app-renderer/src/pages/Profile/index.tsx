@@ -5,6 +5,7 @@ import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@renderer/app';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import './index.less';
+import { Uploader } from 'aragorn-types';
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -20,38 +21,42 @@ export const Profile = () => {
 
   const { id } = useParams<{ id: string }>();
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const [uploaderProfile, setUploaderProfile] = useState({} as UploaderProfile);
+  const [curUploaderProfileId, setCurUploaderProfileId] = useState('');
 
-  const [currentProfileId, setCurrentProfileId] = useState('');
+  const [curUploader, setCurUploader] = useState({} as Uploader);
 
   const [form] = Form.useForm();
 
   useEffect(() => {
     const currentId = id || defaultUploaderProfileId;
-    setCurrentProfile(currentId);
+    setCurrentData(currentId);
   }, []);
 
   const handleUploaderProfileChange = val => {
-    setCurrentProfile(val);
+    setCurrentData(val);
   };
 
-  const setCurrentProfile = currentId => {
-    const uploaderProfile = uploaderProfiles.find(item => item.id === currentId);
-    const formInitalValue = uploaderProfile?.uploaderOptions.reduce(
-      (pre, cur) => {
-        pre[cur.name] = cur.value;
-        return pre;
-      },
-      {
-        id: uploaderProfile.id,
-        name: uploaderProfile.name,
-        uploaderName: uploaderProfile.uploaderName
+  const setCurrentData = curId => {
+    const uploaderProfile = uploaderProfiles.find(item => item.id === curId);
+    if (uploaderProfile) {
+      const curUploader = uploaders.find(item => item.name === uploaderProfile.uploaderName);
+      const formInitalValue = uploaderProfile?.uploaderOptions.reduce(
+        (pre, cur) => {
+          pre[cur.name] = cur.value;
+          return pre;
+        },
+        {
+          id: uploaderProfile.id,
+          name: uploaderProfile.name,
+          uploaderName: uploaderProfile.uploaderName
+        }
+      );
+      form.setFieldsValue(formInitalValue as any);
+      setCurUploaderProfileId(curId);
+      if (curUploader) {
+        setCurUploader(curUploader);
       }
-    );
-    form.setFieldsValue(formInitalValue as any);
-    setUploaderProfile(uploaderProfile as UploaderProfile);
-    setCurrentProfileId(currentId as string);
+    }
   };
 
   const history = useHistory();
@@ -121,7 +126,7 @@ export const Profile = () => {
         <hr />
       </header>
       <div className="header-menu">
-        <Select style={{ minWidth: 120 }} value={currentProfileId} onChange={handleUploaderProfileChange}>
+        <Select style={{ minWidth: 120 }} value={curUploaderProfileId} onChange={handleUploaderProfileChange}>
           {uploaderProfiles.map(item => (
             <Select.Option key={item.name} value={item.id}>
               {item.name}
@@ -146,7 +151,7 @@ export const Profile = () => {
           <Form.Item name="name" label="配置名称" rules={[{ required: true, message: '配置名称不能为空' }]}>
             <Input />
           </Form.Item>
-          {uploaderProfile?.uploaderOptions?.map(item => (
+          {curUploader?.defaultOptions?.map(item => (
             <Form.Item
               key={item.name}
               name={item.name}
