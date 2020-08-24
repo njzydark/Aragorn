@@ -75,7 +75,7 @@ export const Profile = () => {
     }
     function handleUploaderProfileDelete(res) {
       if (res) {
-        history.push(`/uploaderProfile`);
+        history.push(`/`);
         message.success('上传器配置删除成功');
       }
     }
@@ -126,19 +126,27 @@ export const Profile = () => {
         <hr />
       </header>
       <div className="header-menu">
-        <Select style={{ minWidth: 120 }} value={curUploaderProfileId} onChange={handleUploaderProfileChange}>
+        <Select
+          style={{ minWidth: 120 }}
+          value={curUploaderProfileId || '请选择'}
+          onChange={handleUploaderProfileChange}
+        >
           {uploaderProfiles.map(item => (
             <Select.Option key={item.name} value={item.id}>
               {item.name}
             </Select.Option>
           ))}
         </Select>
-        <Button danger onClick={handleDelete} style={{ marginLeft: 'auto' }}>
-          删除
-        </Button>
-        <Button type="primary" onClick={handleSubmit}>
-          更新配置
-        </Button>
+        {curUploaderProfileId && (
+          <>
+            <Button danger onClick={handleDelete} style={{ marginLeft: 'auto' }}>
+              删除
+            </Button>
+            <Button type="primary" onClick={handleSubmit}>
+              更新配置
+            </Button>
+          </>
+        )}
       </div>
       <div className="content-wrapper">
         <Form {...formItemLayout} layout="horizontal" form={form} onFinish={handleFinish}>
@@ -148,9 +156,11 @@ export const Profile = () => {
           <Form.Item name="uploaderName" style={{ display: 'none' }}>
             <Input />
           </Form.Item>
-          <Form.Item name="name" label="配置名称" rules={[{ required: true, message: '配置名称不能为空' }]}>
-            <Input />
-          </Form.Item>
+          {curUploaderProfileId && (
+            <Form.Item name="name" label="配置名称" rules={[{ required: true, message: '配置名称不能为空' }]}>
+              <Input />
+            </Form.Item>
+          )}
           {curUploader?.defaultOptions?.map(item => (
             <Form.Item
               key={item.name}
