@@ -105,7 +105,7 @@ export class UploaderManager {
           date: new Date().getTime(),
           uploaderProfileId: uploaderProfile.id
         };
-        const res = await uploader.upload(file, fileName, directoryPath);
+        const res = await uploader.upload(file, fileName, directoryPath, isFromFileManage);
         if (res.success) {
           successRes.push({ ...baseInfo, ...res.data });
         } else {

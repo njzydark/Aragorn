@@ -16,6 +16,19 @@ export const FileManage = () => {
     configuration: { defaultUploaderProfileId }
   } = useContext(AppContext);
 
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowHeight(window.innerHeight);
+    }
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const { id } = useParams<{ id: string }>();
 
   const [uploaderProfile, setUploaderProfile] = useState({} as UploaderProfile);
@@ -121,8 +134,12 @@ export const FileManage = () => {
     setSelectRows(selectedRows);
   };
 
+  const handleRefresh = () => {
+    getList(dirPath.join('/'));
+  };
+
   const handleBatchDelete = () => {
-    const names = selectRows.map(item => item.name);
+    const names = selectRows.map(item => [...dirPath, formatFileName(item.name)].join('/'));
     ipcRenderer.send('file-delete', uploaderProfile.id, names);
   };
 
@@ -130,6 +147,8 @@ export const FileManage = () => {
     let name = record.name;
     if (record.type === 'directory') {
       name = `${[...dirPath, record.name].join('/')}/`;
+    } else {
+      name = [...dirPath, formatFileName(record.name)].join('/');
     }
     ipcRenderer.send('file-delete', uploaderProfile.id, [name]);
   };
@@ -212,6 +231,9 @@ export const FileManage = () => {
             </Select.Option>
           ))}
         </Select>
+        <Button disabled={!uploaderProfile} onClick={handleRefresh}>
+          刷新
+        </Button>
         <Button
           disabled={!uploaderProfile}
           onClick={() => {
@@ -232,31 +254,32 @@ export const FileManage = () => {
           批量删除
         </Button>
       </Space>
-      {dirPath.length > 0 && (
-        <Breadcrumb style={{ marginBottom: 10 }}>
-          <Breadcrumb.Item>
-            <a onClick={() => handlePathClick(-1)}>Home</a>
+      <Breadcrumb style={{ marginBottom: 10 }}>
+        <Breadcrumb.Item>
+          <a onClick={() => handlePathClick(-1)}>全部文件</a>
+        </Breadcrumb.Item>
+        {dirPath.map((item, index) => (
+          <Breadcrumb.Item key={item}>
+            <a onClick={() => handlePathClick(index)}>{item}</a>
           </Breadcrumb.Item>
-          {dirPath.map((item, index) => (
-            <Breadcrumb.Item key={item}>
-              <a onClick={() => handlePathClick(index)}>{item}</a>
-            </Breadcrumb.Item>
-          ))}
-        </Breadcrumb>
-      )}
-      <Table
-        size="small"
-        rowKey="name"
-        dataSource={list}
-        columns={columns}
-        pagination={false}
-        loading={listLoading}
-        rowSelection={{
-          onChange: handleTableRowChange,
-          selectedRowKeys: selectRowKeys,
-          getCheckboxProps: record => ({ disabled: record?.type === 'directory' })
-        }}
-      />
+        ))}
+      </Breadcrumb>
+      <div className="table-wrapper">
+        <Table
+          size="small"
+          rowKey="name"
+          scroll={{ y: windowHeight - 230 }}
+          dataSource={list}
+          columns={columns}
+          pagination={false}
+          loading={listLoading}
+          rowSelection={{
+            onChange: handleTableRowChange,
+            selectedRowKeys: selectRowKeys,
+            getCheckboxProps: record => ({ disabled: record?.type === 'directory' })
+          }}
+        />
+      </div>
       <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
       <Modal
         title="创建目录"

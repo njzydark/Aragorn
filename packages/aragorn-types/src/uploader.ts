@@ -14,7 +14,12 @@ export interface Uploader {
   /** 改变options */
   changeOptions: (newOptions: UploaderOptions) => void;
   /** 上传方法 */
-  upload: (filePath: string, fileName: string, directoryPath?: string) => Promise<SuccessResponse | FailResponse>;
+  upload: (
+    filePath: string,
+    fileName: string,
+    directoryPath?: string,
+    isFromFileManage?: boolean
+  ) => Promise<SuccessResponse | FailResponse>;
   /** 获取存储空间所有文件 */
   getFileList?: (directoryPath?: string) => Promise<ListFile[]>;
   /** 删除文件 */
