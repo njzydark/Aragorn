@@ -29,10 +29,29 @@ export class AliOssUploader implements Uploader {
     this.client = new OSS(this.config);
   }
 
-  async upload(filePath: string, fileName: string, directoryPath?: string): Promise<SuccessResponse | FailResponse> {
-    const file = createReadStream(filePath);
+  async upload(
+    filePath: string,
+    fileName: string,
+    directoryPath?: string,
+    isFromFileManage?: boolean
+  ): Promise<SuccessResponse | FailResponse> {
     try {
-      const url = (await this.ossUpload(fileName, file, directoryPath)) as string;
+      const file = createReadStream(filePath);
+      const { directory } = this.config;
+      let newFileName = '';
+      if (isFromFileManage) {
+        newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
+      } else {
+        newFileName = directory ? `${directory}/${fileName}` : fileName;
+      }
+      let putRes = await this.client.put(newFileName, file);
+      if (putRes?.res?.status !== 200) {
+        return {
+          success: false,
+          desc: '上传失败'
+        };
+      }
+      const url = await this.client.generateObjectUrl(newFileName);
       if (url) {
         return {
           success: true,
@@ -84,7 +103,7 @@ export class AliOssUploader implements Uploader {
 
   async deleteFile(fileNames: string[]) {
     try {
-      if (fileNames.length === 0) {
+      if (fileNames.length === 1) {
         await this.client.delete(fileNames[0]);
       } else {
         await this.client.deleteMulti(fileNames);
@@ -101,19 +120,6 @@ export class AliOssUploader implements Uploader {
       return true;
     } catch (err) {
       return false;
-    }
-  }
-
-  protected async ossUpload(fileName: string, file: ReadStream, directoryPath?: string) {
-    const { directory } = this.config;
-    const newFileName = directoryPath
-      ? `${directoryPath}/${fileName}`
-      : directory
-      ? `${directory}/${fileName}`
-      : fileName;
-    let putRes = await this.client.put(newFileName, file);
-    if (putRes?.res?.status === 200) {
-      return this.client.generateObjectUrl(newFileName);
     }
   }
 
