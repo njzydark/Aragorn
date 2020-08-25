@@ -1,6 +1,7 @@
 {
   "name": "aragorn-app-main",
-  "version": "1.0.0-beta.0",
+  "productName": "Aragorn",
+  "version": "1.0.0-beta.1",
   "description": "electron main",
   "author": "njzy <njzydark@gmail.com>",
   "homepage": "https://github.com/njzydark/Aragorn/tree/master/packages/electron-main#readme",
@@ -21,6 +22,7 @@
     "electron-store": "^6.0.0",
     "form-data": "^3.0.0",
     "mime-types": "^2.1.27",
+    "semver": "^7.3.2",
     "uuid": "^8.3.0"
   },
   "devDependencies": {

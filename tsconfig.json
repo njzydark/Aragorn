@@ -16,13 +16,14 @@
         "packages/aragorn-app-renderer/src/*"
       ]
     },
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
   },
   "include": [
     "packages",
-    "types"
+    "global.d.ts"
   ],
   "exclude": [
     "node_modules",
