@@ -9,6 +9,7 @@ import Profile from '../../assets/profile.png';
 import Storage from '../../assets/storage.png';
 import Upload from '../../assets/upload.png';
 import Setting from '../../assets/setting.png';
+import About from '../../assets/about.png';
 
 const menuData = [
   {
@@ -35,6 +36,11 @@ const menuData = [
     name: 'upload',
     path: '',
     img: Upload
+  },
+  {
+    name: 'about',
+    path: '/about',
+    img: About
   },
   {
     name: 'setting',
@@ -78,7 +84,7 @@ export const SideBar = () => {
     <div className="side-bar">
       <div className="logo" />
       <div className="menu-list">
-        {menuData.slice(0, -1).map(item => (
+        {menuData.slice(0, -2).map(item => (
           <div
             key={item.name}
             className={item.name === current ? 'menu-item menu-active' : 'menu-item'}
@@ -89,7 +95,7 @@ export const SideBar = () => {
         ))}
       </div>
       <div className="footer">
-        {menuData.slice(-1).map(item => (
+        {menuData.slice(-2).map(item => (
           <div key={item.name} className="menu-item" onClick={() => handleSideChange(item)}>
             <img src={item.img} />
           </div>

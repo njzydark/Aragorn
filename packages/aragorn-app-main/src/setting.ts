@@ -19,6 +19,8 @@ export interface SettingConfiguration {
   autoStart: boolean;
   /** 自动检查更新 */
   autoUpdate: boolean;
+  /** 接收beta版本更新 */
+  useBetaVersion: boolean;
 }
 
 // 默认设置
@@ -29,7 +31,8 @@ const defaultSettingConfigurtion: SettingConfiguration = {
   showNotifaction: true,
   sound: true,
   autoStart: false,
-  autoUpdate: false
+  autoUpdate: false,
+  useBetaVersion: false
 };
 
 export class Setting {

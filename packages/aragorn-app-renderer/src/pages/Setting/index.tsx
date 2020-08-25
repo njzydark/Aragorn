@@ -105,8 +105,15 @@ export default function Basic() {
                 <Switch />
               </Form.Item>
             </Col>
+          </Row>
+          <Row>
             <Col xs={12}>
               <Form.Item name="autoUpdate" label="自动检查更新" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+            <Col xs={12}>
+              <Form.Item name="useBetaVersion" label="接收beta版本更新" valuePropName="checked">
                 <Switch />
               </Form.Item>
             </Col>

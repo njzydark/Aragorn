@@ -37,8 +37,12 @@ export class Ipc {
   }
 
   protected appUpdateHandlee() {
-    ipcMain.on('check-update', () => {
-      updater.checkUpdate();
+    const { autoUpdate } = setting.get();
+    if (autoUpdate) {
+      updater.checkUpdate(false);
+    }
+    ipcMain.on('check-update', (_, manul = false) => {
+      updater.checkUpdate(manul);
     });
   }
 

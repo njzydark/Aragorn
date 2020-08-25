@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
-import { ipcRenderer } from 'electron';
-import { ConfigProvider, message, notification, Progress } from 'antd';
+import { ipcRenderer, shell } from 'electron';
+import { ConfigProvider, message, notification } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 
 import { SideBar } from '@renderer/components/SideBar';
@@ -50,8 +50,19 @@ const App = () => {
     ipcRenderer.on('app-updater-message', (_, data: UpdaterChannelData) => {
       notification.info({
         message: data.message,
-        description: data.percent ? <Progress percent={data.percent} /> : data.description,
-        key: 'updaterMessage'
+        description: (
+          <a
+            onClick={() => {
+              if (data.url) {
+                shell.openExternal(data.url);
+              }
+            }}
+          >
+            {data.description}
+          </a>
+        ),
+        key: 'updaterMessage',
+        duration: null
       });
     });
     ipcRenderer.on('uploaded-files-get-reply', (_, uploadedFiles: UploadedFileInfo[]) => {
