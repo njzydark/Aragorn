@@ -1,6 +1,13 @@
-import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
+import {
+  Uploader,
+  UploaderOptions,
+  UploadResponse,
+  FileListResponse,
+  DeleteFileResponse,
+  CreateDirectoryResponse
+} from 'aragorn-types';
 import upyun from 'upyun';
-import { ReadStream, createReadStream } from 'fs';
+import { createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
 
 interface Config {
@@ -30,7 +37,7 @@ export class UpyunUploader implements Uploader {
     fileName: string,
     directoryPath?: string,
     isFromFileManage?: boolean
-  ): Promise<SuccessResponse | FailResponse> {
+  ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
       const { domain, directory } = this.getConfig();
@@ -62,26 +69,39 @@ export class UpyunUploader implements Uploader {
     }
   }
 
-  async getFileList(directoryPath?: string) {
-    const res = await this.client.listDir(directoryPath);
-    const { domain } = this.getConfig();
-    if (res?.files?.length > 0) {
-      res.files.map(item => {
-        if (item.type === 'F') {
-          item.type = 'directory';
-        } else {
-          item.url = directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`;
-          item.lastModified = item.time ? item.time * 1000 : '';
-        }
-        return item;
-      });
-      return res.files;
-    } else {
-      return [];
+  async getFileList(directoryPath?: string): Promise<FileListResponse> {
+    try {
+      const res = await this.client.listDir(directoryPath);
+      const { domain } = this.getConfig();
+      if (res?.files?.length > 0) {
+        res.files.map(item => {
+          if (item.type === 'F') {
+            item.type = 'directory';
+          } else {
+            item.url = directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`;
+            item.lastModified = item.time ? item.time * 1000 : '';
+          }
+          return item;
+        });
+        return {
+          success: true,
+          data: res.files
+        };
+      } else {
+        return {
+          success: true,
+          data: []
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        desc: err.message
+      };
     }
   }
 
-  async deleteFile(fileNames: string[]) {
+  async deleteFile(fileNames: string[]): Promise<DeleteFileResponse> {
     try {
       if (fileNames.length === 1) {
         await this.client.deleteFile(fileNames[0]);
@@ -89,18 +109,18 @@ export class UpyunUploader implements Uploader {
         const promises = fileNames.map(async filename => await this.client.deleteFile(filename));
         await Promise.all(promises);
       }
-      return true;
+      return { success: true };
     } catch (err) {
-      return false;
+      return { success: false, desc: err.message };
     }
   }
 
-  async createDirectory(directoryPath: string) {
+  async createDirectory(directoryPath: string): Promise<CreateDirectoryResponse> {
     try {
       await this.client.makeDir(`${directoryPath}/`);
-      return true;
+      return { success: true };
     } catch (err) {
-      return false;
+      return { success: false, desc: err.message };
     }
   }
 

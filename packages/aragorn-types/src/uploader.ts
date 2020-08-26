@@ -1,7 +1,3 @@
-/**
- * 上传器
- * @description 基于相关对象存储 SDK 开发，供 Aragorn 使用
- */
 export interface Uploader {
   /** 名称 全局唯一 */
   name: string;
@@ -13,19 +9,19 @@ export interface Uploader {
   options: UploaderOptions;
   /** 改变options */
   changeOptions: (newOptions: UploaderOptions) => void;
-  /** 上传方法 */
+  /** 文件上传 */
   upload: (
     filePath: string,
     fileName: string,
     directoryPath?: string,
     isFromFileManage?: boolean
-  ) => Promise<SuccessResponse | FailResponse>;
-  /** 获取存储空间所有文件 */
-  getFileList?: (directoryPath?: string) => Promise<ListFile[]>;
+  ) => Promise<UploadResponse>;
+  /** 获取文件列表 */
+  getFileList?: (directoryPath?: string) => Promise<FileListResponse>;
   /** 删除文件 */
-  deleteFile?: (fileNames: string[]) => Promise<Boolean>;
+  deleteFile?: (fileNames: string[]) => Promise<DeleteFileResponse>;
   /** 创建目录 */
-  createDirectory?: (directoryPath: string) => Promise<Boolean>;
+  createDirectory?: (directoryPath: string) => Promise<CreateDirectoryResponse>;
 }
 
 interface UploaderOption {
@@ -55,15 +51,17 @@ export interface UploadResponseData {
   [property: string]: any;
 }
 
-export interface SuccessResponse {
+interface UploadSuccessResponse {
   success: true;
   data: UploadResponseData;
 }
 
-export interface FailResponse {
+interface UploadFailResponse {
   success: false;
   desc: string;
 }
+
+export type UploadResponse = UploadSuccessResponse | UploadFailResponse;
 
 export interface ListFile {
   name: string;
@@ -72,4 +70,26 @@ export interface ListFile {
   lastModified?: Date;
   type?: 'directory' | 'normal';
   [property: string]: any;
+}
+
+interface FileListSuccessResponse {
+  success: true;
+  data: ListFile[];
+}
+
+interface FileListFailResponse {
+  success: false;
+  desc?: string;
+}
+
+export type FileListResponse = FileListSuccessResponse | FileListFailResponse;
+
+export interface DeleteFileResponse {
+  success: boolean;
+  desc?: string;
+}
+
+export interface CreateDirectoryResponse {
+  success: boolean;
+  desc?: string;
 }

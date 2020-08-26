@@ -1,4 +1,4 @@
-import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
+import { Uploader, UploaderOptions, UploadResponse } from 'aragorn-types';
 import qiniu from 'qiniu';
 import { ReadStream, createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
@@ -13,7 +13,7 @@ export class QiniuUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+  async upload(filePath: string, fileName: string): Promise<UploadResponse> {
     const file = createReadStream(filePath);
     try {
       const { key }: any = await this.qiniuUpload(fileName, file);

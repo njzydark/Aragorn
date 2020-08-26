@@ -57,7 +57,7 @@ export class UploaderManager {
     });
   }
 
-  async upload(files: string[], customUploaderProfileId = '', directoryPath?: string, isFromFileManage = false) {
+  async upload(files: string[], customUploaderProfileId = '', directoryPath = '', isFromFileManage = false) {
     try {
       const {
         configuration: { defaultUploaderProfileId }
@@ -135,10 +135,10 @@ export class UploaderManager {
   async getFileList(uploaderProfileId: string, directoryPath?: string) {
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.getFileList) {
-      const data = await uploader.getFileList(directoryPath);
-      Ipc.win.webContents.send('file-list-get-reply', data);
+      const res = await uploader.getFileList(directoryPath);
+      Ipc.win.webContents.send('file-list-get-reply', res);
     } else {
-      Ipc.win.webContents.send('file-list-get-reply', []);
+      Ipc.win.webContents.send('file-list-get-reply');
     }
   }
 
@@ -148,17 +148,17 @@ export class UploaderManager {
       const res = await uploader.deleteFile(fileNames);
       Ipc.win.webContents.send('file-delete-reply', res);
     } else {
-      Ipc.win.webContents.send('file-delete-reply', false);
+      Ipc.win.webContents.send('file-delete-reply');
     }
   }
 
   async createDirectory(uploaderProfileId: string, directoryPath: string) {
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.createDirectory) {
-      const data = await uploader.createDirectory(directoryPath);
-      Ipc.win.webContents.send('directory-create-reply', data);
+      const res = await uploader.createDirectory(directoryPath);
+      Ipc.win.webContents.send('directory-create-reply', res);
     } else {
-      Ipc.win.webContents.send('directory-create-reply', false);
+      Ipc.win.webContents.send('directory-create-reply');
     }
   }
 

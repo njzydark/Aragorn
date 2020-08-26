@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import { AppContext } from '@renderer/app';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import './index.less';
-import { ListFile } from 'aragorn-types';
+import { ListFile, FileListResponse, DeleteFileResponse, CreateDirectoryResponse } from 'aragorn-types';
 
 export const FileManage = () => {
   const {
@@ -55,13 +55,17 @@ export const FileManage = () => {
   const [dirPath, setDirPath] = useState([] as string[]);
 
   useEffect(() => {
-    function handleListGetReply(_, data) {
+    function handleListGetReply(_, res?: FileListResponse) {
       setListLoading(false);
-      setList(data);
+      if (res?.success) {
+        setList(res.data);
+      } else {
+        setList([]);
+      }
     }
 
-    function handleFileDeleteReply(_, res: boolean) {
-      if (res) {
+    function handleFileDeleteReply(_, res?: DeleteFileResponse) {
+      if (res?.success) {
         message.success('文件删除成功');
         getList(dirPath.join('/'));
       }
@@ -71,9 +75,11 @@ export const FileManage = () => {
       getList(dirPath.join('/'));
     }
 
-    function handleDirectoryCreateReply() {
-      setModalVisible(false);
-      getList(dirPath.join('/'));
+    function handleDirectoryCreateReply(_, res?: CreateDirectoryResponse) {
+      if (res?.success) {
+        setModalVisible(false);
+        getList(dirPath.join('/'));
+      }
     }
 
     ipcRenderer.on('file-list-get-reply', handleListGetReply);

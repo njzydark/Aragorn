@@ -1,9 +1,16 @@
-import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
+import {
+  Uploader,
+  UploaderOptions,
+  UploadResponse,
+  FileListResponse,
+  DeleteFileResponse,
+  CreateDirectoryResponse
+} from 'aragorn-types';
 import OSS from 'ali-oss';
 import { options as defaultOptions } from './options';
-import { createReadStream, ReadStream } from 'fs';
+import { createReadStream } from 'fs';
 
-type Config = {
+interface Config {
   accessKeyId: string;
   accessKeySecret: string;
   bucket: string;
@@ -13,7 +20,7 @@ type Config = {
   directory?: string;
   isRequestPay?: boolean;
   secure?: false;
-};
+}
 
 export class AliOssUploader implements Uploader {
   name = '阿里云OSS';
@@ -34,7 +41,7 @@ export class AliOssUploader implements Uploader {
     fileName: string,
     directoryPath?: string,
     isFromFileManage?: boolean
-  ): Promise<SuccessResponse | FailResponse> {
+  ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
       const { directory } = this.config;
@@ -74,7 +81,7 @@ export class AliOssUploader implements Uploader {
     }
   }
 
-  async getFileList(directoryPath?: string) {
+  async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
       const res = await this.client.list({ delimiter: '/', prefix: directoryPath ? directoryPath + '/' : '' });
       let dirData = [];
@@ -92,7 +99,10 @@ export class AliOssUploader implements Uploader {
       let data = res.objects || [];
       data = data.filter(item => /.*[^\/]$/g.test(item?.name));
       data.unshift(...dirData);
-      return data;
+      return {
+        success: true,
+        data
+      };
     } catch (err) {
       return {
         success: false,
@@ -101,25 +111,25 @@ export class AliOssUploader implements Uploader {
     }
   }
 
-  async deleteFile(fileNames: string[]) {
+  async deleteFile(fileNames: string[]): Promise<DeleteFileResponse> {
     try {
       if (fileNames.length === 1) {
         await this.client.delete(fileNames[0]);
       } else {
         await this.client.deleteMulti(fileNames);
       }
-      return true;
+      return { success: true };
     } catch (err) {
-      return false;
+      return { success: false, desc: err.message };
     }
   }
 
-  async createDirectory(directoryPath: string) {
+  async createDirectory(directoryPath: string): Promise<CreateDirectoryResponse> {
     try {
       await this.client.put(`${directoryPath}/`, Buffer.from(''));
-      return true;
+      return { success: true };
     } catch (err) {
-      return false;
+      return { success: false, desc: err.message };
     }
   }
 

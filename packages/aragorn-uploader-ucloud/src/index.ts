@@ -1,4 +1,4 @@
-import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
+import { Uploader, UploaderOptions, UploadResponse } from 'aragorn-types';
 import { ReadStream, createReadStream } from 'fs';
 import crypto from 'crypto';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -23,7 +23,7 @@ export class UCloudUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+  async upload(filePath: string, fileName: string): Promise<UploadResponse> {
     const file = createReadStream(filePath);
     const { domain } = this.getConfig();
     try {

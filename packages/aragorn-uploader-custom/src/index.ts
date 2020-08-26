@@ -1,4 +1,4 @@
-import { Uploader, UploaderOptions, SuccessResponse, FailResponse } from 'aragorn-types';
+import { Uploader, UploaderOptions, UploadResponse } from 'aragorn-types';
 import { createReadStream } from 'fs';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
@@ -23,7 +23,7 @@ export class CustomUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(filePath: string, fileName: string): Promise<SuccessResponse | FailResponse> {
+  async upload(filePath: string, fileName: string): Promise<UploadResponse> {
     try {
       const formData = new FormData();
       const uploaderOptions = this.getConfig();
