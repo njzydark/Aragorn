@@ -31,6 +31,8 @@ export const FileManage = () => {
 
   const { id } = useParams<{ id: string }>();
 
+  const [hasFileManageFeature, setHasFileManageFeature] = useState(false);
+
   const [uploaderProfile, setUploaderProfile] = useState({} as UploaderProfile);
 
   useEffect(() => {
@@ -57,17 +59,29 @@ export const FileManage = () => {
   useEffect(() => {
     function handleListGetReply(_, res?: FileListResponse) {
       setListLoading(false);
-      if (res?.success) {
+      if (res === undefined) {
+        setHasFileManageFeature(false);
+        setList([]);
+        message.info(`${uploaderProfile.uploaderName}暂不支持文件管理功能`);
+        return;
+      }
+      setHasFileManageFeature(true);
+      if (res.success) {
         setList(res.data);
       } else {
-        setList([]);
+        message.error(`文件列表获取失败 ${res.desc || ''}`);
       }
     }
 
     function handleFileDeleteReply(_, res?: DeleteFileResponse) {
-      if (res?.success) {
+      if (res === undefined) {
+        return;
+      }
+      if (res.success) {
         message.success('文件删除成功');
         getList(dirPath.join('/'));
+      } else {
+        message.error(`文件删除失败 ${res.desc || ''}`);
       }
     }
 
@@ -76,9 +90,15 @@ export const FileManage = () => {
     }
 
     function handleDirectoryCreateReply(_, res?: CreateDirectoryResponse) {
-      if (res?.success) {
+      if (res === undefined) {
+        return;
+      }
+      if (res.success) {
+        message.success('目录创建成功');
         setModalVisible(false);
         getList(dirPath.join('/'));
+      } else {
+        message.error(`目录创建失败 ${res.desc || ''}`);
       }
     }
 
@@ -237,11 +257,11 @@ export const FileManage = () => {
             </Select.Option>
           ))}
         </Select>
-        <Button disabled={!uploaderProfile} onClick={handleRefresh}>
+        <Button disabled={!hasFileManageFeature} onClick={handleRefresh}>
           刷新
         </Button>
         <Button
-          disabled={!uploaderProfile}
+          disabled={!hasFileManageFeature}
           onClick={() => {
             uploadRef.current?.click();
           }}
@@ -249,7 +269,7 @@ export const FileManage = () => {
           上传
         </Button>
         <Button
-          disabled={!uploaderProfile}
+          disabled={!hasFileManageFeature}
           onClick={() => {
             setModalVisible(true);
           }}
