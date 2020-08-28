@@ -95,7 +95,9 @@ export class UploaderManager {
       const successRes: UploadedFileInfo[] = [];
       const failRes: UploadedFileInfo[] = [];
 
-      const promises = files.map(async file => {
+      const uploadQuence = [] as any[];
+
+      const toUpload = async (file: string, index: number, uploadQuence: any[]) => {
         const fileExtName = path.extname(file);
         const fileName = uuidv4() + fileExtName;
         const fileType = mime.lookup(file) || '-';
@@ -107,12 +109,23 @@ export class UploaderManager {
           date: new Date().getTime(),
           uploaderProfileId: uploaderProfile.id
         };
+
+        if (uploader.batchUploadMode === 'Sequence' && index > 0) {
+          await uploadQuence[index - 1];
+        }
+
         const res = await uploader.upload(file, fileName, directoryPath, isFromFileManage);
         if (res.success) {
           successRes.push({ ...baseInfo, ...res.data });
         } else {
           failRes.push({ ...baseInfo, errorMessage: res.desc });
         }
+      };
+
+      const promises = files.map((file, index) => {
+        const res = toUpload(file, index, uploadQuence);
+        uploadQuence.push(res);
+        return res;
       });
 
       await Promise.all(promises);

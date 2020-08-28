@@ -9,6 +9,8 @@ export interface Uploader {
   options: UploaderOptions;
   /** 改变options */
   changeOptions: (newOptions: UploaderOptions) => void;
+  /** 批量上传模式 并发和顺序 */
+  batchUploadMode?: BatchUploadMode;
   /** 文件上传 */
   upload: (
     filePath: string,
@@ -23,6 +25,8 @@ export interface Uploader {
   /** 创建目录 */
   createDirectory?: (directoryPath: string) => Promise<CreateDirectoryResponse>;
 }
+
+export type BatchUploadMode = 'Concurrent' | 'Sequence';
 
 interface UploaderOption {
   /** 表单字段描述 */
