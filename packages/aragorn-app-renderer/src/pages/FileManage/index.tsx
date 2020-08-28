@@ -199,6 +199,10 @@ export const FileManage = () => {
     });
   };
 
+  const handleDownload = (record: ListFile) => {
+    ipcRenderer.send('file-download', record.name, record.url);
+  };
+
   const columns = [
     {
       title: '文件名',
@@ -207,7 +211,11 @@ export const FileManage = () => {
       render: (val: string, record: ListFile) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {record.type === 'directory' ? <FolderOutlined /> : <FileOutlined />}
-          <a onClick={() => handleNameClick(record)} style={{ marginLeft: 10 }}>
+          <a
+            title={val}
+            onClick={() => handleNameClick(record)}
+            style={{ marginLeft: 10, overflow: 'hidden', textOverflow: 'ellipsis' }}
+          >
             {formatFileName(val)}
           </a>
         </div>
@@ -233,11 +241,7 @@ export const FileManage = () => {
       render: (_, record) => (
         <Space>
           <a onClick={() => handleDelete(record)}>删除</a>
-          {record.type !== 'directory' && (
-            <a href={record.url} download>
-              下载
-            </a>
-          )}
+          {record.type !== 'directory' && <a onClick={() => handleDownload(record)}>下载</a>}
         </Space>
       )
     }

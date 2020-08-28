@@ -1,7 +1,9 @@
-import { Notification, clipboard } from 'electron';
+import { Notification, clipboard, app } from 'electron';
 import mime from 'mime-types';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import fs from 'fs';
 import { Ipc } from './ipc';
 import { Setting } from './setting';
 import { History } from './history';
@@ -159,6 +161,43 @@ export class UploaderManager {
       Ipc.win.webContents.send('directory-create-reply', res);
     } else {
       Ipc.win.webContents.send('directory-create-reply');
+    }
+  }
+
+  async download(name: string, url: string) {
+    try {
+      await new Promise((resolve, reject) => {
+        axios
+          .get(url, { responseType: 'stream' })
+          .then(res => {
+            const totalLength = res.headers['content-length'] as number;
+            const writer = fs.createWriteStream(`${app.getPath('downloads')}/${name}`);
+            let error = null;
+            let curLength = 0;
+            res.data.on('data', chunk => {
+              curLength += chunk.length;
+              const progress = curLength / totalLength;
+              if (totalLength !== undefined) {
+                Ipc.win.webContents.send('file-download-progress', { name, progress, key: name });
+              }
+            });
+            res.data.pipe(writer);
+            writer.on('error', err => {
+              error = err;
+              writer.close();
+              reject(err);
+            });
+            writer.on('close', () => {
+              if (!error) {
+                totalLength === undefined && Ipc.win.webContents.send('file-download-reply', true);
+                resolve();
+              }
+            });
+          })
+          .catch(reject);
+      });
+    } catch (err) {
+      Ipc.win.webContents.send('file-download-reply');
     }
   }
 

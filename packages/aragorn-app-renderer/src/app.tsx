@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { ipcRenderer, shell } from 'electron';
-import { ConfigProvider, message, notification } from 'antd';
+import { ConfigProvider, message, notification, Progress } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 
 import { SideBar } from '@renderer/components/SideBar';
@@ -63,6 +63,22 @@ const App = () => {
         ),
         key: 'updaterMessage',
         duration: null
+      });
+    });
+    ipcRenderer.on('file-download-reply', (_, res?: boolean) => {
+      if (res) {
+        message.success('下载成功');
+      } else {
+        message.error('下载失败');
+      }
+    });
+    ipcRenderer.on('file-download-progress', (_, res: { name: string; progress: number; key: string }) => {
+      const percent = Math.floor(res.progress * 100);
+      notification.info({
+        message: `正在下载${res.name}`,
+        description: <Progress percent={percent} />,
+        key: res.key,
+        duration: percent === 100 ? 1.5 : null
       });
     });
     ipcRenderer.on('uploaded-files-get-reply', (_, uploadedFiles: UploadedFileInfo[]) => {

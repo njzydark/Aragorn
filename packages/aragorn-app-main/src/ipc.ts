@@ -141,5 +141,9 @@ export class Ipc {
     ipcMain.on('directory-create', (_, uploaderProfileId: string, directoryPath: string) => {
       new UploaderManager().createDirectory(uploaderProfileId, directoryPath);
     });
+
+    ipcMain.on('file-download', (_, name: string, url: string) => {
+      new UploaderManager().download(name, url);
+    });
   }
 }
