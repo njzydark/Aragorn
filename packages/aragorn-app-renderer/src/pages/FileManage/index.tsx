@@ -166,6 +166,7 @@ export const FileManage = () => {
 
   const handleBatchDelete = () => {
     const names = selectRows.map(item => [...dirPath, formatFileName(item.name)].join('/'));
+    message.info('正在删除，请稍后...');
     ipcRenderer.send('file-delete', uploaderProfile.id, names);
   };
 
@@ -176,6 +177,7 @@ export const FileManage = () => {
     } else {
       name = [...dirPath, formatFileName(record.name)].join('/');
     }
+    message.info('正在删除，请稍后...');
     ipcRenderer.send('file-delete', uploaderProfile.id, [name]);
   };
 

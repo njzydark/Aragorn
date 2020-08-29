@@ -65,20 +65,22 @@ const App = () => {
         duration: null
       });
     });
-    ipcRenderer.on('file-download-reply', (_, res?: boolean) => {
-      if (res) {
-        message.success('下载成功');
+    ipcRenderer.on('file-download-reply', (_, errMessage?: string) => {
+      if (errMessage) {
+        message.error(errMessage);
       } else {
-        message.error('下载失败');
+        message.success('下载成功');
       }
     });
     ipcRenderer.on('file-download-progress', (_, res: { name: string; progress: number; key: string }) => {
       const percent = Math.floor(res.progress * 100);
-      notification.info({
-        message: `正在下载${res.name}`,
+      const isFinish = percent === 100;
+      notification.open({
+        type: isFinish ? 'success' : 'info',
+        message: isFinish ? '下载完成' : `正在下载${res.name}`,
         description: <Progress percent={percent} />,
         key: res.key,
-        duration: percent === 100 ? 1.5 : null
+        duration: isFinish ? 1.5 : null
       });
     });
     ipcRenderer.on('uploaded-files-get-reply', (_, uploadedFiles: UploadedFileInfo[]) => {

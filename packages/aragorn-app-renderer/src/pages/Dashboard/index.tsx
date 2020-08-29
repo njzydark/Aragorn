@@ -121,6 +121,7 @@ export const Dashboard = () => {
     {
       title: '上传时间',
       dataIndex: 'date',
+      width: 200,
       ellipsis: true,
       render: val => dayjs(val).format('YYYY-MM-DD HH:mm:ss')
     }
