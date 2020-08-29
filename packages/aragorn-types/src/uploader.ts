@@ -8,7 +8,7 @@ export interface Uploader {
   /** 配置项 方法调用时需要调用 changeOptions 方法修改 */
   options: UploaderOptions;
   /** 改变options */
-  changeOptions: (newOptions: UploaderOptions) => void;
+  changeOptions: (newOptions: UploaderOptions, proxy?: string) => void;
   /** 批量上传模式 并发和顺序 */
   batchUploadMode?: BatchUploadMode;
   /** 文件上传 */

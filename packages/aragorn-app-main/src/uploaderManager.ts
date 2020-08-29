@@ -3,6 +3,7 @@ import mime from 'mime-types';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import fs from 'fs';
 import { Ipc } from './ipc';
 import { Setting } from './setting';
@@ -179,9 +180,10 @@ export class UploaderManager {
 
   async download(name: string, url: string) {
     try {
+      const { proxy } = setting.configuration;
       await new Promise((resolve, reject) => {
         axios
-          .get(url, { responseType: 'stream' })
+          .get(url, { responseType: 'stream', httpsAgent: proxy ? new HttpsProxyAgent(proxy) : null })
           .then(res => {
             const totalLength = res.headers['content-length'] as number;
             const writer = fs.createWriteStream(`${app.getPath('downloads')}/${name}`);
@@ -202,7 +204,7 @@ export class UploaderManager {
             });
             writer.on('close', () => {
               if (!error) {
-                totalLength === undefined && Ipc.win.webContents.send('file-download-reply', true);
+                totalLength === undefined && Ipc.win.webContents.send('file-download-reply');
                 resolve();
               }
             });
@@ -210,11 +212,12 @@ export class UploaderManager {
           .catch(reject);
       });
     } catch (err) {
-      Ipc.win.webContents.send('file-download-reply');
+      Ipc.win.webContents.send('file-download-reply', err.message || '下载失败');
     }
   }
 
   protected getUploader(id: string) {
+    const { proxy } = setting.configuration;
     const uploaderProfiles = uploaderProfileManager.getAll();
     const uploaderProfile = uploaderProfiles.find(uploaderProfile => uploaderProfile.id === id);
     if (!uploaderProfile) {
@@ -222,7 +225,7 @@ export class UploaderManager {
     }
     const uploader = core.getUploaderByName(uploaderProfile.uploaderName);
     if (uploader) {
-      uploader.changeOptions(uploaderProfile.uploaderOptions);
+      uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
       return uploader;
     }
   }

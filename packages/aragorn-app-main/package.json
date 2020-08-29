@@ -21,6 +21,7 @@
     "axios": "^0.19.2",
     "electron-store": "^6.0.0",
     "form-data": "^3.0.0",
+    "https-proxy-agent": "^5.0.0",
     "mime-types": "^2.1.27",
     "semver": "^7.3.2",
     "uuid": "^8.3.0"
