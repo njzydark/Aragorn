@@ -9,6 +9,7 @@ import {
 } from 'aragorn-types';
 import fs from 'fs';
 import axios from 'axios';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { options as defaultOptions } from './options';
 
 interface Config {
@@ -26,10 +27,18 @@ export class GithubUploader implements Uploader {
   defaultOptions = defaultOptions;
   options = defaultOptions;
   batchUploadMode: BatchUploadMode = 'Sequence';
+  config = {} as Config;
   tempFiles = [] as { name: string; sha: string }[];
+  agent: HttpsProxyAgent | null = null;
 
-  changeOptions(newOptions: UploaderOptions) {
+  changeOptions(newOptions: UploaderOptions, proxy?: string) {
     this.options = newOptions;
+    this.config = this.getConfig();
+    if (proxy) {
+      this.agent = new HttpsProxyAgent(proxy);
+    } else {
+      this.agent = null;
+    }
   }
 
   async upload(
@@ -39,7 +48,7 @@ export class GithubUploader implements Uploader {
     isFromFileManage?: boolean
   ): Promise<UploadResponse> {
     try {
-      let { owner, repo, branch, token, customDomain, path, message } = this.getConfig();
+      let { owner, repo, branch, token, customDomain, path, message } = this.config;
       if (customDomain) {
         customDomain = customDomain.replace(/^\/+/, '').replace(/\/+$/, '');
       }
@@ -62,10 +71,10 @@ export class GithubUploader implements Uploader {
           content
         },
         {
-          timeout: 10000,
           headers: {
             Authorization: `token ${token}`
-          }
+          },
+          httpsAgent: this.agent
         }
       );
       if (res.status === 201) {
@@ -97,15 +106,16 @@ export class GithubUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      let { owner, repo, branch, token } = this.getConfig();
+      let { owner, repo, branch, token } = this.config;
+
       const baseUrl = directoryPath
         ? `https://api.github.com/repos/${owner}/${repo}/contents/${directoryPath}?ref=${branch}`
         : `https://api.github.com/repos/${owner}/${repo}/contents?ref=${branch}`;
       const res = await axios.get(baseUrl, {
-        timeout: 10000,
         headers: {
           Authorization: `token ${token}`
-        }
+        },
+        httpsAgent: this.agent
       });
       if (res.status === 200) {
         const directoryData = [] as any[];
@@ -142,44 +152,39 @@ export class GithubUploader implements Uploader {
 
   async deleteFile(fileNames: string[]): Promise<DeleteFileResponse> {
     try {
-      let { owner, repo, branch, token } = this.getConfig();
+      let { owner, repo, branch, token } = this.config;
       const baseUrl = `https://api.github.com/repos/${owner}/${repo}/contents/`;
-      if (fileNames.length === 1) {
-        let tempName = fileNames[0].split('/').pop();
+
+      const deleteSequence = [] as any[];
+
+      const toDelete = async (filename: string, index: number, deleteSequence: any[]) => {
+        let tempName = filename.split('/').pop();
         const sha = this.tempFiles.find(item => item.name === tempName)?.sha || '';
+        if (index > 0) {
+          await deleteSequence[index - 1];
+        }
         await axios({
-          baseURL: baseUrl + fileNames[0],
+          baseURL: baseUrl + filename,
           method: 'DELETE',
-          timeout: 10000,
           headers: {
             Authorization: `token ${token}`
           },
+          httpsAgent: this.agent,
           data: {
             branch,
             message: '',
             sha
           }
         });
-      } else {
-        const promises = fileNames.map(async filename => {
-          let tempName = filename.split('/').pop();
-          const sha = this.tempFiles.find(item => item.name === tempName)?.sha || '';
-          return await axios({
-            baseURL: baseUrl + filename,
-            method: 'DELETE',
-            timeout: 10000,
-            headers: {
-              Authorization: `token ${token}`
-            },
-            data: {
-              branch,
-              message: '',
-              sha
-            }
-          });
-        });
-        await Promise.all(promises);
-      }
+      };
+
+      const promises = fileNames.map(async (fileName, index) => {
+        const res = toDelete(fileName, index, deleteSequence);
+        deleteSequence.push(res);
+        return res;
+      });
+
+      await Promise.all(promises);
       return { success: true };
     } catch (err) {
       return { success: false, desc: err.message };
@@ -188,7 +193,7 @@ export class GithubUploader implements Uploader {
 
   async createDirectory(directoryPath: string): Promise<CreateDirectoryResponse> {
     try {
-      let { owner, repo, branch, token } = this.getConfig();
+      let { owner, repo, branch, token } = this.config;
       const baseUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${directoryPath}/README.md`;
       const content = new Buffer(`# Directory created by Aragorn`).toString('base64');
       const res = await axios.put(
@@ -199,10 +204,10 @@ export class GithubUploader implements Uploader {
           content
         },
         {
-          timeout: 10000,
           headers: {
             Authorization: `token ${token}`
-          }
+          },
+          httpsAgent: this.agent
         }
       );
       if (res.status === 201) {
