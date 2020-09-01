@@ -1,7 +1,7 @@
 {
-  "name": "aragorn-core",
+  "name": "aragorn-uploader-tencentcos",
   "version": "1.0.0",
-  "description": "A core of aragorn to upload and manage file",
+  "description": "",
   "author": "njzy <njzydark@gmail.com>",
   "homepage": "https://github.com/njzydark/Aragorn#readme",
   "license": "MIT",
@@ -23,13 +23,7 @@
   },
   "dependencies": {
     "aragorn-types": "^1.0.0",
-    "aragorn-uploader-alioss": "^1.0.0",
-    "aragorn-uploader-custom": "^1.0.0",
-    "aragorn-uploader-github": "^1.0.0",
-    "aragorn-uploader-qiniu": "^1.0.0",
-    "aragorn-uploader-tencentcos": "^1.0.0",
-    "aragorn-uploader-ucloud": "^1.0.0",
-    "aragorn-uploader-upyun": "^1.0.0"
+    "cos-nodejs-sdk-v5": "^2.6.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
