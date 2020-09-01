@@ -52,10 +52,16 @@ export const options: UploaderOptions = [
     required: true
   },
   {
-    label: 'Domain',
+    label: '域名',
     name: 'domain',
     value: '',
     valueType: 'input',
     required: true
+  },
+  {
+    label: '目录',
+    name: 'directory',
+    value: '',
+    valueType: 'input'
   }
 ];
