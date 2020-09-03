@@ -42,6 +42,12 @@ export const options: UploaderOptions = [
     valueType: 'input'
   },
   {
+    label: 'Jsdelivr CDN',
+    name: 'useJsdelivr',
+    value: false,
+    valueType: 'switch'
+  },
+  {
     label: 'Commit Message',
     name: 'message',
     value: 'Uploaded by Aragorn',

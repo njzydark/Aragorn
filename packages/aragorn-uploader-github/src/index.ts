@@ -19,6 +19,7 @@ interface Config {
   token: string;
   path?: string;
   customDomain?: string;
+  useJsdelivr?: boolean;
   message?: string;
 }
 
@@ -58,7 +59,7 @@ export class GithubUploader implements Uploader {
     isFromFileManage?: boolean
   ): Promise<UploadResponse> {
     try {
-      let { owner, repo, branch, customDomain, path, message } = this.config;
+      let { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
       if (customDomain) {
         customDomain = customDomain.replace(/^\/+/, '').replace(/\/+$/, '');
       }
@@ -83,6 +84,11 @@ export class GithubUploader implements Uploader {
               `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
               customDomain
             )
+          : useJsdelivr
+          ? res.data.content.download_url.replace(
+              `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
+              `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}`
+            )
           : res.data.content.download_url;
         return {
           success: true,
@@ -106,7 +112,7 @@ export class GithubUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      let { branch } = this.config;
+      let { branch, owner, repo, customDomain, useJsdelivr } = this.config;
       const url = directoryPath ? `/${directoryPath}?ref=${branch}` : `?ref=${branch}`;
       const res = await this.axiosInstance.request({
         url,
@@ -121,6 +127,14 @@ export class GithubUploader implements Uploader {
           }
           if (cur.type === 'file') {
             cur.url = cur.download_url;
+            cur.url = customDomain
+              ? cur.download_url.replace(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`, customDomain)
+              : useJsdelivr
+              ? cur.download_url.replace(
+                  `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
+                  `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}`
+                )
+              : cur.download_url;
             pre.push(cur);
           }
           return pre;
