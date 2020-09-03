@@ -63,7 +63,7 @@ export class UploaderManager {
   async upload(files: string[], customUploaderProfileId = '', directoryPath = '', isFromFileManage = false) {
     try {
       const {
-        configuration: { defaultUploaderProfileId }
+        configuration: { defaultUploaderProfileId, proxy }
       } = setting;
       const uploaderProfiles = uploaderProfileManager.getAll();
       const uploaderProfile = uploaderProfiles.find(
@@ -91,7 +91,7 @@ export class UploaderManager {
         return false;
       }
 
-      uploader.changeOptions(uploaderProfile.uploaderOptions);
+      uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
 
       const successRes: UploadedFileInfo[] = [];
       const failRes: UploadedFileInfo[] = [];
