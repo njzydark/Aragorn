@@ -4,8 +4,9 @@ import { ipcRenderer } from 'electron';
 import { Form, Input, Button, Select, message, Switch } from 'antd';
 import { AppContext } from '@renderer/app';
 import { UploaderProfile } from '@main/uploaderProfileManager';
-import './index.less';
+import { getFormRule } from '@renderer/utils/validationRule';
 import { Uploader } from 'aragorn-types';
+import './index.less';
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -166,7 +167,10 @@ export const Profile = () => {
               key={item.name}
               name={item.name}
               label={item.label}
-              rules={[{ required: item.required, message: `${item.name}不能为空` }]}
+              rules={[
+                { required: item.required, message: `${item.name}不能为空` },
+                ...(getFormRule(item.validationRule) as any)
+              ]}
               valuePropName={item.valueType === 'switch' ? 'checked' : 'value'}
             >
               {item.valueType === 'input' ? (

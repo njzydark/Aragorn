@@ -6,9 +6,10 @@ import { FileOutlined, FolderOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import dayjs from 'dayjs';
 import { AppContext } from '@renderer/app';
+import { domainPathRegExp } from '@renderer/utils/validationRule';
 import { UploaderProfile } from '@main/uploaderProfileManager';
-import './index.less';
 import { ListFile, FileListResponse, DeleteFileResponse, CreateDirectoryResponse } from 'aragorn-types';
+import './index.less';
 
 export const FileManage = () => {
   const {
@@ -324,7 +325,7 @@ export const FileManage = () => {
           <Form.Item
             label="目录名称"
             name="directoryPath"
-            rules={[{ required: true }, { pattern: /^[^\/](.*[^\/])?$/g, message: '目录名不能以 / 开头或结尾' }]}
+            rules={[{ required: true }, { pattern: domainPathRegExp, message: '目录名不能以 / 开头或结尾' }]}
           >
             <Input autoFocus />
           </Form.Item>

@@ -28,6 +28,14 @@ export interface Uploader {
 
 export type BatchUploadMode = 'Concurrent' | 'Sequence';
 
+export type UploaderOptionValidationRule =
+  | 'domain'
+  | 'domainPath'
+  | 'domainQuery'
+  | { pattern: RegExp | string; message: string };
+
+export type UploaderOptionValidationRuleArr = UploaderOptionValidationRule[];
+
 interface UploaderOption {
   /** 表单字段描述 */
   label: string;
@@ -41,6 +49,8 @@ interface UploaderOption {
   options?: { label: string; value: any }[];
   /** 是否必填 */
   required?: boolean;
+  /** 验证规则 */
+  validationRule?: UploaderOptionValidationRuleArr;
   /** 配置项描述 */
   desc?: string;
 }
