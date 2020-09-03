@@ -15,7 +15,7 @@ interface Config {
   operatorName: string;
   operatorPassword: string;
   domain: string;
-  directory: string;
+  path?: string;
 }
 
 export class UpyunUploader implements Uploader {
@@ -40,12 +40,12 @@ export class UpyunUploader implements Uploader {
   ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
-      const { domain, directory } = this.getConfig();
+      const { domain, path } = this.getConfig();
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
       } else {
-        newFileName = directory ? `/${directory}/${fileName}` : `/${fileName}`;
+        newFileName = path ? `/${path}/${fileName}` : `/${fileName}`;
       }
       const res = await this.client.putFile(newFileName, file);
       if (res) {

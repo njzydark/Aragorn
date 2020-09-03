@@ -16,7 +16,7 @@ interface Config {
   Bucket: string;
   Region: string;
   domain?: string;
-  directory?: string;
+  path?: string;
 }
 
 interface GetBucketResponse {
@@ -47,12 +47,12 @@ export class TencentCosUploader implements Uploader {
   ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
-      const { directory, Bucket, Region } = this.config;
+      const { path, Bucket, Region } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
       } else {
-        newFileName = directory ? `${directory}/${fileName}` : fileName;
+        newFileName = path ? `${path}/${fileName}` : fileName;
       }
       let res = await new Promise<{ statusCode: number; Location: string }>((resolve, reject) => {
         this.client.putObject({ Bucket, Region, Key: newFileName, Body: file }, (err, data) => {

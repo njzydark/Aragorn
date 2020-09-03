@@ -30,16 +30,18 @@ export const options: UploaderOptions = [
     required: true
   },
   {
-    label: '路径',
+    label: '存放路径',
     name: 'path',
     value: '',
-    valueType: 'input'
+    valueType: 'input',
+    validationRule: ['domainPath']
   },
   {
     label: '自定义域名',
     name: 'customDomain',
     value: '',
-    valueType: 'input'
+    valueType: 'input',
+    validationRule: ['domain']
   },
   {
     label: 'Jsdelivr CDN',

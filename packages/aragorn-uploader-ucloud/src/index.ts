@@ -11,6 +11,7 @@ interface Config {
   zone: string;
   bucket: string;
   domain: string;
+  path?: string;
 }
 
 export class UCloudUploader implements Uploader {

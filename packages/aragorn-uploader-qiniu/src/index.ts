@@ -17,7 +17,7 @@ interface Config {
   zone: string;
   bucket: string;
   domain: string;
-  directory: string;
+  path?: string;
 }
 
 export class QiniuUploader implements Uploader {
@@ -40,12 +40,12 @@ export class QiniuUploader implements Uploader {
   ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
-      const { directory } = this.config;
+      const { path } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : `${fileName}`;
       } else {
-        newFileName = directory ? `${directory}/${fileName}` : `${fileName}`;
+        newFileName = path ? `${path}/${fileName}` : `${fileName}`;
       }
       const { key }: any = await this.qiniuUpload(newFileName, file);
       const url = this.qiniuDownload(key);

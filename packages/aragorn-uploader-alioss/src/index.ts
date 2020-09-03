@@ -17,7 +17,7 @@ interface Config {
   region: string;
   endpoint?: string;
   cname?: boolean;
-  directory?: string;
+  path?: string;
   isRequestPay?: boolean;
   secure?: false;
 }
@@ -44,12 +44,12 @@ export class AliOssUploader implements Uploader {
   ): Promise<UploadResponse> {
     try {
       const file = createReadStream(filePath);
-      const { directory } = this.config;
+      const { path } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
       } else {
-        newFileName = directory ? `${directory}/${fileName}` : fileName;
+        newFileName = path ? `${path}/${fileName}` : fileName;
       }
       let putRes = await this.client.put(newFileName, file);
       if (putRes?.res?.status !== 200) {
@@ -58,7 +58,7 @@ export class AliOssUploader implements Uploader {
           desc: '上传失败'
         };
       }
-      const url = await this.client.generateObjectUrl(newFileName);
+      let url = await this.client.generateObjectUrl(newFileName);
       if (url) {
         return {
           success: true,

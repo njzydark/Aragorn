@@ -60,12 +60,6 @@ export class GithubUploader implements Uploader {
   ): Promise<UploadResponse> {
     try {
       let { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
-      if (customDomain) {
-        customDomain = customDomain.replace(/^\/+/, '').replace(/\/+$/, '');
-      }
-      if (path) {
-        path = path.replace(/^\/+/, '').replace(/\/+$/, '');
-      }
       let url = '';
       if (isFromFileManage) {
         url = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
@@ -79,7 +73,7 @@ export class GithubUploader implements Uploader {
         data: { message, branch, content }
       });
       if (res.status === 201) {
-        const url = customDomain
+        let url = customDomain
           ? res.data.content.download_url.replace(
               `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
               customDomain

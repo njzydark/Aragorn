@@ -33,12 +33,14 @@ export const options: UploaderOptions = [
     label: '自定义域名',
     name: 'domain',
     value: '',
-    valueType: 'input'
+    valueType: 'input',
+    validationRule: ['domain']
   },
   {
-    label: '文件存放目录',
-    name: 'directory',
+    label: '存放路径',
+    name: 'path',
     value: '',
-    valueType: 'input'
+    valueType: 'input',
+    validationRule: ['domainPath']
   }
 ];
