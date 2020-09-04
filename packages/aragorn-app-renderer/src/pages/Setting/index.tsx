@@ -1,7 +1,9 @@
+/* eslint-disable no-template-curly-in-string */
 import React, { useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import { Row, Col, Form, Input, Button, Select, Radio, Switch } from 'antd';
 import { AppContext } from '@renderer/app';
+import { domainPathValidationRule } from '@renderer/utils/validationRule';
 
 const inputItemLayout = {
   labelCol: { span: 6 },
@@ -84,6 +86,23 @@ export default function Basic() {
             <Col xs={12}>
               <Form.Item name="autoRecover" label="自动恢复粘贴板内容" valuePropName="checked">
                 <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <Form.Item name="rename" label="重命名文件" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+            <Col xs={12}>
+              <Form.Item
+                name="renameFormat"
+                wrapperCol={{ span: 18 }}
+                rules={[domainPathValidationRule]}
+                extra="魔法变量: {fileName} {fileExtName} {uuid:n} {year} {month} {day} {hour} {minute} {second}"
+              >
+                <Input placeholder="请输入文件命名格式" />
               </Form.Item>
             </Col>
           </Row>

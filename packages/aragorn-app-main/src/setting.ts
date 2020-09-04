@@ -21,6 +21,10 @@ export interface SettingConfiguration {
   autoUpdate: boolean;
   /** 接收beta版本更新 */
   useBetaVersion: boolean;
+  /** 上传前重命名 */
+  rename: boolean;
+  /** 重命名格式 */
+  renameFormat: string;
 }
 
 // 默认设置
@@ -32,7 +36,9 @@ const defaultSettingConfigurtion: SettingConfiguration = {
   sound: true,
   autoStart: false,
   autoUpdate: false,
-  useBetaVersion: false
+  useBetaVersion: false,
+  rename: true,
+  renameFormat: '{fileName}-{uuid:6}'
 };
 
 export class Setting {
