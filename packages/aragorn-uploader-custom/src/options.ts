@@ -9,6 +9,12 @@ export const options: UploaderOptions = [
     required: true
   },
   {
+    label: 'Token',
+    name: 'token',
+    value: '',
+    valueType: 'input'
+  },
+  {
     label: '请求方式',
     name: 'method',
     value: 'POST',
@@ -40,7 +46,7 @@ export const options: UploaderOptions = [
   {
     label: 'Content-Type',
     name: 'contentType',
-    value: '',
+    value: 'multipart/form-data',
     valueType: 'select',
     options: [
       {
@@ -59,18 +65,24 @@ export const options: UploaderOptions = [
     required: true
   },
   {
-    label: '文件字段名',
+    label: '上传文件字段名',
     name: 'fileFieldName',
     value: 'file',
     valueType: 'input',
     required: true
   },
   {
-    label: '响应字段名',
+    label: '响应文件字段名',
     name: 'responseUrlFieldName',
-    value: '',
+    value: 'data.url',
     valueType: 'input',
     required: true
+  },
+  {
+    label: '响应提示字段名',
+    name: 'responseMessageName',
+    value: 'message',
+    valueType: 'input'
   },
   {
     label: '请求头参数',
