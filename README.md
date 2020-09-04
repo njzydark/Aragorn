@@ -3,6 +3,7 @@
 一款基于 `Electron + React + TS` 开发的文件上传及管理软件，既可以作为图床上传管理工具，也可以作为对象存储文件管理工具
 
 ![aragorn](assets/aragorn.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnjzydark%2FAragorn.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnjzydark%2FAragorn?ref=badge_shield)
 
 ## 对象存储及相关图床支持情况
 
@@ -75,3 +76,7 @@ npm run app:dist
   - [x] 自动更新
   - [x] http 代理
 - [ ] 上传进度
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnjzydark%2FAragorn.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnjzydark%2FAragorn?ref=badge_large)
