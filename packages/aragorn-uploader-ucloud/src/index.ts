@@ -97,7 +97,7 @@ export class UCloudUploader implements Uploader {
   }
 
   protected Base64(content: Buffer) {
-    return new Buffer(content).toString('base64');
+    return Buffer.from(content).toString('base64');
   }
 
   protected HmacSha1(secretKey: string, content: string) {
