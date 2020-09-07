@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { Uploader } from 'aragorn-types';
 import { CustomUploader } from 'aragorn-uploader-custom';
 import { AliOssUploader } from 'aragorn-uploader-alioss';
@@ -29,5 +32,44 @@ export class AragornCore {
 
   getAllUploaders() {
     return this.uploaders;
+  }
+
+  getFileNameByFormat(filePath: string, rename = false, renameFormat = '') {
+    const fileExtName = path.extname(filePath);
+    const fileName = path.basename(filePath, fileExtName);
+    const uuid = uuidv4().replace(/-/g, '');
+
+    if (!rename || !renameFormat) {
+      return fileName + fileExtName;
+    }
+
+    function dateFormat(val: number) {
+      return val < 10 ? '0' + val : val;
+    }
+
+    const date = new Date();
+
+    const data = {
+      fileName,
+      fileExtName: fileExtName.replace('.', ''),
+      uuid,
+      year: date.getFullYear(),
+      month: dateFormat(date.getMonth() + 1),
+      day: dateFormat(date.getDate()),
+      hour: dateFormat(date.getHours()),
+      minute: dateFormat(date.getMinutes()),
+      second: dateFormat(date.getSeconds())
+    };
+
+    renameFormat.match(/\{[^\}]*\}/g)?.forEach(item => {
+      const itemReg = new RegExp(item);
+      if (item.includes('uuid')) {
+        const count = Number(item.replace(/(\{)|(\})/g, '').split(':')[1]) || 32;
+        renameFormat = renameFormat.replace(itemReg, data.uuid.substring(0, count));
+      } else {
+        renameFormat = renameFormat.replace(itemReg, data[item.replace(/(\{)|(\})/g, '')] || '');
+      }
+    });
+    return renameFormat + fileExtName;
   }
 }
