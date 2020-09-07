@@ -1,0 +1,36 @@
+{
+  "name": "aragorn-cli",
+  "version": "1.0.0",
+  "description": "A cli for aragorn to upload files",
+  "author": "njzy <njzydark@gmail.com>",
+  "homepage": "https://github.com/njzydark/Aragorn#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --watch --mode development --config webpack.config.js --info-verbosity verbose",
+    "build": "cross-env NODE_ENV=production webpack --mode production --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njzydark/Aragorn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njzydark/Aragorn/issues"
+  },
+  "dependencies": {
+    "aragorn-core": "^1.0.0",
+    "aragorn-types": "^1.0.0",
+    "axios": "^0.19.2",
+    "commander": "^6.1.0",
+    "figlet": "^1.5.0"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "cross-env": "^7.0.2",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}
