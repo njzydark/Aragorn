@@ -5,11 +5,11 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fs from 'fs';
-import { Ipc } from './ipc';
 import { Setting } from './setting';
 import { History } from './history';
 import { UploaderProfileManager } from './uploaderProfileManager';
 import { AragornCore } from 'aragorn-core';
+import { Ipc } from './ipc';
 
 /** 上传成功之后的文件信息 */
 export interface UploadedFileInfo {
@@ -29,11 +29,6 @@ export interface UploadedFileInfo {
   errorMessage?: string;
 }
 
-const setting = Setting.getInstance();
-const history = History.getInstance();
-const uploaderProfileManager = UploaderProfileManager.getInstance();
-const core = new AragornCore();
-
 export class UploaderManager {
   private static instance: UploaderManager;
 
@@ -44,7 +39,18 @@ export class UploaderManager {
     return UploaderManager.instance;
   }
 
-  uploaders = core.getAllUploaders();
+  core: AragornCore;
+  setting: Setting;
+  history: History;
+  uploaderProfileManager: UploaderProfileManager;
+
+  protected constructor() {
+    this.core = new AragornCore();
+
+    this.setting = Setting.getInstance();
+    this.history = History.getInstance();
+    this.uploaderProfileManager = UploaderProfileManager.getInstance();
+  }
 
   async uploadByDifferentUploaderProfileIds(data: { id: string; path: string }[]) {
     const uploaderProfileIds = [...new Set(data.map(item => item.id))];
@@ -64,8 +70,8 @@ export class UploaderManager {
     try {
       const {
         configuration: { defaultUploaderProfileId, proxy, rename, renameFormat }
-      } = setting;
-      const uploaderProfiles = uploaderProfileManager.getAll();
+      } = this.setting;
+      const uploaderProfiles = this.uploaderProfileManager.getAll();
       const uploaderProfile = uploaderProfiles.find(
         uploaderProfile => uploaderProfile.id === (customUploaderProfileId || defaultUploaderProfileId)
       );
@@ -82,7 +88,7 @@ export class UploaderManager {
         return false;
       }
 
-      const uploader = core.getUploaderByName(uploaderProfile.uploaderName);
+      const uploader = this.core.getUploaderByName(uploaderProfile.uploaderName);
 
       if (!uploader) {
         const message = `没有找到${uploaderProfile.uploaderName}上传器`;
@@ -99,7 +105,7 @@ export class UploaderManager {
       const uploadQuence = [] as any[];
 
       const toUpload = async (file: string, index: number, uploadQuence: any[]) => {
-        const fileName = core.getFileNameByFormat(file, rename, renameFormat);
+        const fileName = this.core.getFileNameByFormat(file, rename, renameFormat);
         const fileType = mime.lookup(file) || '-';
         const baseInfo = {
           id: uuidv4(),
@@ -133,7 +139,7 @@ export class UploaderManager {
       this.handleAddHistory([...failRes, ...successRes]);
 
       if (isFromFileManage) {
-        Ipc.win.webContents.send('file-upload-reply');
+        Ipc.sendMessage('file-upload-reply');
       }
 
       if (files.length > 1) {
@@ -153,9 +159,9 @@ export class UploaderManager {
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.getFileList) {
       const res = await uploader.getFileList(directoryPath);
-      Ipc.win.webContents.send('file-list-get-reply', res);
+      Ipc.sendMessage('file-list-get-reply', res);
     } else {
-      Ipc.win.webContents.send('file-list-get-reply');
+      Ipc.sendMessage('file-list-get-reply');
     }
   }
 
@@ -163,9 +169,9 @@ export class UploaderManager {
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.deleteFile) {
       const res = await uploader.deleteFile(fileNames);
-      Ipc.win.webContents.send('file-delete-reply', res);
+      Ipc.sendMessage('file-delete-reply', res);
     } else {
-      Ipc.win.webContents.send('file-delete-reply');
+      Ipc.sendMessage('file-delete-reply');
     }
   }
 
@@ -173,15 +179,15 @@ export class UploaderManager {
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.createDirectory) {
       const res = await uploader.createDirectory(directoryPath);
-      Ipc.win.webContents.send('directory-create-reply', res);
+      Ipc.sendMessage('directory-create-reply', res);
     } else {
-      Ipc.win.webContents.send('directory-create-reply');
+      Ipc.sendMessage('directory-create-reply');
     }
   }
 
   async download(name: string, url: string) {
     try {
-      const { proxy } = setting.configuration;
+      const { proxy } = this.setting.configuration;
       await new Promise((resolve, reject) => {
         axios
           .get(url, { responseType: 'stream', httpsAgent: proxy ? new HttpsProxyAgent(proxy) : null })
@@ -194,7 +200,7 @@ export class UploaderManager {
               curLength += chunk.length;
               const progress = curLength / totalLength;
               if (totalLength !== undefined) {
-                Ipc.win.webContents.send('file-download-progress', { name, progress, key: name });
+                Ipc.sendMessage('file-download-progress', { name, progress, key: name });
               }
             });
             res.data.pipe(writer);
@@ -205,7 +211,7 @@ export class UploaderManager {
             });
             writer.on('close', () => {
               if (!error) {
-                totalLength === undefined && Ipc.win.webContents.send('file-download-reply');
+                totalLength === undefined && Ipc.sendMessage('file-download-reply');
                 resolve();
               }
             });
@@ -213,18 +219,18 @@ export class UploaderManager {
           .catch(reject);
       });
     } catch (err) {
-      Ipc.win.webContents.send('file-download-reply', err.message || '下载失败');
+      Ipc.sendMessage('file-download-reply', err.message || '下载失败');
     }
   }
 
   protected getUploader(id: string) {
-    const { proxy } = setting.configuration;
-    const uploaderProfiles = uploaderProfileManager.getAll();
+    const { proxy } = this.setting.configuration;
+    const uploaderProfiles = this.uploaderProfileManager.getAll();
     const uploaderProfile = uploaderProfiles.find(uploaderProfile => uploaderProfile.id === id);
     if (!uploaderProfile) {
       return;
     }
-    const uploader = core.getUploaderByName(uploaderProfile.uploaderName);
+    const uploader = this.core.getUploaderByName(uploaderProfile.uploaderName);
     if (uploader) {
       uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
       return uploader;
@@ -251,7 +257,7 @@ export class UploaderManager {
     if (successFile) {
       // 根据urlType转换图片链接格式
       let clipboardUrl = successFile.url;
-      switch (setting.configuration.urlType) {
+      switch (this.setting.configuration.urlType) {
         case 'URL':
           break;
         case 'HTML':
@@ -263,9 +269,9 @@ export class UploaderManager {
         default:
           return successFile.url;
       }
-      if (setting.configuration.autoCopy) {
+      if (this.setting.configuration.autoCopy) {
         let preClipBoardText = '';
-        if (setting.configuration.autoRecover) {
+        if (this.setting.configuration.autoRecover) {
           preClipBoardText = clipboard.readText();
         }
         // 开启自动复制
@@ -273,16 +279,16 @@ export class UploaderManager {
         const notification = new Notification({
           title: '上传成功',
           body: '链接已自动复制到粘贴板',
-          silent: !setting.configuration.sound
+          silent: !this.setting.configuration.sound
         });
-        setting.configuration.showNotifaction && notification.show();
-        setting.configuration.autoRecover &&
+        this.setting.configuration.showNotifaction && notification.show();
+        this.setting.configuration.autoRecover &&
           setTimeout(() => {
             clipboard.writeText(preClipBoardText);
             const notification = new Notification({
               title: '粘贴板已恢复',
               body: '已自动恢复上次粘贴板中的内容',
-              silent: !setting.configuration.sound
+              silent: !this.setting.configuration.sound
             });
             notification.show();
           }, 5000);
@@ -290,9 +296,9 @@ export class UploaderManager {
         const notification = new Notification({
           title: '上传成功',
           body: clipboardUrl || '',
-          silent: !setting.configuration.sound
+          silent: !this.setting.configuration.sound
         });
-        setting.configuration.showNotifaction && notification.show();
+        this.setting.configuration.showNotifaction && notification.show();
       }
     } else {
       const notification = new Notification({ title: '上传失败', body: failFile.errorMessage || '错误未捕获' });
@@ -301,9 +307,9 @@ export class UploaderManager {
   }
 
   protected handleAddHistory(uploadedData: UploadedFileInfo[]) {
-    const uploadedFiles = history.add(uploadedData);
+    const uploadedFiles = this.history.add(uploadedData);
     if (!Ipc.win.isDestroyed()) {
-      Ipc.win.webContents.send('uploaded-files-get-reply', uploadedFiles);
+      Ipc.sendMessage('uploaded-files-get-reply', uploadedFiles);
     }
   }
 }

@@ -1,20 +1,18 @@
-import { Ipc } from './ipc';
 import axios from 'axios';
 import { app } from 'electron';
 import { lt } from 'semver';
 import { Setting } from './setting';
-
-const appVersion = app.getVersion();
-
-const setting = Setting.getInstance();
-
-const GithubReleaseApi = `https://api.github.com/repos/njzydark/Aragorn/releases?per_page=3`;
+import { Ipc } from './ipc';
 
 export interface UpdaterChannelData {
   message: string;
   description?: string;
   url?: string;
 }
+
+const appVersion = app.getVersion();
+
+const GithubReleaseApi = `https://api.github.com/repos/njzydark/Aragorn/releases?per_page=3`;
 
 export class Updater {
   private static instance: Updater;
@@ -26,6 +24,12 @@ export class Updater {
     return Updater.instance;
   }
 
+  setting: Setting;
+
+  protected constructor() {
+    this.setting = Setting.getInstance();
+  }
+
   checkUpdate(manul = false) {
     if (manul) {
       this.sendMessage({
@@ -35,15 +39,17 @@ export class Updater {
     this.checkUpdateFromGithub(manul);
   }
 
-  protected async checkUpdateFromGithub(manul) {
+  protected async checkUpdateFromGithub(manul: boolean) {
     try {
-      const { useBetaVersion } = setting.get();
-      const res = await axios.get(GithubReleaseApi);
-      if (res.status === 200 && res?.data?.length > 0) {
+      const { useBetaVersion } = this.setting.get();
+      const res = await axios.get<{ prerelease: boolean; draft: boolean; tag_name: string; html_url: string }[]>(
+        GithubReleaseApi
+      );
+      if (res.status === 200) {
         const data = res.data;
         const latest = data.find(item => item.prerelease === false && item.draft === false);
         const latestBeta = data.find(item => item.prerelease === true && item.draft === false);
-        let updateInfo: { tag_name: string; html_url: string } | null = null;
+        let updateInfo: ({ tag_name: string; html_url: string } & typeof latest) | null = null;
         if (useBetaVersion) {
           if (latest && lt(appVersion, latest.tag_name)) {
             updateInfo = latest;

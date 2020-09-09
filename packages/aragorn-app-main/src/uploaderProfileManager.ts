@@ -22,7 +22,7 @@ export class UploaderProfileManager {
 
   protected uploaderProfiles: UploaderProfile[] = [];
 
-  constructor() {
+  protected constructor() {
     this.uploaderProfiles = uploaderProfilesStore.get('uploaderProfiles', []) as UploaderProfile[];
   }
 
