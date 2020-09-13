@@ -5,23 +5,36 @@ import path from 'path';
 import { UploadResponseData } from 'aragorn-types';
 
 interface Options {
-  mode: 'app' | 'cli';
+  mode: 'auto' | 'app' | 'cli';
   port: string;
   uploaderProfileName?: string;
   uploaderProfileId?: string;
 }
 
 export const upload = async (imagesPath: string[], options: Options) => {
-  if (options.mode === 'app') {
+  let flag = false;
+  if (options.mode === 'auto') {
+    flag = await webServerCheck(Number(options.port));
+  }
+  if (options.mode === 'app' || flag) {
     uploadByApp(imagesPath, Number(options.port));
   } else {
     uploadByCli(imagesPath, options);
   }
 };
 
+async function webServerCheck(port: number) {
+  try {
+    const res = await axios.get(`http://127.0.0.1:${port}`);
+    return res.data?.includes('Aragorn WebServer is running');
+  } catch (err) {
+    return false;
+  }
+}
+
 async function uploadByApp(imagesPath: string[], port: number) {
   try {
-    const res = await axios.post(`http://localhost:${port}`, {
+    const res = await axios.post(`http://127.0.0.1:${port}`, {
       images: imagesPath
     });
     if (Array.isArray(res.data)) {
@@ -82,7 +95,7 @@ async function uploadByCli(imagesPath: string[], options: Options) {
         await uploadQuence[index - 1];
       }
 
-      const res = await uploader.upload(file, fileName);
+      const res = await uploader.upload({ file, fileName });
       if (res.success) {
         successRes.push(res.data);
       } else {
