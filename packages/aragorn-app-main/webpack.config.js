@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('path');
 const { ContextReplacementPlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -8,16 +9,16 @@ const devMode = process.env.NODE_ENV === 'development';
 module.exports = {
   target: 'electron-main',
   entry: {
-    index: path.resolve(__dirname, './src/index.ts'),
-    preload: path.resolve(__dirname, './src/preload.ts')
+    index: path.resolve(__dirname, 'src/index.ts'),
+    preload: path.resolve(__dirname, 'src/preload.ts')
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, './dist/main')
+    path: path.resolve(__dirname, 'dist/main')
   },
+  externals: [{ express: { commonjs: 'express' } }],
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
-    modules: [path.resolve(__dirname, './'), 'node_modules', 'src']
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
   },
   node: {
     __dirname: false,

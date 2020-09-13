@@ -15,8 +15,7 @@
       "script": "dev",
       "path": "packages/aragorn-app-main/",
       "isBackground": true,
-      "label": "App Main Dev",
-      "problemMatcher": []
+      "label": "App Main Dev"
     },
     {
       "type": "npm",
@@ -24,6 +23,20 @@
       "path": "packages/aragorn-app-renderer/",
       "isBackground": true,
       "label": "App Renderer Dev"
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "path": "packages/aragorn-core/",
+      "isBackground": true,
+      "label": "App Core Dev"
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "path": "packages/aragorn-cli/",
+      "isBackground": true,
+      "label": "App Cli Dev"
     }
   ]
 }

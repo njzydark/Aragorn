@@ -25,14 +25,25 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "type": "pwa-node"
+      "type": "node",
     },
     {
       "name": "Aragorn App Renderer",
       "port": 9223,
       "request": "attach",
       "type": "pwa-chrome",
-      "webRoot": "${workspaceFolder}/packages/aragorn-app-renderer"
-    }
+      "webRoot": "${workspaceFolder}/packages/aragorn-app-renderer",
+      "restart": true,
+    },
+    {
+      "name": "Aragorn Cli",
+      "program": "${workspaceFolder}/packages/aragorn-cli/dist/index.js",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/aragorn-cli",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+    },
   ]
 }

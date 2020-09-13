@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const webpackConfig = require('./webpack.base.config');
