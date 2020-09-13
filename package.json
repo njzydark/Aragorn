@@ -2,9 +2,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "setup": "lerna bootstrap && npm run packages:build",
-    "build": "npm run setup && npm run packages:build && npm run app:build",
-    "packages:build": "lerna run build --sort --scope aragorn-* --ignore aragorn-app-*",
+    "build": "npm run setup && npm run app:build",
+    "setup": "lerna bootstrap && npm run core:build && npm run cli:build",
+    "core:dev": "lerna run dev --scope aragorn-core",
+    "core:build": "lerna run build --scope aragorn-core",
+    "core:clean": "lerna run clean --scope aragorn-core",
+    "cli:dev": "lerna run dev --scope aragorn-cli",
+    "cli:build": "lerna run build --scope aragorn-cli",
     "app:dev": "lerna run dev --parallel --scope aragorn-app-*",
     "app:build": "lerna run build --parallel --scope aragorn-app-*",
     "app:start": "lerna run start --scope aragorn-app-main",
@@ -40,7 +44,7 @@
     "lerna": "^3.22.1",
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.2"
   },
   "husky": {
     "hooks": {

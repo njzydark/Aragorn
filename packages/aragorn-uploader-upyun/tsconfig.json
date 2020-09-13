@@ -1,9 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "sourceRoot": "../../packages/aragorn-uploader-upyun/src"
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../aragorn-types"
+    }
   ]
 }

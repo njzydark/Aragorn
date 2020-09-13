@@ -5,3 +5,4 @@ appDevConfig
 node_modules
 dist
 output
+tsconfig.tsbuildinfo

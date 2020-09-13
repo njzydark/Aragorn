@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
     "strict": true,
+    "target": "ES2015",
     "module": "CommonJS",
     "noImplicitAny": false,
-    "baseUrl": "./",
     "jsx": "react",
-    "outDir": "./dist",
+    "baseUrl": "./",
+    "composite": true,
     "declaration": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@main/*": [
         "packages/aragorn-app-main/src/*"
@@ -15,11 +19,7 @@
       "@renderer/*": [
         "packages/aragorn-app-renderer/src/*"
       ]
-    },
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    }
   },
   "include": [
     "packages",

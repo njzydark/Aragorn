@@ -10,9 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run clean && npm run compile",
-    "clean": "rimraf -rf ./dist",
-    "compile": "tsc -p tsconfig.json"
+    "dev": "tsc -b -w",
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
   },
   "repository": {
     "type": "git",
