@@ -25,6 +25,10 @@ export interface SettingConfiguration {
   rename: boolean;
   /** 重命名格式 */
   renameFormat: string;
+  /** openWebServer */
+  openWebServer: boolean;
+  /** webserver port */
+  webServerPort: number;
 }
 
 // 默认设置
@@ -38,7 +42,9 @@ const defaultSettingConfigurtion: SettingConfiguration = {
   autoUpdate: false,
   useBetaVersion: false,
   rename: true,
-  renameFormat: '{fileName}-{uuid:6}'
+  renameFormat: '{fileName}-{uuid:6}',
+  openWebServer: false,
+  webServerPort: 7777
 };
 
 export class Setting {
@@ -51,16 +57,15 @@ export class Setting {
     return Setting.instance;
   }
 
-  /** 基础设置信息 */
   configuration: SettingConfiguration;
 
-  constructor() {
+  protected constructor() {
     this.configuration = (settingStore.get('setting') as SettingConfiguration) || defaultSettingConfigurtion;
   }
 
   get() {
     console.log('获取App设置');
-    return this.configuration;
+    return { ...defaultSettingConfigurtion, ...this.configuration };
   }
 
   update(configuration: SettingConfiguration) {

@@ -2,6 +2,7 @@ import { app, BrowserWindow, Tray } from 'electron';
 import path from 'path';
 import { Ipc } from './ipc';
 import { UploaderManager } from './uploaderManager';
+import { WebServer } from './webServer';
 
 let tray: Tray;
 let mainWindow: BrowserWindow;
@@ -36,12 +37,14 @@ if (!gotTheLock) {
 
     // 托盘拖拽上传
     tray.addListener('drop-files', (_, files) => {
-      UploaderManager.getInstance().upload(files);
+      UploaderManager.getInstance().upload({ files });
     });
 
     mainWindow = createWindow();
     Ipc.win = mainWindow;
     Ipc.getInstance();
+
+    WebServer.getInstance().init();
   });
 
   app.on('window-all-closed', function () {

@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { useContext } from 'react';
 import { ipcRenderer } from 'electron';
-import { Row, Col, Form, Input, Button, Select, Radio, Switch } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message } from 'antd';
 import { AppContext } from '@renderer/app';
 import { domainPathValidationRule } from '@renderer/utils/validationRule';
 
@@ -134,6 +134,18 @@ export default function Basic() {
             <Col xs={12}>
               <Form.Item name="useBetaVersion" label="接收beta版本更新" valuePropName="checked">
                 <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <Form.Item name="openWebServer" label="WebServer" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+            <Col xs={12}>
+              <Form.Item name="webServerPort" label="WebServer 端口">
+                <InputNumber min={3001} max={65535} />
               </Form.Item>
             </Col>
           </Row>

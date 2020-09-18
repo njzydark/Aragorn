@@ -16,23 +16,26 @@
     "dist": "electron-builder"
   },
   "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
     "aragorn-core": "^1.0.0",
     "aragorn-types": "^1.0.0",
     "axios": "^0.19.2",
     "electron-store": "^6.0.0",
     "form-data": "^3.0.0",
+    "fs-extra": "^9.0.1",
     "https-proxy-agent": "^5.0.0",
     "mime-types": "^2.1.27",
+    "multer": "^1.4.2",
     "semver": "^7.3.2",
-    "uuid": "^8.3.0"
-  },
-  "devDependencies": {
+    "uuid": "^8.3.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "cross-env": "^7.0.2",
     "electron": "9.2.0",
     "electron-builder": "^22.8.0",
-    "electron-updater": "^4.3.4",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
@@ -44,14 +47,24 @@
     },
     "files": [
       "dist",
-      "!node_modules"
+      "node_modules"
     ],
     "publish": [
       "github"
     ],
     "mac": {
       "icon": "assets/icon.icns",
-      "identity": null
+      "identity": null,
+      "extraResources": [
+        {
+          "from": "../aragorn-cli/dist",
+          "to": "cli"
+        },
+        {
+          "from": "./extraResources/Darwin",
+          "to": "cli"
+        }
+      ]
     }
   },
   "repository": {

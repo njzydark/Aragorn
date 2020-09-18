@@ -5,6 +5,7 @@ import { Setting } from './setting';
 import { History } from './history';
 import { UploaderManager } from './uploaderManager';
 import { UploaderProfileManager, UploaderProfile } from './uploaderProfileManager';
+import { WebServer } from './webServer';
 
 export class Ipc {
   static win: BrowserWindow;
@@ -28,6 +29,7 @@ export class Ipc {
   history: History;
   uploaderManager: UploaderManager;
   uploaderProfileManager: UploaderProfileManager;
+  webServer: WebServer;
 
   protected constructor() {
     this.core = new AragornCore();
@@ -37,6 +39,7 @@ export class Ipc {
     this.history = History.getInstance();
     this.uploaderManager = UploaderManager.getInstance();
     this.uploaderProfileManager = UploaderProfileManager.getInstance();
+    this.webServer = WebServer.getInstance();
 
     this.init();
   }
@@ -61,7 +64,7 @@ export class Ipc {
 
   protected uploadHandle() {
     ipcMain.on('file-upload-by-side-menu', (_, filesPath: string[]) => {
-      this.uploaderManager.upload(filesPath);
+      this.uploaderManager.upload({ files: filesPath });
     });
 
     ipcMain.on('file-reupload', (_, data) => {
@@ -88,6 +91,7 @@ export class Ipc {
     ipcMain.on('setting-configuration-update', (event, newConfiguration) => {
       const configuration = this.setting.update(newConfiguration);
       if (configuration) {
+        this.webServer.init();
         event.reply('setting-configuration-update-reply', configuration);
       }
     });
@@ -95,11 +99,6 @@ export class Ipc {
     ipcMain.on('set-default-uploader-profile', (event, id) => {
       const configuration = this.setting.setDefaultUploaderProfile(id);
       event.reply('setting-configuration-get-reply', configuration);
-    });
-
-    ipcMain.on('copy-darwin-workflow', event => {
-      const res = this.setting.copyDarwinWorkflow();
-      event.reply('copy-darwin-workflow-reply', res);
     });
   }
 
@@ -153,7 +152,12 @@ export class Ipc {
     });
 
     ipcMain.on('file-upload', (_, uploaderProfileId: string, filesPath: string[], directoryPath?: string) => {
-      this.uploaderManager.upload(filesPath, uploaderProfileId, directoryPath, true);
+      this.uploaderManager.upload({
+        files: filesPath,
+        customUploaderProfileId: uploaderProfileId,
+        directoryPath,
+        isFromFileManage: true
+      });
     });
 
     ipcMain.on('directory-create', (_, uploaderProfileId: string, directoryPath: string) => {
