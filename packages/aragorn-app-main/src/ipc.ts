@@ -100,6 +100,11 @@ export class Ipc {
       const configuration = this.setting.setDefaultUploaderProfile(id);
       event.reply('setting-configuration-get-reply', configuration);
     });
+
+    ipcMain.on('copy-darwin-workflow', event => {
+      const res = this.setting.copyDarwinWorkflow();
+      event.reply('copy-darwin-workflow-reply', res);
+    });
   }
 
   protected uploaderProfileHandle() {

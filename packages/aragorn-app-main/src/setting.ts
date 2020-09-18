@@ -1,4 +1,9 @@
+import { app } from 'electron';
+import path from 'path';
+import fs from 'fs-extra';
 import { settingStore } from './store';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 export interface SettingConfiguration {
   /** 上传成功后链接复制的格式 */
@@ -86,6 +91,19 @@ export class Setting {
       this.configuration.defaultUploaderProfileId = '';
       this.save();
     }
+  }
+
+  copyDarwinWorkflow() {
+    const appPath = app.getAppPath();
+    const destPath = path.join(app.getPath('home'), '/Library/Services/Upload by Aragorn.workflow');
+    let workflowPath = '';
+    if (isDev) {
+      workflowPath = path.resolve(appPath, '../../extraResources/Darwin/Upload by Aragorn.workflow');
+    } else {
+      workflowPath = path.resolve(appPath, '../cli/Upload by Aragorn.workflow');
+    }
+    fs.copySync(workflowPath, destPath, { overwrite: true });
+    return fs.existsSync(destPath);
   }
 
   protected save() {

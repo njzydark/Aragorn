@@ -1,9 +1,11 @@
 /* eslint-disable no-template-curly-in-string */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message } from 'antd';
 import { AppContext } from '@renderer/app';
 import { domainPathValidationRule } from '@renderer/utils/validationRule';
+
+const platform = window.navigator.platform.toLowerCase();
 
 const inputItemLayout = {
   labelCol: { span: 6 },
@@ -18,6 +20,20 @@ export default function Basic() {
   const { configuration, uploaderProfiles } = useContext(AppContext);
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    function handleWorkflowCopyReply(_, res) {
+      if (res) {
+        message.success('右键菜单添加成功');
+      } else {
+        message.error('右键菜单添加失败');
+      }
+    }
+    ipcRenderer.on('copy-darwin-workflow-reply', handleWorkflowCopyReply);
+    return () => {
+      ipcRenderer.removeListener('copy-darwin-workflow-reply', handleWorkflowCopyReply);
+    };
+  }, []);
+
   const handleSubmit = () => {
     form.submit();
   };
@@ -29,6 +45,10 @@ export default function Basic() {
   const handleFinish = values => {
     console.log(values);
     ipcRenderer.send('setting-configuration-update', values);
+  };
+
+  const handleAddWorkflow = () => {
+    ipcRenderer.send('copy-darwin-workflow');
   };
 
   return (
@@ -149,6 +169,13 @@ export default function Basic() {
               </Form.Item>
             </Col>
           </Row>
+          {platform.includes('mac') && (
+            <Row>
+              <Col xs={24}>
+                <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
+              </Col>
+            </Row>
+          )}
         </Form>
       </main>
       <footer>
