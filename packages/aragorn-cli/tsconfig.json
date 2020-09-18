@@ -3,6 +3,10 @@
   "compilerOptions": {
     "noEmit": true
   },
+  "include": [
+    "package.json",
+    "src"
+  ],
   "references": [
     {
       "path": "../aragorn-core"
