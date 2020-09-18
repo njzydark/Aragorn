@@ -12,12 +12,15 @@ interface Options {
 }
 
 export const upload = async (imagesPath: string[], options: Options) => {
+  const { userSetting } = getAppConfig();
+  const { webServerPort = options.port } = userSetting;
+
   let flag = false;
   if (options.mode === 'auto') {
-    flag = await webServerCheck(Number(options.port));
+    flag = await webServerCheck(Number(webServerPort));
   }
   if (options.mode === 'app' || flag) {
-    uploadByApp(imagesPath, Number(options.port));
+    uploadByApp(imagesPath, Number(webServerPort));
   } else {
     uploadByCli(imagesPath, options);
   }
@@ -51,11 +54,7 @@ async function uploadByCli(imagesPath: string[], options: Options) {
   try {
     const core = new AragornCore();
 
-    const userDataPath = `${process.env.HOME}/Library/Application Support/aragorn`;
-
-    const userSetting = JSON.parse(fs.readFileSync(path.join(userDataPath, 'setting.json'), 'utf8'))?.setting || {};
-    const uploaderProfiles =
-      JSON.parse(fs.readFileSync(path.join(userDataPath, 'uploaderProfiles.json'), 'utf8'))?.uploaderProfiles || [];
+    const { userSetting, uploaderProfiles } = getAppConfig();
 
     const { uploaderProfileId, uploaderProfileName } = options;
     const { defaultUploaderProfileId, proxy, rename, renameFormat } = userSetting;
@@ -120,6 +119,18 @@ async function uploadByCli(imagesPath: string[], options: Options) {
   } catch (err) {
     console.log('upload by cli fail: ', err.message);
   }
+}
+
+function getAppConfig() {
+  const userDataPath = `${process.env.HOME}/Library/Application Support/aragorn`;
+
+  const userSetting = JSON.parse(fs.readFileSync(path.join(userDataPath, 'setting.json'), 'utf8'))?.setting || {};
+  const uploaderProfiles =
+    JSON.parse(fs.readFileSync(path.join(userDataPath, 'uploaderProfiles.json'), 'utf8'))?.uploaderProfiles || [];
+  return {
+    userSetting,
+    uploaderProfiles
+  };
 }
 
 export default upload;
