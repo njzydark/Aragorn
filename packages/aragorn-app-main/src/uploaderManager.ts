@@ -29,6 +29,22 @@ export interface UploadedFileInfo {
   errorMessage?: string;
 }
 
+export interface FileFormData {
+  originalname: string;
+  mimetype: string;
+  encoding: string;
+  buffer: Buffer;
+  size: number;
+  fieldname: string;
+}
+
+interface UploadOptions {
+  files: (string | FileFormData)[];
+  customUploaderProfileId?: string;
+  directoryPath?: string;
+  isFromFileManage?: boolean;
+}
+
 export class UploaderManager {
   private static instance: UploaderManager;
 
@@ -62,12 +78,13 @@ export class UploaderManager {
       };
     });
     newData.forEach(item => {
-      this.upload(item.filesPath, item.id);
+      this.upload({ files: item.filesPath, customUploaderProfileId: item.id });
     });
   }
 
-  async upload(files: string[], customUploaderProfileId = '', directoryPath = '', isFromFileManage = false) {
+  async upload(uploadOptions: UploadOptions) {
     try {
+      const { files, customUploaderProfileId, directoryPath, isFromFileManage } = uploadOptions;
       const {
         configuration: { defaultUploaderProfileId, proxy, rename, renameFormat }
       } = this.setting;
@@ -104,14 +121,18 @@ export class UploaderManager {
 
       const uploadQuence = [] as any[];
 
-      const toUpload = async (file: string, index: number, uploadQuence: any[]) => {
-        const fileName = this.core.getFileNameByFormat(file, rename, renameFormat);
-        const fileType = mime.lookup(file) || '-';
+      const toUpload = async (file: string | FileFormData, index: number, uploadQuence: any[]) => {
+        const fileName = this.core.getFileNameByFormat(
+          typeof file === 'string' ? file : file.originalname,
+          rename,
+          renameFormat
+        );
+        const fileType = typeof file === 'string' ? mime.lookup(file) || '-' : file.mimetype;
         const baseInfo = {
           id: uuidv4(),
           name: fileName,
           type: fileType,
-          path: file,
+          path: typeof file === 'string' ? file : '',
           date: new Date().getTime(),
           uploaderProfileId: uploaderProfile.id
         };
@@ -120,7 +141,12 @@ export class UploaderManager {
           await uploadQuence[index - 1];
         }
 
-        const res = await uploader.upload(file, fileName, directoryPath, isFromFileManage);
+        const res = await uploader.upload({
+          file: typeof file === 'string' ? file : file.buffer,
+          fileName,
+          directoryPath,
+          isFromFileManage
+        });
         if (res.success) {
           successRes.push({ ...baseInfo, ...res.data });
         } else {

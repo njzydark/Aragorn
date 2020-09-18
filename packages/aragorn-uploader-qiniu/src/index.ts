@@ -1,6 +1,7 @@
 import {
   Uploader,
   UploaderOptions,
+  UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
@@ -32,14 +33,10 @@ export class QiniuUploader implements Uploader {
     this.config = this.getConfig();
   }
 
-  async upload(
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ): Promise<UploadResponse> {
+  async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
-      const file = createReadStream(filePath);
+      const { file, fileName, directoryPath, isFromFileManage } = options;
+      const fileStream = this.getStream(file);
       const { path } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
@@ -47,7 +44,7 @@ export class QiniuUploader implements Uploader {
       } else {
         newFileName = path ? `${path}/${fileName}` : `${fileName}`;
       }
-      const { key }: any = await this.qiniuUpload(newFileName, file);
+      const { key }: any = await this.qiniuUpload(newFileName, fileStream as ReadStream);
       const url = this.qiniuDownload(key);
       if (url) {
         return {
@@ -241,5 +238,18 @@ export class QiniuUploader implements Uploader {
       return pre;
     }, {});
     return config as Config;
+  }
+
+  protected getStream(file: string | Buffer) {
+    if (Buffer.isBuffer(file)) {
+      return new Readable({
+        read() {
+          this.push(file);
+          this.push(null);
+        }
+      });
+    } else {
+      return createReadStream(file);
+    }
   }
 }

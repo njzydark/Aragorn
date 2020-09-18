@@ -1,6 +1,7 @@
 import {
   Uploader,
   UploaderOptions,
+  UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
@@ -52,13 +53,9 @@ export class GithubUploader implements Uploader {
     });
   }
 
-  async upload(
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ): Promise<UploadResponse> {
+  async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
+      const { file, fileName, directoryPath, isFromFileManage } = options;
       let { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
       let url = '';
       if (isFromFileManage) {
@@ -66,7 +63,7 @@ export class GithubUploader implements Uploader {
       } else {
         url = path ? `/${path}/${fileName}` : `/${fileName}`;
       }
-      const content = fs.readFileSync(filePath, { encoding: 'base64' });
+      const content = Buffer.isBuffer(file) ? file.toString('base64') : fs.readFileSync(file, { encoding: 'base64' });
       const res = await this.axiosInstance.request({
         url,
         method: 'PUT',

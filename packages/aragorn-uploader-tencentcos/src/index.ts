@@ -1,6 +1,7 @@
 import {
   Uploader,
   UploaderOptions,
+  UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
@@ -9,6 +10,7 @@ import {
 import COS from 'cos-nodejs-sdk-v5';
 import { options as defaultOptions } from './options';
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 interface Config {
   SecretId: string;
@@ -39,14 +41,9 @@ export class TencentCosUploader implements Uploader {
     this.client = new COS({ ...this.config, Domain: this.config.domain });
   }
 
-  async upload(
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ): Promise<UploadResponse> {
+  async upload({ file, fileName, directoryPath, isFromFileManage }: UploadOptions): Promise<UploadResponse> {
     try {
-      const file = createReadStream(filePath);
+      const fileStream = this.getStream(file);
       const { path, Bucket, Region } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
@@ -55,7 +52,7 @@ export class TencentCosUploader implements Uploader {
         newFileName = path ? `${path}/${fileName}` : fileName;
       }
       let res = await new Promise<{ statusCode: number; Location: string }>((resolve, reject) => {
-        this.client.putObject({ Bucket, Region, Key: newFileName, Body: file }, (err, data) => {
+        this.client.putObject({ Bucket, Region, Key: newFileName, Body: fileStream }, (err, data) => {
           if (err) {
             reject(err);
           } else {
@@ -200,5 +197,18 @@ export class TencentCosUploader implements Uploader {
       return pre;
     }, {} as Config);
     return config;
+  }
+
+  protected getStream(file: string | Buffer) {
+    if (Buffer.isBuffer(file)) {
+      return new Readable({
+        read() {
+          this.push(file);
+          this.push(null);
+        }
+      });
+    } else {
+      return createReadStream(file);
+    }
   }
 }

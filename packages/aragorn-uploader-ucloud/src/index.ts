@@ -1,5 +1,6 @@
-import { Uploader, UploaderOptions, UploadResponse } from 'aragorn-types';
-import { ReadStream, createReadStream } from 'fs';
+import { Uploader, UploaderOptions, UploadOptions, UploadResponse } from 'aragorn-types';
+import { createReadStream, ReadStream } from 'fs';
+import mime from 'mime-types';
 import crypto from 'crypto';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
@@ -24,11 +25,12 @@ export class UCloudUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(filePath: string, fileName: string): Promise<UploadResponse> {
-    const file = createReadStream(filePath);
+  async upload(options: UploadOptions): Promise<UploadResponse> {
+    const { file, fileName } = options;
+    const fileStream = Buffer.isBuffer(file) ? file : createReadStream(file);
     const { domain } = this.getConfig();
     try {
-      const res = await this.postFile(fileName, file);
+      const res = await this.postFile(fileName, fileStream);
       if (res.status === 200) {
         return {
           success: true,
@@ -63,7 +65,7 @@ export class UCloudUploader implements Uploader {
 
     const httpMethod = 'POST';
     const content_md5 = '';
-    const mimeType = 'image/jpeg';
+    const mimeType = mime.lookup(key);
     const date = '';
     const canonicalized_ucloudHeaders = this.CanonicalizedUCloudHeaders();
     const canonicalized_resource = this.CanonicalizedResource(bucket, key);
@@ -111,7 +113,7 @@ export class UCloudUploader implements Uploader {
     return 'UCloud' + ' ' + ucloud_public_key + ':' + signature;
   }
 
-  protected postFile(fileName: string, file: ReadStream) {
+  protected postFile(fileName: string, file: ReadStream | Buffer) {
     const { zone, bucket } = this.getConfig();
     const token = this.getToken(fileName);
 
@@ -119,7 +121,9 @@ export class UCloudUploader implements Uploader {
       const formData = new FormData();
       formData.append('Authorization', token);
       formData.append('FileName', fileName);
-      formData.append('file', file);
+      formData.append('file', file, {
+        filename: fileName
+      });
       formData.getLength(async (err, length) => {
         if (err) {
           console.log('content-length 获取失败');

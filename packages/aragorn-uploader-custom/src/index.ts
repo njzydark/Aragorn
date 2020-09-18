@@ -1,7 +1,7 @@
-import { Uploader, UploaderOptions, UploadResponse } from 'aragorn-types';
-import { createReadStream } from 'fs';
+import { Uploader, UploaderOptions, UploadOptions, UploadResponse } from 'aragorn-types';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
+import { createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
 
 interface Config {
@@ -25,11 +25,13 @@ export class CustomUploader implements Uploader {
     this.options = newOptions;
   }
 
-  async upload(filePath: string, fileName: string): Promise<UploadResponse> {
+  async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
+      const { file, fileName } = options;
       const formData = new FormData();
       const uploaderOptions = this.getConfig();
-      formData.append(uploaderOptions.fileFieldName, createReadStream(filePath));
+      const fileStream = Buffer.isBuffer(file) ? file : createReadStream(file);
+      formData.append(uploaderOptions.fileFieldName, fileStream, { filename: fileName });
       const length = await new Promise((resolve, reject) => {
         formData.getLength(async (err, length) => {
           if (err) {

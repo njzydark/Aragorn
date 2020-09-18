@@ -12,18 +12,22 @@ export interface Uploader {
   /** 批量上传模式 并发和顺序 */
   batchUploadMode?: BatchUploadMode;
   /** 文件上传 */
-  upload: (
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ) => Promise<UploadResponse>;
+  upload: (options: UploadOptions) => Promise<UploadResponse>;
   /** 获取文件列表 */
   getFileList?: (directoryPath?: string) => Promise<FileListResponse>;
   /** 删除文件 */
   deleteFile?: (fileNames: string[]) => Promise<DeleteFileResponse>;
   /** 创建目录 */
   createDirectory?: (directoryPath: string) => Promise<CreateDirectoryResponse>;
+}
+
+export interface UploadOptions {
+  /** 文件路径或文件Buffer数据 */
+  file: string | Buffer;
+  fileName: string;
+  directoryPath?: string;
+  isFromFileManage?: boolean;
+  [property: string]: any;
 }
 
 export type BatchUploadMode = 'Concurrent' | 'Sequence';
@@ -53,6 +57,7 @@ interface UploaderOption {
   validationRule?: UploaderOptionValidationRuleArr;
   /** 配置项描述 */
   desc?: string;
+  [property: string]: any;
 }
 
 export type UploaderOptions = UploaderOption[];

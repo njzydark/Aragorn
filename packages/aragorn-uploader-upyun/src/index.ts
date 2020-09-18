@@ -1,6 +1,7 @@
 import {
   Uploader,
   UploaderOptions,
+  UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
@@ -9,6 +10,7 @@ import {
 import upyun from 'upyun';
 import { createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
+import { Readable } from 'stream';
 
 interface Config {
   serviceName: string;
@@ -32,14 +34,10 @@ export class UpyunUploader implements Uploader {
     this.client = new upyun.Client(service);
   }
 
-  async upload(
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ): Promise<UploadResponse> {
+  async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
-      const file = createReadStream(filePath);
+      const { file, fileName, directoryPath, isFromFileManage } = options;
+      const fileStream = this.getStream(file);
       const { domain, path } = this.getConfig();
       let newFileName = '';
       if (isFromFileManage) {
@@ -47,7 +45,7 @@ export class UpyunUploader implements Uploader {
       } else {
         newFileName = path ? `/${path}/${fileName}` : `/${fileName}`;
       }
-      const res = await this.client.putFile(newFileName, file);
+      const res = await this.client.putFile(newFileName, fileStream);
       if (res) {
         return {
           success: true,
@@ -134,5 +132,18 @@ export class UpyunUploader implements Uploader {
       return pre;
     }, {});
     return config as Config;
+  }
+
+  protected getStream(file: string | Buffer) {
+    if (Buffer.isBuffer(file)) {
+      return new Readable({
+        read() {
+          this.push(file);
+          this.push(null);
+        }
+      });
+    } else {
+      return createReadStream(file);
+    }
   }
 }

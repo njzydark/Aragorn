@@ -1,6 +1,7 @@
 import {
   Uploader,
   UploaderOptions,
+  UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
@@ -9,6 +10,7 @@ import {
 import OSS from 'ali-oss';
 import { options as defaultOptions } from './options';
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 interface Config {
   accessKeyId: string;
@@ -36,14 +38,10 @@ export class AliOssUploader implements Uploader {
     this.client = new OSS(this.config);
   }
 
-  async upload(
-    filePath: string,
-    fileName: string,
-    directoryPath?: string,
-    isFromFileManage?: boolean
-  ): Promise<UploadResponse> {
+  async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
-      const file = createReadStream(filePath);
+      const { file, fileName, directoryPath, isFromFileManage } = options;
+      const fileStream = this.getStream(file);
       const { path } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
@@ -51,7 +49,7 @@ export class AliOssUploader implements Uploader {
       } else {
         newFileName = path ? `${path}/${fileName}` : fileName;
       }
-      let putRes = await this.client.put(newFileName, file);
+      let putRes = await this.client.put(newFileName, fileStream);
       if (putRes?.res?.status !== 200) {
         return {
           success: false,
@@ -142,5 +140,18 @@ export class AliOssUploader implements Uploader {
       config.cname = true;
     }
     return config as Config;
+  }
+
+  protected getStream(file: string | Buffer) {
+    if (Buffer.isBuffer(file)) {
+      return new Readable({
+        read() {
+          this.push(file);
+          this.push(null);
+        }
+      });
+    } else {
+      return createReadStream(file);
+    }
   }
 }
