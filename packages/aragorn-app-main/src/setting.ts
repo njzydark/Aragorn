@@ -1,6 +1,7 @@
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs-extra';
+import { exec } from 'child_process';
 import { settingStore } from './store';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -104,6 +105,31 @@ export class Setting {
     }
     fs.copySync(workflowPath, destPath, { overwrite: true });
     return fs.existsSync(destPath);
+  }
+
+  async installCli() {
+    try {
+      const appPath = app.getAppPath();
+      const destPath = '/usr/local/bin/aragorn';
+      let cliPath = '';
+      if (isDev) {
+        cliPath = path.resolve(appPath, '../../extraResources/Darwin/aragorn.sh');
+      } else {
+        cliPath = path.resolve(appPath, '../cli/aragorn.sh');
+      }
+      const res = await new Promise((resolve, reject) => {
+        exec(`ln -sf ${cliPath} ${destPath}`, err => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(true);
+          }
+        });
+      });
+      return res;
+    } catch (err) {
+      console.log(err.message);
+    }
   }
 
   protected save() {

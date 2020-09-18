@@ -105,6 +105,11 @@ export class Ipc {
       const res = this.setting.copyDarwinWorkflow();
       event.reply('copy-darwin-workflow-reply', res);
     });
+
+    ipcMain.on('install-cli', async event => {
+      const res = await this.setting.installCli();
+      event.reply('install-cli-reply', res);
+    });
   }
 
   protected uploaderProfileHandle() {

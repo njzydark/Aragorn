@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { useContext, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
-import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message, Space } from 'antd';
 import { AppContext } from '@renderer/app';
 import { domainPathValidationRule } from '@renderer/utils/validationRule';
 
@@ -28,9 +28,20 @@ export default function Basic() {
         message.error('右键菜单添加失败');
       }
     }
+
+    function handleInstallCliReply(_, res) {
+      if (res) {
+        message.success('CLI 安装成功');
+      } else {
+        message.error('CLI 安装失败');
+      }
+    }
+
     ipcRenderer.on('copy-darwin-workflow-reply', handleWorkflowCopyReply);
+    ipcRenderer.on('install-cli-reply', handleInstallCliReply);
     return () => {
       ipcRenderer.removeListener('copy-darwin-workflow-reply', handleWorkflowCopyReply);
+      ipcRenderer.removeListener('install-cli-reply', handleInstallCliReply);
     };
   }, []);
 
@@ -49,6 +60,10 @@ export default function Basic() {
 
   const handleAddWorkflow = () => {
     ipcRenderer.send('copy-darwin-workflow');
+  };
+
+  const handleInstallCli = () => {
+    ipcRenderer.send('install-cli');
   };
 
   return (
@@ -172,7 +187,10 @@ export default function Basic() {
           {platform.includes('mac') && (
             <Row>
               <Col xs={24}>
-                <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
+                <Space>
+                  <Button onClick={handleInstallCli}>安装 CLI</Button>
+                  <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
+                </Space>
               </Col>
             </Row>
           )}
