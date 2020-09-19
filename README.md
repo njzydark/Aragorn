@@ -1,7 +1,7 @@
 # Aragorn
 
-![Build](https://github.com/njzydark/Aragorn/workflows/Build/release/badge.svg)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/njzydark/Aragorn?include_prereleases)
+![Build](https://github.com/njzydark/Aragorn/workflows/Build/release/badge.svg)
 ![GitHub](https://img.shields.io/github/license/njzydark/Aragorn)
 
 一款基于 `Electron + React + TS` 开发的文件上传及管理工具，可作为图床上传或对象存储文件管理工具使用
@@ -38,7 +38,7 @@
 
 可在设置中开启，默认关闭
 
-- 地址: http://127.0.0.1:7777
+- 地址: <http://127.0.0.1:7777>
 - POST 文件字段名: files
 - 上传成功返回的 URL 字段名: url
 
@@ -78,22 +78,35 @@ Options:
 
 ## 开发
 
-项目依赖安装
+### 克隆代码
+
+```bash
+git clone https://github.com/njzydark/Aragorn.git
+```
+
+### 安装依赖
 
 ```bash
 npm i
 npm run setup
 ```
 
-这里特别说明一下：
+#### 注意
 
-项目是使用 [lerna](https://lerna.js.org/) 进行管理的，根目录的 `package.json` 只是公共开发依赖，不包含项目所有依赖
+1. 项目是使用 [lerna](https://lerna.js.org/) 进行管理的，根目录的 `package.json` 只是公共开发依赖，不包含项目所有依赖
 
-`npm i` 只是把公共依赖装上
+   `npm i` 只是把公共依赖装上
 
-`npm run setup` 会把所有 `packages` 里的依赖全部装上
+   `npm run setup` 会把所有 `packages` 里的依赖全部装上
 
-启动 App
+2. 由于众所周知的网络原因，依赖可能无法正常安装，尤其是 `Electron`，这里推荐使用淘宝镜像源来解决此问题，在项目根目录创建 `.npmrc` 文件，配置以下内容：
+
+   ```txt
+   registry=https://registry.npm.taobao.org
+   ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+   ```
+
+### 开发模式
 
 ```bash
 npm run app:dev
@@ -102,7 +115,7 @@ npm run app:start
 
 PS: 项目已经配置好了 `task.json` 和 `launch.json` ，可以直接在 vscode 中执行 task ，然后以 debug 模式启动
 
-打包
+### 打包
 
 ```bash
 npm run app:build

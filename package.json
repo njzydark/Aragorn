@@ -1,6 +1,9 @@
 {
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=12.16.3"
+  },
   "scripts": {
     "build": "npm run setup && npm run app:build",
     "setup": "lerna bootstrap && npm run core:build && npm run cli:build",
