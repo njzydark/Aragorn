@@ -1,8 +1,9 @@
 # Aragorn
 
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/njzydark/Aragorn?include_prereleases)
-![Build](https://github.com/njzydark/Aragorn/workflows/Build/release/badge.svg)
-![GitHub](https://img.shields.io/github/license/njzydark/Aragorn)
+[![GitHub release (latest by date including pre-releases](https://img.shields.io/github/v/release/njzydark/Aragorn?include_prereleases)](https://github.com/njzydark/Aragorn/releases/latest)
+[![Build](https://github.com/njzydark/Aragorn/workflows/Build/release/badge.svg)](https://github.com/njzydark/Aragorn/actions?query=workflow%3ABuild%2Frelease)
+[![GitHub](https://img.shields.io/github/license/njzydark/Aragorn)](https://github.com/njzydark/Aragorn/blob/master/LICENSE)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square)](https://lerna.js.org/)
 
 一款基于 `Electron + React + TS` 开发的文件上传及管理工具，可作为图床上传或对象存储文件管理工具使用
 
@@ -39,12 +40,34 @@
 可在设置中开启，默认关闭
 
 - 地址: <http://127.0.0.1:7777>
-- POST 文件字段名: files
-- 上传成功返回的 URL 字段名: url
+- POST 请求格式无论是 `form-data` 还是 `json`，文件字段名都为 `files`
+
+### 示例
+
+form-data 请求
+
+```bash
+curl http://127.0.0.1:7777 -X POST -H "Content-Type: multipart/form-data" -F "files=@文件绝对路径"
+```
+
+json 请求
+
+```bash
+curl http://127.0.0.1:7777 -X POST -H "Content-Type: application/json" -d '{"files": ["文件绝对路径"]}'
+```
+
+响应
+
+```json
+{
+  "url": "第一张图片地址",
+  "urls": ["图片地址"]
+}
+```
 
 ## CLI
 
-CLI 可以在设置中安装，安装后可通过 `aragorn` 或 `/usr/local/bin/aragorn` 使用
+CLI 可在设置中安装，安装后可通过 `aragorn` 或 `/usr/local/bin/aragorn` 使用
 
 ```bash
      _                                        ____ _ _
@@ -68,13 +91,13 @@ Options:
   -h, --help                                   display help for command
 ```
 
-如果配合 `Typora` 使用，即可在 `Typora` 的图像设置中配置以下自定义指令即可：
+如果配合 `Typora` 使用，在 `Typora` 的图像设置中配置以下自定义指令即可：
 
 ```bash
 /usr/local/bin/aragorn upload
 ```
 
-**PS** 如果开启 WebServer ，那么 CLI 也会通过此上传接口使用，未开启状态 CLI 会通过自身内置的方式上传，所以即使软件未开启也可以正常使用
+**PS** 如果开启 WebServer ，那么 CLI 也会通过 `WebServer` 提供的接口进行上传，未开启状态 CLI 会通过自身内置的方式进行上传，所以即使软件未开启也可以正常使用
 
 ## 开发
 
@@ -95,7 +118,7 @@ npm run setup
 
 1. 项目是使用 [lerna](https://lerna.js.org/) 进行管理的，根目录的 `package.json` 只是公共开发依赖，不包含项目所有依赖
 
-   `npm i` 只是把公共依赖装上
+   `npm i` 只是把公共开发依赖装上
 
    `npm run setup` 会把所有 `packages` 里的依赖全部装上
 
