@@ -49,15 +49,11 @@ export class WebServer {
       });
 
       app.post('/', multer().array('files'), async (req: any, res) => {
-        const data = await this.handleUpload(req?.files || req.body?.images);
-        if (req.files && data) {
-          res.json({
-            url: data[0],
-            urls: data
-          });
-        } else {
-          res.send(data);
-        }
+        const data = await this.handleUpload(req?.files || req.body?.files);
+        res.json({
+          url: data[0] || '',
+          urls: data
+        });
       });
 
       this.server = createServer(app);
@@ -88,5 +84,6 @@ export class WebServer {
         return res.map(item => item.url);
       }
     }
+    return [];
   }
 }

@@ -11,7 +11,7 @@ interface Options {
   uploaderProfileId?: string;
 }
 
-export const upload = async (imagesPath: string[], options: Options) => {
+export const upload = async (filesPath: string[], options: Options) => {
   const { userSetting } = getAppConfig();
   const { webServerPort = options.port } = userSetting;
 
@@ -20,9 +20,9 @@ export const upload = async (imagesPath: string[], options: Options) => {
     flag = await webServerCheck(Number(webServerPort));
   }
   if (options.mode === 'app' || flag) {
-    uploadByApp(imagesPath, Number(webServerPort));
+    uploadByApp(filesPath, Number(webServerPort));
   } else {
-    uploadByCli(imagesPath, options);
+    uploadByCli(filesPath, options);
   }
 };
 
@@ -35,13 +35,13 @@ async function webServerCheck(port: number) {
   }
 }
 
-async function uploadByApp(imagesPath: string[], port: number) {
+async function uploadByApp(filesPath: string[], port: number) {
   try {
     const res = await axios.post(`http://127.0.0.1:${port}`, {
-      images: imagesPath
+      files: filesPath
     });
-    if (Array.isArray(res.data)) {
-      console.log(res.data.join('\n'));
+    if (Array.isArray(res?.data?.urls)) {
+      console.log(res.data.urls.join('\n'));
     } else {
       console.log('upload fail');
     }
@@ -50,7 +50,7 @@ async function uploadByApp(imagesPath: string[], port: number) {
   }
 }
 
-async function uploadByCli(imagesPath: string[], options: Options) {
+async function uploadByCli(filesPath: string[], options: Options) {
   try {
     const core = new AragornCore();
 
@@ -102,7 +102,7 @@ async function uploadByCli(imagesPath: string[], options: Options) {
       }
     };
 
-    const promises = imagesPath.map((file, index) => {
+    const promises = filesPath.map((file, index) => {
       const res = toUpload(file, index, uploadQuence);
       uploadQuence.push(res);
       return res;
