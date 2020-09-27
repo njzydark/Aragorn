@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+require('dotenv').config({ path: '../../.env' });
 const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');

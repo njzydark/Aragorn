@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "ali-oss": "^6.10.0",
-    "aragorn-types": "^1.0.0",
-    "uuid": "^8.3.0"
+    "aragorn-types": "^1.0.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

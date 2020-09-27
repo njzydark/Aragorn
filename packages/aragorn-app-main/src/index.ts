@@ -1,3 +1,4 @@
+import { config as dotenvConfig } from 'dotenv';
 import { app, BrowserWindow, Tray } from 'electron';
 import path from 'path';
 import { Ipc } from './ipc';
@@ -6,6 +7,8 @@ import { WebServer } from './webServer';
 
 let tray: Tray;
 let mainWindow: BrowserWindow;
+
+dotenvConfig({ path: '../../.env' });
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -75,7 +78,7 @@ function createWindow(): BrowserWindow {
   });
 
   if (isDev) {
-    window.loadURL('http://localhost:8831');
+    window.loadURL(`http://localhost:${process.env.RENDERER_DEV_PORT}`);
   } else {
     window.loadFile(path.resolve(__dirname, '../renderer/index.html'));
   }

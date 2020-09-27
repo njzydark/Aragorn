@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "aragorn-types": "^1.0.0",
-    "qiniu": "^7.3.2",
-    "uuid": "^8.3.0"
+    "qiniu": "^7.3.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

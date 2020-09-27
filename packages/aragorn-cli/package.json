@@ -23,14 +23,14 @@
   "dependencies": {
     "aragorn-core": "^1.0.0",
     "aragorn-types": "^1.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "commander": "^6.1.0",
     "figlet": "^1.5.0"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
     "cross-env": "^7.0.2",
-    "webpack": "^4.44.1",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   }
 }

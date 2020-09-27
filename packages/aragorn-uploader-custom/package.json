@@ -23,9 +23,8 @@
   },
   "dependencies": {
     "aragorn-types": "^1.0.0",
-    "axios": "^0.19.2",
-    "form-data": "^3.0.0",
-    "uuid": "^8.3.0"
+    "axios": "^0.20.0",
+    "form-data": "^3.0.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
