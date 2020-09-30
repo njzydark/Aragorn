@@ -73,7 +73,8 @@ function createWindow(): BrowserWindow {
     titleBarStyle: 'hidden',
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   });
 
