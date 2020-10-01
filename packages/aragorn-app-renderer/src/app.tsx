@@ -4,13 +4,8 @@ import { ipcRenderer, shell } from 'electron';
 import { ConfigProvider, message, notification, Progress } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 
+import { routes } from './routes';
 import { SideBar } from '@renderer/components/SideBar';
-import { Dashboard } from '@renderer/pages/Dashboard';
-import { Uploader } from '@renderer/pages/Uploader';
-import { Profile } from '@renderer/pages/Profile';
-import { FileManage } from '@renderer/pages/FileManage';
-import About from '@renderer/pages/About';
-import Setting from '@renderer/pages/Setting';
 
 import { UploadedFileInfo } from '@main/uploaderManager';
 import { SettingConfiguration } from '@main/setting';
@@ -37,6 +32,7 @@ const App = () => {
   useEffect(() => {
     ipcSendInit();
     ipcOnInit();
+    checkPlatform();
   }, []);
 
   const ipcSendInit = () => {
@@ -140,19 +136,27 @@ const App = () => {
     });
   };
 
+  const [customScrollStyle, setCustomScrollStyle] = useState(false);
+
+  const checkPlatform = () => {
+    const platform = window.navigator.platform.toLowerCase();
+    if (!platform.includes('mac')) {
+      setCustomScrollStyle(true);
+    }
+  };
+
   return (
     <ConfigProvider locale={zhCN}>
       <AppContext.Provider value={data}>
         <HashRouter>
-          <SideBar />
-          <div className="main-content-wrapper">
+          <SideBar routes={routes} />
+          <div
+            className={customScrollStyle ? 'app-main-content-wrapper custom-scroll-bar' : 'app-main-content-wrapper'}
+          >
             <Switch>
-              <Route path="/" component={Dashboard} exact />
-              <Route path="/uploader" component={Uploader} exact />
-              <Route path="/profile/:id?" component={Profile} exact />
-              <Route path="/fileManage/:id?" component={FileManage} exact />
-              <Route path="/about" component={About} exact />
-              <Route path="/setting" component={Setting} exact />
+              {routes.map(
+                route => route.path && <Route key={route.path} path={route.path} component={route.component} exact />
+              )}
             </Switch>
           </div>
         </HashRouter>

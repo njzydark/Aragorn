@@ -1,4 +1,4 @@
-.side-bar {
+.app-sidebar-wrapper {
   width: 68px;
   height: 100%;
   flex-shrink: 0;
@@ -13,9 +13,8 @@
     background: url('../../assets/logo.png') no-repeat;
     background-size: 100% 100%;
   }
-  .menu-list {
-    flex: auto;
-    margin-top: 15px;
+  .menu-list,
+  .footer {
     .menu-item {
       position: relative;
       width: 100%;
@@ -23,11 +22,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      img {
-        width: 23px;
-        height: 23px;
+      .menu-icon {
+        color: #fff;
+        opacity: 0.8;
       }
     }
+    .menu-active {
+      .menu-icon {
+        opacity: 1;
+      }
+    }
+  }
+  .menu-list {
+    flex: auto;
+    margin-top: 15px;
     .menu-active {
       &::before {
         content: '';
@@ -37,7 +45,7 @@
         width: 2px;
         height: 100%;
         border-radius: 0 2px 2px 0;
-        background: #fff;
+        background: rgba(255, 255, 255, 0.8);
       }
       &::after {
         content: '';
@@ -48,20 +56,6 @@
         height: 100%;
         background: #fff;
         opacity: 0.15;
-      }
-    }
-  }
-  .footer {
-    .menu-item {
-      position: relative;
-      width: 100%;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img {
-        width: 23px;
-        height: 23px;
       }
     }
   }

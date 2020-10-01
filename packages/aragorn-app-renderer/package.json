@@ -13,9 +13,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/react-fontawesome": "^0.1.11",
     "antd": "^4.6.6",
     "aragorn-types": "^1.0.0",
     "axios": "^0.20.0",
@@ -24,6 +21,7 @@
     "filesize": "^6.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-feather": "^2.0.8",
     "react-router-dom": "^5.2.0"
   },
   "devDependencies": {

@@ -1,67 +1,57 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
-import { useParams, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Routes } from '@renderer/routes';
 import './index.less';
 
-import DashBorad from '../../assets/dashboard.png';
-import Uploader from '../../assets/uploader.png';
-import Profile from '../../assets/profile.png';
-import Storage from '../../assets/storage.png';
-import Upload from '../../assets/upload.png';
-import Setting from '../../assets/setting.png';
-import About from '../../assets/about.png';
+interface Props {
+  routes: Routes;
+}
 
-const menuData = [
-  {
-    name: 'dashboard',
-    path: '/',
-    img: DashBorad
-  },
-  {
-    name: 'uploader',
-    path: '/uploader',
-    img: Uploader
-  },
-  {
-    name: 'profile',
-    path: '/profile',
-    img: Profile
-  },
-  {
-    name: 'fileManage',
-    path: '/fileManage',
-    img: Storage
-  },
-  {
-    name: 'upload',
-    path: '',
-    img: Upload
-  },
-  {
-    name: 'about',
-    path: '/about',
-    img: About
-  },
-  {
-    name: 'setting',
-    path: '/setting',
-    img: Setting
-  }
-];
+interface MenuProps extends Props {
+  current: string;
+  handleSideChange: (route: Routes[number]) => void;
+}
 
-export const SideBar = () => {
-  const [current, setCurrent] = useState('dashboard');
+const Menu = ({ routes, current, handleSideChange }: MenuProps) => {
+  return (
+    <>
+      {routes.map(route => (
+        <div
+          key={route.name}
+          className={route.name === current ? 'menu-item menu-active' : 'menu-item'}
+          onClick={() => handleSideChange(route)}
+        >
+          <route.icon className="menu-icon" />
+        </div>
+      ))}
+    </>
+  );
+};
+
+export const SideBar = ({ routes }: Props) => {
+  const [current, setCurrent] = useState(routes[0].name);
 
   let location = useLocation();
 
   useEffect(() => {
-    const menuName = location.pathname.split('/')[1] || 'dashboard';
+    const menuName = location.pathname.split('/')[1] || routes[0].name;
     setCurrent(menuName);
   }, [location]);
 
   const history = useHistory();
 
   const uploadRef = useRef<HTMLInputElement>(null);
+
+  const handleSideChange = (item: Routes[0]) => {
+    if (item.path) {
+      setCurrent(item.name);
+      history.push(item.path.split(':')[0]);
+    }
+    if (item.name === 'upload') {
+      uploadRef.current?.click();
+    }
+  };
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const fileList = event.currentTarget.files || [];
@@ -70,36 +60,14 @@ export const SideBar = () => {
     event.currentTarget.value = '';
   };
 
-  const handleSideChange = item => {
-    if (item.path) {
-      setCurrent(item.name);
-      history.push(item.path);
-    }
-    if (item.name === 'upload') {
-      uploadRef.current?.click();
-    }
-  };
-
   return (
-    <div className="side-bar">
+    <div className="app-sidebar-wrapper">
       <div className="logo" />
       <div className="menu-list">
-        {menuData.slice(0, -2).map(item => (
-          <div
-            key={item.name}
-            className={item.name === current ? 'menu-item menu-active' : 'menu-item'}
-            onClick={() => handleSideChange(item)}
-          >
-            <img src={item.img} />
-          </div>
-        ))}
+        <Menu routes={routes.filter(item => !item.isFooter)} current={current} handleSideChange={handleSideChange} />
       </div>
       <div className="footer">
-        {menuData.slice(-2).map(item => (
-          <div key={item.name} className="menu-item" onClick={() => handleSideChange(item)}>
-            <img src={item.img} />
-          </div>
-        ))}
+        <Menu routes={routes.filter(item => item.isFooter)} current={current} handleSideChange={handleSideChange} />
       </div>
       <input ref={uploadRef} type="file" multiple hidden onChange={handleFileUpload} />
     </div>
