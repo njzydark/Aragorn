@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { clipboard, shell, ipcRenderer } from 'electron';
-import { Table, message, Popover, Space, Button, Badge } from 'antd';
+import { Table, message, Popover, Space, Button, Badge, Divider } from 'antd';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AppContext } from '@renderer/app';
-import PlusIcon from '../../assets/plus.png';
-import NewProfileIcon from '../../assets/newProfile.svg';
-import './index.less';
+import { Plus, Box } from 'react-feather';
 import { UploadedFileInfo } from '@main/uploaderManager';
+import './index.less';
 
 export const Dashboard = () => {
   const {
@@ -130,10 +129,10 @@ export const Dashboard = () => {
   return (
     <div className="dashboard-page">
       <header>
-        <h3>控制台</h3>
-        <hr />
+        <span>控制台</span>
+        <Divider />
       </header>
-      <div className="main-content">
+      <main>
         <div className="profile-wrapper">
           <div className="title">上传器配置</div>
           <div className="card-wrapper">
@@ -143,12 +142,12 @@ export const Dashboard = () => {
                 className={item.id === defaultUploaderProfileId ? 'card card-active' : 'card'}
                 onClick={() => handleProfileClick(item.id)}
               >
-                <img src={NewProfileIcon} />
+                <Box className="card-icon" />
                 <span>{item.name}</span>
               </div>
             ))}
             <div className="card" onClick={handleProfileAdd}>
-              <img src={PlusIcon} />
+              <Plus className="card-icon" />
             </div>
           </div>
         </div>
@@ -168,12 +167,11 @@ export const Dashboard = () => {
               rowKey="id"
               dataSource={uploadedFiles}
               columns={columns}
-              pagination={false}
               rowSelection={{ onChange: handleTableRowChange, selectedRowKeys: selectRowKeys }}
             />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

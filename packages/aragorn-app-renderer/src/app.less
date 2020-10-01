@@ -22,13 +22,11 @@ body {
   display: flex;
 }
 
-.main-content-wrapper {
+.app-main-content-wrapper {
   position: relative;
   flex: auto;
   height: 100%;
-  overflow: auto;
-  padding: 20px;
-  padding-top: 30px;
+  overflow: hidden;
   &::before {
     content: '';
     position: absolute;
@@ -39,25 +37,23 @@ body {
     -webkit-app-region: drag;
   }
   & > div {
+    background-color: @main-bg-color;
+    padding: 20px;
+    padding-top: 30px;
     height: 100%;
     display: flex;
     flex-direction: column;
     header {
       flex-shrink: 0;
-      font-size: 18px;
-      margin-bottom: 20px;
-      hr {
-        border: 1px solid @divider-color;
-      }
+      font-size: 21px;
+      font-weight: 500;
     }
     main {
-      padding: 20px;
-      background-color: @main-bg-color;
+      margin-right: -20px;
       flex: auto;
-      overflow: scroll;
+      overflow-y: scroll;
     }
     footer {
-      padding: 20px;
       background-color: @main-bg-color;
       flex-shrink: 0;
     }
@@ -67,4 +63,43 @@ body {
 .ant-btn-primary {
   background-color: @primary-color;
   border-radius: 4px;
+}
+
+.ant-divider {
+  margin: 18px 0;
+}
+
+.custom-scroll-bar {
+  /* Customize website's scrollbar like Mac OS
+Not supports in Firefox and IE */
+
+  /* total width */
+  main::-webkit-scrollbar {
+    background-color: #fff;
+    width: 16px;
+  }
+
+  /* background of the scrollbar except button or resizer */
+  main::-webkit-scrollbar-track {
+    background-color: #fff;
+  }
+  main::-webkit-scrollbar-track:hover {
+    background-color: #f4f4f4;
+  }
+
+  /* scrollbar itself */
+  main::-webkit-scrollbar-thumb {
+    background-color: #babac0;
+    border-radius: 16px;
+    border: 5px solid #fff;
+  }
+  main::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a5;
+    border: 4px solid #f4f4f4;
+  }
+
+  /* set button(top and bottom of the scrollbar) */
+  main::-webkit-scrollbar-button {
+    display: none;
+  }
 }

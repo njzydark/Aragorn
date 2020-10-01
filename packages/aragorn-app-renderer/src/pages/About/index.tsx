@@ -1,17 +1,21 @@
 import { ipcRenderer, remote, shell } from 'electron';
 import React from 'react';
+import { Button, Divider } from 'antd';
 import './index.less';
-import { Button } from 'antd';
 
 const AppUrl = 'https://github.com/njzydark/Aragorn';
 
-export default function About() {
+export const About = () => {
   function handleUpdate() {
     ipcRenderer.send('check-update', true);
   }
 
   return (
     <div className="info-wrapper">
+      <header>
+        <span>关于</span>
+        <Divider />
+      </header>
       <main>
         <h3>Aragorn</h3>
         <a
@@ -29,4 +33,4 @@ export default function About() {
       </main>
     </div>
   );
-}
+};

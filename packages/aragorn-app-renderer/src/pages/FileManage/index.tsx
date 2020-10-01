@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { clipboard, ipcRenderer } from 'electron';
-import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input } from 'antd';
+import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider } from 'antd';
 import { FileOutlined, FolderOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import dayjs from 'dayjs';
@@ -253,8 +253,8 @@ export const FileManage = () => {
   return (
     <div className="storage-page">
       <header>
-        <h3>文件管理</h3>
-        <hr />
+        <span>文件管理</span>
+        <Divider />
       </header>
       <Space style={{ marginBottom: 10 }}>
         <Select style={{ minWidth: 120 }} value={uploaderProfile?.id} onChange={setCurrentProfile}>

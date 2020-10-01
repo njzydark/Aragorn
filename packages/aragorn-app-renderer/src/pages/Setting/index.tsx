@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { useContext, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
-import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message, Space } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message, Space, Divider } from 'antd';
 import { AppContext } from '@renderer/app';
 import { domainPathValidationRule } from '@renderer/utils/validationRule';
 
@@ -16,7 +16,7 @@ const switchtemLayout = {
   wrapperCol: { span: 11 }
 };
 
-export default function Basic() {
+export const Setting = () => {
   const { configuration, uploaderProfiles } = useContext(AppContext);
   const [form] = Form.useForm();
 
@@ -69,8 +69,8 @@ export default function Basic() {
   return (
     <div className="setting-wrapper">
       <header>
-        <h3>设置</h3>
-        <hr />
+        <span>设置</span>
+        <Divider />
       </header>
       <main>
         <Form
@@ -184,24 +184,23 @@ export default function Basic() {
               </Form.Item>
             </Col>
           </Row>
-          {platform.includes('mac') && (
-            <Row>
-              <Col xs={24}>
-                <Space>
-                  <Button onClick={handleInstallCli}>安装 CLI</Button>
-                  <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
-                </Space>
-              </Col>
-            </Row>
-          )}
         </Form>
       </main>
       <footer>
-        <Button type="primary" onClick={handleSubmit} style={{ marginRight: 10 }}>
-          保存并应用
-        </Button>
-        <Button onClick={handleReset}>放弃</Button>
+        <Divider />
+        <Space>
+          <Button type="primary" onClick={handleSubmit}>
+            保存并应用
+          </Button>
+          <Button onClick={handleReset}>放弃</Button>
+          {platform.includes('mac') && (
+            <>
+              <Button onClick={handleInstallCli}>安装 CLI</Button>
+              <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
+            </>
+          )}
+        </Space>
       </footer>
     </div>
   );
-}
+};
