@@ -1,16 +1,12 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle, Ref } from 'react';
+import React, { useState, useEffect, useContext, forwardRef, useImperativeHandle, Ref } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { Form, Input, Select, message, Switch, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getFormRule } from '@renderer/utils/validationRule';
+import { AppContext } from '@renderer/app';
 import { Uploader as IUploader, UploaderOptionsSpan } from 'aragorn-types';
 import { UploaderProfile } from '@main/uploaderProfileManager';
-
-interface IProps {
-  uploaders: IUploader[];
-  uploaderProfiles: UploaderProfile[];
-}
 
 export interface UploaderProfileFormHandle {
   handleUploaderSelect: (name: string) => void;
@@ -19,7 +15,7 @@ export interface UploaderProfileFormHandle {
   handleSubmit: () => void;
 }
 
-export const UploaderProfileForm = forwardRef((props: IProps, ref: Ref<UploaderProfileFormHandle>) => {
+export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHandle>) => {
   useImperativeHandle(ref, () => ({
     handleUploaderSelect,
     handleUploaderProfilesSelect,
@@ -27,7 +23,11 @@ export const UploaderProfileForm = forwardRef((props: IProps, ref: Ref<UploaderP
     handleSubmit
   }));
 
-  const { uploaders, uploaderProfiles } = props;
+  const {
+    uploaders,
+    uploaderProfiles,
+    configuration: { defaultUploaderProfileId }
+  } = useContext(AppContext);
 
   const [curUploader, setCurUploader] = useState({} as IUploader);
 
@@ -57,7 +57,8 @@ export const UploaderProfileForm = forwardRef((props: IProps, ref: Ref<UploaderP
       {
         id: uploaderProfile.id,
         name: uploaderProfile.name,
-        uploaderName: uploaderProfile.uploaderName
+        uploaderName: uploaderProfile.uploaderName,
+        isDefault: uploaderProfile.id === defaultUploaderProfileId
       }
     );
 
@@ -116,7 +117,7 @@ export const UploaderProfileForm = forwardRef((props: IProps, ref: Ref<UploaderP
       name: values.name,
       uploaderName: values.uploaderName,
       uploaderOptions,
-      isDefault: values.id ? false : values.isDefault
+      isDefault: values.isDefault
     };
 
     if (values.id) {

@@ -5,7 +5,7 @@ import { UploaderProfileForm, UploaderProfileFormHandle } from '@renderer/compon
 import './index.less';
 
 export const Uploader = () => {
-  const { uploaders, uploaderProfiles } = useContext(AppContext);
+  const { uploaders } = useContext(AppContext);
 
   const [curName, setCurName] = useState('');
 
@@ -51,7 +51,7 @@ export const Uploader = () => {
           <Divider />
         </header>
         <main>
-          <UploaderProfileForm ref={uploaderProfileFormRef} uploaders={uploaders} uploaderProfiles={uploaderProfiles} />
+          <UploaderProfileForm ref={uploaderProfileFormRef} />
         </main>
         <footer>
           <Divider />

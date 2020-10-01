@@ -126,7 +126,7 @@ export class Ipc {
     ipcMain.on('uploader-profile-add', (event, newUploaderProfile: UploaderProfile) => {
       const uploaderProfile = this.uploaderProfileManager.add(newUploaderProfile);
       if (uploaderProfile) {
-        uploaderProfile.isDefault && this.setting.setDefaultUploaderProfile(uploaderProfile.id);
+        this.setting.setDefaultUploaderProfile(uploaderProfile.id, uploaderProfile.isDefault);
         event.reply('uploader-profiles-get-reply', this.uploaderProfileManager.getAll());
         event.reply('uploader-profile-add-reply', uploaderProfile);
         event.reply('setting-configuration-get-reply', this.setting.get());
@@ -136,8 +136,10 @@ export class Ipc {
     ipcMain.on('uploader-profile-update', (event, newUploaderProfile: UploaderProfile) => {
       const uploaderProfiles = this.uploaderProfileManager.update(newUploaderProfile);
       if (uploaderProfiles) {
+        this.setting.setDefaultUploaderProfile(newUploaderProfile.id, newUploaderProfile.isDefault);
         event.reply('uploader-profiles-get-reply', uploaderProfiles);
         event.reply('uploader-profile-update-reply', true);
+        event.reply('setting-configuration-get-reply', this.setting.get());
       }
     });
 

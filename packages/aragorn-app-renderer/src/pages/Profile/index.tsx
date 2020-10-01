@@ -7,7 +7,6 @@ import './index.less';
 
 export const Profile = () => {
   const {
-    uploaders,
     uploaderProfiles,
     configuration: { defaultUploaderProfileId }
   } = useContext(AppContext);
@@ -56,7 +55,7 @@ export const Profile = () => {
         </Select>
       </div>
       <main>
-        <UploaderProfileForm ref={uploaderProfileFormRef} uploaderProfiles={uploaderProfiles} uploaders={uploaders} />
+        <UploaderProfileForm ref={uploaderProfileFormRef} />
       </main>
       <footer>
         <Divider />

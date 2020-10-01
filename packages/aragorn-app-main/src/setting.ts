@@ -81,8 +81,12 @@ export class Setting {
     return this.configuration;
   }
 
-  setDefaultUploaderProfile(id: string) {
-    this.configuration.defaultUploaderProfileId = id;
+  setDefaultUploaderProfile(id: string, flag = true) {
+    if (flag) {
+      this.configuration.defaultUploaderProfileId = id;
+    } else if (this.configuration.defaultUploaderProfileId === id) {
+      this.configuration.defaultUploaderProfileId = undefined;
+    }
     this.save();
     return this.configuration;
   }
