@@ -40,6 +40,12 @@ export type UploaderOptionValidationRule =
 
 export type UploaderOptionValidationRuleArr = UploaderOptionValidationRule[];
 
+export enum UploaderOptionsSpan {
+  small = 4,
+  middle = 8,
+  large = 12
+}
+
 interface UploaderOption {
   /** 表单字段描述 */
   label: string;
@@ -49,6 +55,8 @@ interface UploaderOption {
   value: any;
   /** 值类型 */
   valueType: 'input' | 'switch' | 'select';
+  /** form 控件长度 */
+  span?: UploaderOptionsSpan | number;
   /** select 选项 */
   options?: { label: string; value: any }[];
   /** 是否必填 */
