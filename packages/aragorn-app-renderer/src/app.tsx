@@ -6,6 +6,7 @@ import zhCN from 'antd/es/locale/zh_CN';
 
 import { routes } from './routes';
 import { SideBar } from '@renderer/components/SideBar';
+import { WindowButton } from '@renderer/components/WindowButton';
 
 import { UploadedFileInfo } from '@main/uploaderManager';
 import { SettingConfiguration } from '@main/setting';
@@ -136,12 +137,12 @@ const App = () => {
     });
   };
 
-  const [customScrollStyle, setCustomScrollStyle] = useState(false);
+  const [isNotMac, setIsNotMac] = useState(false);
 
   const checkPlatform = () => {
     const platform = window.navigator.platform.toLowerCase();
     if (!platform.includes('mac')) {
-      setCustomScrollStyle(true);
+      setIsNotMac(true);
     }
   };
 
@@ -149,10 +150,9 @@ const App = () => {
     <ConfigProvider locale={zhCN}>
       <AppContext.Provider value={data}>
         <HashRouter>
+          {isNotMac && <WindowButton />}
           <SideBar routes={routes} />
-          <div
-            className={customScrollStyle ? 'app-main-content-wrapper custom-scroll-bar' : 'app-main-content-wrapper'}
-          >
+          <div className={isNotMac ? 'app-main-content-wrapper custom-scroll-bar' : 'app-main-content-wrapper'}>
             <Switch>
               {routes.map(
                 route => route.path && <Route key={route.path} path={route.path} component={route.component} exact />
