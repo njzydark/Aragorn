@@ -23,7 +23,7 @@ if (gotTheLock) {
   });
 
   app.on('window-all-closed', function () {
-    app.dock.hide();
+    app?.dock?.hide();
   });
 
   app.on('activate', () => {

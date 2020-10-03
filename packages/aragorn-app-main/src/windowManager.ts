@@ -39,7 +39,7 @@ export class WindowManager {
   }
 
   showWindow() {
-    app.dock.show();
+    app?.dock?.show();
     if (BrowserWindow.getAllWindows().length === 0) {
       this.mainWindow = this.createWindow();
       Ipc.win = this.mainWindow;
