@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { Ipc } from './ipc';
 import path from 'path';
 
@@ -39,6 +39,7 @@ export class WindowManager {
   }
 
   showWindow() {
+    app.dock.show();
     if (BrowserWindow.getAllWindows().length === 0) {
       this.mainWindow = this.createWindow();
       Ipc.win = this.mainWindow;
