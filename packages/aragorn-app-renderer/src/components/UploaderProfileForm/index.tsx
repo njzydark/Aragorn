@@ -12,6 +12,7 @@ export interface UploaderProfileFormHandle {
   handleUploaderSelect: (name: string) => void;
   handleUploaderProfilesSelect: (profileId: string) => void;
   handleDelete: () => void;
+  handleTest: () => void;
   handleSubmit: () => void;
 }
 
@@ -20,6 +21,7 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
     handleUploaderSelect,
     handleUploaderProfilesSelect,
     handleDelete,
+    handleTest,
     handleSubmit
   }));
 
@@ -99,7 +101,7 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
     form.submit();
   };
 
-  const handleFinish = values => {
+  const handleFinish = (values, isTest = false) => {
     const uploader = uploaders.find(item => item.name === values.uploaderName);
 
     if (!uploader) {
@@ -120,7 +122,9 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
       isDefault: values.isDefault
     };
 
-    if (values.id) {
+    if (isTest) {
+      ipcRenderer.send('uploader-profile-test', uploaderProfile);
+    } else if (values.id) {
       ipcRenderer.send('uploader-profile-update', uploaderProfile);
     } else {
       ipcRenderer.send('uploader-profile-add', uploaderProfile);
@@ -132,37 +136,53 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
     ipcRenderer.send('uploader-profile-delete', id);
   };
 
+  const handleTest = () => {
+    form.validateFields().then(res => {
+      handleFinish(res, true);
+    });
+  };
+
   const history = useHistory();
 
   useEffect(() => {
-    function handleUploaderProfileAdd(res) {
+    function handleUploaderProfileAdd(_, res) {
       if (res) {
         history.push('/');
         message.success('上传器配置添加成功');
       }
     }
 
-    function handleUploaderProfileUpdate(res) {
+    function handleUploaderProfileUpdate(_, res) {
       if (res) {
         message.success('上传器配置更新成功');
       }
     }
 
-    function handleUploaderProfileDelete(res) {
+    function handleUploaderProfileDelete(_, res) {
       if (res) {
         history.push(`/`);
         message.success('上传器配置删除成功');
       }
     }
 
+    function handleUploaderProfileTest(_, res) {
+      if (res) {
+        message.success('测试成功，配置填写正确');
+      } else {
+        message.error('测试失败，请检查配置是否填写正确');
+      }
+    }
+
     ipcRenderer.on('uploader-profile-add-reply', handleUploaderProfileAdd);
     ipcRenderer.on('uploader-profile-update-reply', handleUploaderProfileUpdate);
     ipcRenderer.on('uploader-profile-delete-reply', handleUploaderProfileDelete);
+    ipcRenderer.on('uploader-profile-test-reply', handleUploaderProfileTest);
 
     return () => {
       ipcRenderer.removeListener('uploader-profile-add-reply', handleUploaderProfileAdd);
       ipcRenderer.removeListener('uploader-profile-update-reply', handleUploaderProfileUpdate);
       ipcRenderer.removeListener('uploader-profile-delete-reply', handleUploaderProfileDelete);
+      ipcRenderer.removeListener('uploader-profile-test-reply', handleUploaderProfileTest);
     };
   }, []);
 

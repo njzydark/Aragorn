@@ -26,8 +26,9 @@ export const Uploader = () => {
     uploaderProfileFormRef.current.handleSubmit();
   };
 
-  // TODO: 配置测试
-  const handleTest = () => {};
+  const handleTest = () => {
+    uploaderProfileFormRef.current.handleTest();
+  };
 
   return (
     <div className="uploader-page">
@@ -59,7 +60,7 @@ export const Uploader = () => {
             <Button type="primary" onClick={handleSubmit}>
               保存配置
             </Button>
-            <Button onClick={handleTest}>测试连接</Button>
+            <Button onClick={handleTest}>测试</Button>
           </Space>
         </footer>
       </div>

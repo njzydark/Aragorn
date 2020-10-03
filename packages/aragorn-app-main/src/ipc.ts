@@ -154,6 +154,10 @@ export class Ipc {
         event.reply('setting-configuration-get-reply', this.setting.get());
       }
     });
+
+    ipcMain.on('uploader-profile-test', (_, newUploaderProfile: UploaderProfile) => {
+      this.uploaderManager.handleUploadTest(newUploaderProfile);
+    });
   }
 
   protected fileManageHandle() {

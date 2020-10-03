@@ -5,9 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fs from 'fs';
+import path from 'path';
 import { Setting } from './setting';
 import { History } from './history';
-import { UploaderProfileManager } from './uploaderProfileManager';
+import { UploaderProfile, UploaderProfileManager } from './uploaderProfileManager';
 import { AragornCore } from 'aragorn-core';
 import { Ipc } from './ipc';
 
@@ -43,6 +44,8 @@ interface UploadOptions {
   customUploaderProfileId?: string;
   directoryPath?: string;
   isFromFileManage?: boolean;
+  testProfile?: UploaderProfile;
+  isTest?: boolean;
 }
 
 export class UploaderManager {
@@ -82,16 +85,32 @@ export class UploaderManager {
     });
   }
 
+  async handleUploadTest(testProfile: UploaderProfile) {
+    const data: UploadOptions = {
+      files: [path.resolve(__dirname, '../assets/icon.png')],
+      directoryPath: 'aragorn-upload-test',
+      testProfile,
+      isTest: true
+    };
+    this.upload(data);
+  }
+
   async upload(uploadOptions: UploadOptions) {
     try {
-      const { files, customUploaderProfileId, directoryPath, isFromFileManage } = uploadOptions;
+      const { files, customUploaderProfileId, directoryPath, isFromFileManage, testProfile, isTest } = uploadOptions;
       const {
         configuration: { defaultUploaderProfileId, proxy, rename, renameFormat }
       } = this.setting;
       const uploaderProfiles = this.uploaderProfileManager.getAll();
-      const uploaderProfile = uploaderProfiles.find(
-        uploaderProfile => uploaderProfile.id === (customUploaderProfileId || defaultUploaderProfileId)
-      );
+      let uploaderProfile: UploaderProfile | undefined;
+
+      if (isTest) {
+        uploaderProfile = testProfile;
+      } else {
+        uploaderProfile = uploaderProfiles.find(
+          uploaderProfile => uploaderProfile.id === (customUploaderProfileId || defaultUploaderProfileId)
+        );
+      }
 
       if (!uploaderProfile) {
         let notification;
@@ -134,7 +153,7 @@ export class UploaderManager {
           type: fileType,
           path: typeof file === 'string' ? file : '',
           date: new Date().getTime(),
-          uploaderProfileId: uploaderProfile.id
+          uploaderProfileId: uploaderProfile?.id || ''
         };
 
         if (uploader.batchUploadMode === 'Sequence' && index > 0) {
@@ -168,6 +187,10 @@ export class UploaderManager {
         Ipc.sendMessage('file-upload-reply');
       }
 
+      if (isTest) {
+        Ipc.sendMessage('uploader-profile-test-reply', successRes.length > 0);
+      }
+
       if (files.length > 1) {
         this.handleBatchUploaded(successRes.length, failRes.length);
       } else {
@@ -176,6 +199,9 @@ export class UploaderManager {
 
       return successRes;
     } catch (err) {
+      if (uploadOptions.isTest) {
+        Ipc.sendMessage('uploader-profile-test-reply', false);
+      }
       const notification = new Notification({ title: '上传操作异常', body: err.message });
       notification.show();
     }

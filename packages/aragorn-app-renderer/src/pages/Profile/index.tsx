@@ -35,6 +35,10 @@ export const Profile = () => {
     uploaderProfileFormRef.current.handleDelete();
   };
 
+  const handleTest = () => {
+    uploaderProfileFormRef.current.handleTest();
+  };
+
   return (
     <div className="profile-page">
       <header>
@@ -66,6 +70,7 @@ export const Profile = () => {
           <Button danger onClick={handleDelete}>
             删除
           </Button>
+          <Button onClick={handleTest}>测试</Button>
         </Space>
       </footer>
     </div>
