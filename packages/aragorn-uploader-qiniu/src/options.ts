@@ -1,4 +1,4 @@
-import { UploaderOptions } from 'aragorn-types';
+import { UploaderOptions, UploaderOptionsSpan } from 'aragorn-types';
 
 export const options: UploaderOptions = [
   {
@@ -6,6 +6,7 @@ export const options: UploaderOptions = [
     name: 'accessKey',
     value: '',
     valueType: 'input',
+    span: UploaderOptionsSpan.large,
     required: true
   },
   {
@@ -13,6 +14,7 @@ export const options: UploaderOptions = [
     name: 'secretKey',
     value: '',
     valueType: 'input',
+    span: UploaderOptionsSpan.large,
     required: true
   },
   {
@@ -20,6 +22,7 @@ export const options: UploaderOptions = [
     name: 'zone',
     value: 'Zone_z0',
     valueType: 'select',
+    span: UploaderOptionsSpan.small,
     options: [
       {
         label: '华东',
@@ -64,6 +67,7 @@ export const options: UploaderOptions = [
     name: 'path',
     value: '',
     valueType: 'input',
+    desc: '支持路径嵌套，比如 test/img ',
     validationRule: ['domainPath']
   }
 ];

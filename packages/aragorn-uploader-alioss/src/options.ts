@@ -1,4 +1,4 @@
-import { UploaderOptions } from 'aragorn-types';
+import { UploaderOptions, UploaderOptionsSpan } from 'aragorn-types';
 
 export const options: UploaderOptions = [
   {
@@ -6,6 +6,7 @@ export const options: UploaderOptions = [
     name: 'accessKeyId',
     value: '',
     valueType: 'input',
+    span: UploaderOptionsSpan.large,
     required: true
   },
   {
@@ -13,6 +14,7 @@ export const options: UploaderOptions = [
     name: 'accessKeySecret',
     value: '',
     valueType: 'input',
+    span: UploaderOptionsSpan.large,
     required: true
   },
   {
@@ -25,8 +27,9 @@ export const options: UploaderOptions = [
   {
     label: '区域',
     name: 'region',
-    value: '',
+    value: null,
     valueType: 'select',
+    span: UploaderOptionsSpan.small,
     options: [
       {
         value: 'oss-cn-hangzhou',
@@ -68,6 +71,7 @@ export const options: UploaderOptions = [
     name: 'path',
     value: '',
     valueType: 'input',
+    desc: '支持路径嵌套，比如 test/img ',
     validationRule: ['domainPath']
   },
   {
@@ -75,6 +79,7 @@ export const options: UploaderOptions = [
     name: 'endpoint',
     value: '',
     valueType: 'input',
+    desc: '自定义域名需要在阿里云控制台进行 Bucket 绑定操作',
     validationRule: ['domain']
   },
   {

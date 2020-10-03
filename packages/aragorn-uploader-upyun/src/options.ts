@@ -35,6 +35,7 @@ export const options: UploaderOptions = [
     name: 'path',
     value: '',
     valueType: 'input',
+    desc: '支持路径嵌套，比如 test/img ',
     validationRule: ['domainPath']
   }
 ];

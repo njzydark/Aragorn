@@ -1,4 +1,4 @@
-import { UploaderOptions } from 'aragorn-types';
+import { UploaderOptions, UploaderOptionsSpan } from 'aragorn-types';
 
 export const options: UploaderOptions = [
   {
@@ -27,6 +27,7 @@ export const options: UploaderOptions = [
     name: 'token',
     value: '',
     valueType: 'input',
+    span: UploaderOptionsSpan.large,
     required: true
   },
   {
@@ -34,6 +35,7 @@ export const options: UploaderOptions = [
     name: 'path',
     value: '',
     valueType: 'input',
+    desc: '支持路径嵌套，比如 test/img ',
     validationRule: ['domainPath']
   },
   {
@@ -47,7 +49,8 @@ export const options: UploaderOptions = [
     label: 'Jsdelivr CDN',
     name: 'useJsdelivr',
     value: false,
-    valueType: 'switch'
+    valueType: 'switch',
+    desc: '使用 Jsdeliver CDN 域名替代 Github 原始链接，此时自定义域名无效'
   },
   {
     label: 'Commit Message',

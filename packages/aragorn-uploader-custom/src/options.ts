@@ -1,4 +1,4 @@
-import { UploaderOptions } from 'aragorn-types';
+import { UploaderOptions, UploaderOptionsSpan } from 'aragorn-types';
 
 export const options: UploaderOptions = [
   {
@@ -12,13 +12,16 @@ export const options: UploaderOptions = [
     label: 'Token',
     name: 'token',
     value: '',
-    valueType: 'input'
+    valueType: 'input',
+    desc: '添加到 Header Authorization 中',
+    span: UploaderOptionsSpan.large
   },
   {
     label: '请求方式',
     name: 'method',
     value: 'POST',
     valueType: 'select',
+    span: UploaderOptionsSpan.small,
     options: [
       {
         label: 'POST',
@@ -69,6 +72,8 @@ export const options: UploaderOptions = [
     name: 'fileFieldName',
     value: 'file',
     valueType: 'input',
+    desc: 'form-data 上传时的 file 字段名称',
+    span: UploaderOptionsSpan.small,
     required: true
   },
   {
@@ -76,13 +81,17 @@ export const options: UploaderOptions = [
     name: 'responseUrlFieldName',
     value: 'data.url',
     valueType: 'input',
+    desc: '文件 url 在响应数据中对应的字段路径，支持嵌套，比如 data.url',
+    span: UploaderOptionsSpan.small,
     required: true
   },
   {
     label: '响应提示字段名',
     name: 'responseMessageName',
     value: 'message',
-    valueType: 'input'
+    valueType: 'input',
+    desc: '用于处理上传失败时，获取接口返回的错误消息字段',
+    span: UploaderOptionsSpan.small
   },
   {
     label: '请求头参数',
