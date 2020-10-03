@@ -53,6 +53,10 @@
     "publish": [
       "github"
     ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.icns.ico"
+    },
     "mac": {
       "icon": "assets/icon.icns",
       "identity": null,
