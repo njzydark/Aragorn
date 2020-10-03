@@ -3,7 +3,7 @@ name: Build/release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   release:
@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
