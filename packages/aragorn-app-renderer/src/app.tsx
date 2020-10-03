@@ -151,8 +151,8 @@ const App = () => {
       <AppContext.Provider value={data}>
         <HashRouter>
           {isNotMac && <WindowButton />}
-          <SideBar routes={routes} />
-          <div className={isNotMac ? 'app-main-content-wrapper custom-scroll-bar' : 'app-main-content-wrapper'}>
+          <SideBar className={isNotMac ? 'app-win32-wrapper' : ''} routes={routes} />
+          <div className={isNotMac ? 'app-main-content-wrapper app-win32-wrapper' : 'app-main-content-wrapper'}>
             <Switch>
               {routes.map(
                 route => route.path && <Route key={route.path} path={route.path} component={route.component} exact />

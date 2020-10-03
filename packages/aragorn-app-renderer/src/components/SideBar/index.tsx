@@ -6,6 +6,7 @@ import './index.less';
 
 interface Props {
   routes: Routes;
+  className?: string;
 }
 
 interface MenuProps extends Props {
@@ -29,7 +30,7 @@ const Menu = ({ routes, current, handleSideChange }: MenuProps) => {
   );
 };
 
-export const SideBar = ({ routes }: Props) => {
+export const SideBar = ({ routes, className = '' }: Props) => {
   const [current, setCurrent] = useState(routes[0].name);
 
   let location = useLocation();
@@ -61,7 +62,7 @@ export const SideBar = ({ routes }: Props) => {
   };
 
   return (
-    <div className="app-sidebar-wrapper">
+    <div className={`app-sidebar-wrapper ${className}`}>
       <div className="logo" />
       <div className="menu-list">
         <Menu routes={routes.filter(item => !item.isFooter)} current={current} handleSideChange={handleSideChange} />
