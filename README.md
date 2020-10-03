@@ -127,6 +127,7 @@ npm run setup
    ```txt
    registry=https://registry.npm.taobao.org
    ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+   ELECTRON_BUILDER_BINARIES_MIRROR=http://npm.taobao.org/mirrors/electron-builder-binaries/
    ```
 
 ### 开发模式
