@@ -20,7 +20,9 @@ export class Ipc {
   }
 
   static sendMessage(channel: string, channelData?: any) {
-    Ipc.win.webContents.send(channel, channelData);
+    if (BrowserWindow.getAllWindows().length > 0) {
+      Ipc.win.webContents.send(channel, channelData);
+    }
   }
 
   core: AragornCore;

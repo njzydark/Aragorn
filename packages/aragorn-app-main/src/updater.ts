@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { app } from 'electron';
+import { app, Notification, shell } from 'electron';
 import { lt } from 'semver';
 import { Setting } from './setting';
 import { Ipc } from './ipc';
@@ -30,16 +30,19 @@ export class Updater {
     this.setting = Setting.getInstance();
   }
 
-  checkUpdate(manul = false) {
+  checkUpdate(manul = false, useSystemNotification = false) {
     if (manul) {
-      this.sendMessage({
-        message: '正在检查更新...'
-      });
+      this.sendMessage(
+        {
+          message: '正在检查更新...'
+        },
+        useSystemNotification
+      );
     }
-    this.checkUpdateFromGithub(manul);
+    this.checkUpdateFromGithub(manul, useSystemNotification);
   }
 
-  protected async checkUpdateFromGithub(manul: boolean) {
+  protected async checkUpdateFromGithub(manul: boolean, useSystemNotification: boolean) {
     try {
       const { useBetaVersion } = this.setting.get();
       const res = await axios.get<{ prerelease: boolean; draft: boolean; tag_name: string; html_url: string }[]>(
@@ -62,33 +65,55 @@ export class Updater {
           }
         }
         if (updateInfo) {
-          this.sendMessage({
-            message: `有新版本可供更新`,
-            description: `${updateInfo.tag_name}`,
-            url: updateInfo.html_url
-          });
+          this.sendMessage(
+            {
+              message: `有新版本可供更新`,
+              description: `${updateInfo.tag_name}`,
+              url: updateInfo.html_url
+            },
+            useSystemNotification
+          );
         } else {
           manul &&
-            this.sendMessage({
-              message: '当前已是最新版本'
-            });
+            this.sendMessage(
+              {
+                message: '当前已是最新版本'
+              },
+              useSystemNotification
+            );
         }
       } else {
         manul &&
-          this.sendMessage({
-            message: `网络请求失败，请稍后重试`
-          });
+          this.sendMessage(
+            {
+              message: `网络请求失败，请稍后重试`
+            },
+            useSystemNotification
+          );
       }
     } catch (err) {
       manul &&
-        this.sendMessage({
-          message: `检查更新失败`,
-          description: err.message
-        });
+        this.sendMessage(
+          {
+            message: `检查更新失败`,
+            description: err.message
+          },
+          useSystemNotification
+        );
     }
   }
 
-  protected sendMessage(channelData: UpdaterChannelData) {
-    Ipc.sendMessage('app-updater-message', channelData);
+  protected sendMessage(channelData: UpdaterChannelData, useSystemNotification: boolean) {
+    if (useSystemNotification) {
+      const notification = new Notification({ title: channelData.message, body: channelData.description || '' });
+      if (channelData.url) {
+        notification.on('click', () => {
+          shell.openExternal(channelData.url as string);
+        });
+      }
+      notification.show();
+    } else {
+      Ipc.sendMessage('app-updater-message', channelData);
+    }
   }
 }

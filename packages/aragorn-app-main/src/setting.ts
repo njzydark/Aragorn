@@ -81,6 +81,11 @@ export class Setting {
     return this.configuration;
   }
 
+  setUrlType(type: SettingConfiguration['urlType']) {
+    this.configuration.urlType = type;
+    this.save();
+  }
+
   setDefaultUploaderProfile(id: string, flag = true) {
     if (flag) {
       this.configuration.defaultUploaderProfileId = id;

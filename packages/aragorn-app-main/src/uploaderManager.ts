@@ -220,7 +220,7 @@ export class UploaderManager {
           .then(res => {
             const totalLength = res.headers['content-length'] as number;
             const writer = fs.createWriteStream(`${app.getPath('downloads')}/${name}`);
-            let error = null;
+            let error: Error | null = null;
             let curLength = 0;
             res.data.on('data', chunk => {
               curLength += chunk.length;
