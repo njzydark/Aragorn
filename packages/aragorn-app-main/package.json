@@ -1,7 +1,7 @@
 {
   "name": "aragorn-app-main",
   "productName": "Aragorn",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "description": "electron main",
   "author": "njzy <njzydark@gmail.com>",
   "homepage": "https://github.com/njzydark/Aragorn/tree/master/packages/electron-main#readme",
