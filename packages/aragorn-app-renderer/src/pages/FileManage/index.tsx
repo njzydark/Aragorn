@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { clipboard, ipcRenderer } from 'electron';
 import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider } from 'antd';
 import { FileOutlined, FolderOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import dayjs from 'dayjs';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
 import { domainPathRegExp } from '@renderer/utils/validationRule';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import { ListFile, FileListResponse, DeleteFileResponse, CreateDirectoryResponse } from 'aragorn-types';
@@ -13,9 +13,11 @@ import './index.less';
 
 export const FileManage = () => {
   const {
-    uploaderProfiles,
-    configuration: { defaultUploaderProfileId }
-  } = useContext(AppContext);
+    state: {
+      uploaderProfiles,
+      configuration: { defaultUploaderProfileId }
+    }
+  } = useAppContext();
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 

@@ -1,15 +1,17 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Divider, Select, Space } from 'antd';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
 import { UploaderProfileForm, UploaderProfileFormHandle } from '@renderer/components/UploaderProfileForm';
 import './index.less';
 
 export const Profile = () => {
   const {
-    uploaderProfiles,
-    configuration: { defaultUploaderProfileId }
-  } = useContext(AppContext);
+    state: {
+      uploaderProfiles,
+      configuration: { defaultUploaderProfileId }
+    }
+  } = useAppContext();
 
   const { id } = useParams<{ id: string }>();
 

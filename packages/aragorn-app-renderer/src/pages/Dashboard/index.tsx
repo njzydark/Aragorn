@@ -1,19 +1,21 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { clipboard, shell, ipcRenderer } from 'electron';
 import { Table, message, Popover, Space, Button, Badge, Divider } from 'antd';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
 import { Plus, Box } from 'react-feather';
 import { UploadedFileInfo } from '@main/uploaderManager';
 import './index.less';
 
 export const Dashboard = () => {
   const {
-    uploaderProfiles,
-    configuration: { defaultUploaderProfileId },
-    uploadedFiles
-  } = useContext(AppContext);
+    state: {
+      uploaderProfiles,
+      configuration: { defaultUploaderProfileId },
+      uploadedFiles
+    }
+  } = useAppContext();
 
   const history = useHistory();
 

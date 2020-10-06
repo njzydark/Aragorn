@@ -1,11 +1,10 @@
 /* eslint-disable no-template-curly-in-string */
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { Row, Col, Form, Input, InputNumber, Button, Select, Radio, Switch, message, Space, Divider } from 'antd';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
+import { usePlatform } from '@renderer/hook/usePlatform';
 import { domainPathValidationRule } from '@renderer/utils/validationRule';
-
-const platform = window.navigator.platform.toLowerCase();
 
 const inputItemLayout = {
   labelCol: { span: 6 },
@@ -17,7 +16,12 @@ const switchtemLayout = {
 };
 
 export const Setting = () => {
-  const { configuration, uploaderProfiles } = useContext(AppContext);
+  const {
+    state: { configuration, uploaderProfiles }
+  } = useAppContext();
+
+  const platform = usePlatform();
+
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -193,7 +197,7 @@ export const Setting = () => {
             保存并应用
           </Button>
           <Button onClick={handleReset}>放弃</Button>
-          {platform.includes('mac') && (
+          {platform === 'darwin' && (
             <>
               <Button onClick={handleInstallCli}>安装 CLI</Button>
               <Button onClick={handleAddWorkflow}>添加右键菜单</Button>

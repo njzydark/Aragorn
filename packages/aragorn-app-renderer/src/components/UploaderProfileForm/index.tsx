@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext, forwardRef, useImperativeHandle, Ref } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, Ref } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { Form, Input, Select, message, Switch, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getFormRule } from '@renderer/utils/validationRule';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
 import { Uploader as IUploader, UploaderOptionsSpan } from 'aragorn-types';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 
@@ -26,10 +26,12 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
   }));
 
   const {
-    uploaders,
-    uploaderProfiles,
-    configuration: { defaultUploaderProfileId }
-  } = useContext(AppContext);
+    state: {
+      uploaders,
+      uploaderProfiles,
+      configuration: { defaultUploaderProfileId }
+    }
+  } = useAppContext();
 
   const [curUploader, setCurUploader] = useState({} as IUploader);
 

@@ -1,11 +1,13 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Space, Divider } from 'antd';
-import { AppContext } from '@renderer/app';
+import { useAppContext } from '@renderer/context/app';
 import { UploaderProfileForm, UploaderProfileFormHandle } from '@renderer/components/UploaderProfileForm';
 import './index.less';
 
 export const Uploader = () => {
-  const { uploaders } = useContext(AppContext);
+  const {
+    state: { uploaders }
+  } = useAppContext();
 
   const [curName, setCurName] = useState('');
 
