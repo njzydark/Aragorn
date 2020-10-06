@@ -6,6 +6,7 @@ import { History } from './history';
 import { UploaderManager } from './uploaderManager';
 import { UploaderProfileManager, UploaderProfile } from './uploaderProfileManager';
 import { WebServer } from './webServer';
+import { Logger } from './logger';
 
 export class Ipc {
   static win: BrowserWindow;
@@ -32,6 +33,7 @@ export class Ipc {
   uploaderManager: UploaderManager;
   uploaderProfileManager: UploaderProfileManager;
   webServer: WebServer;
+  logger: Logger;
 
   protected constructor() {
     this.core = new AragornCore();
@@ -42,6 +44,7 @@ export class Ipc {
     this.uploaderManager = UploaderManager.getInstance();
     this.uploaderProfileManager = UploaderProfileManager.getInstance();
     this.webServer = WebServer.getInstance();
+    this.logger = Logger.getInstance();
 
     this.init();
   }
@@ -111,6 +114,10 @@ export class Ipc {
     ipcMain.on('install-cli', async event => {
       const res = await this.setting.installCli();
       event.reply('install-cli-reply', res);
+    });
+
+    ipcMain.on('open-log', () => {
+      this.logger.open();
     });
   }
 

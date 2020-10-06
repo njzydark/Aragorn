@@ -27,12 +27,12 @@ export class UploaderProfileManager {
   }
 
   getAll() {
-    console.log('获取所有上传器配置');
+    console.log('get all uploader profile');
     return this.uploaderProfiles;
   }
 
   add(uploaderProfile: UploaderProfile) {
-    console.log(`添加名称为${uploaderProfile.name}的上传器配置`);
+    console.log(`add uploader profile: ${uploaderProfile.name}`);
     uploaderProfile.id = uuidv4();
     this.uploaderProfiles.push(uploaderProfile);
     this.save();
@@ -40,12 +40,12 @@ export class UploaderProfileManager {
   }
 
   get(uploaderProfile: UploaderProfile) {
-    console.log(`获取名称为${uploaderProfile.name}的上传器配置`);
+    console.log(`get uploader profile: ${uploaderProfile.name}`);
     return this.uploaderProfiles.find(item => item.id === uploaderProfile.id);
   }
 
   update(uploaderProfile: UploaderProfile) {
-    console.log(`更新名称为${uploaderProfile.name}的上传器配置`);
+    console.log(`update uploader profile: ${uploaderProfile.name}`);
     this.uploaderProfiles = this.uploaderProfiles.map(item => {
       if (item.id === uploaderProfile.id) {
         // eslint-disable-next-line no-param-reassign
@@ -58,7 +58,7 @@ export class UploaderProfileManager {
   }
 
   delete(id: string) {
-    console.log(`删除 ID 为${id}的上传器配置`);
+    console.log(`delete uploader profile: ${id}`);
     this.uploaderProfiles = this.uploaderProfiles.filter(item => item.id !== id);
     this.save();
     return this.uploaderProfiles;

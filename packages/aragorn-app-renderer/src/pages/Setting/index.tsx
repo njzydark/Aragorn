@@ -70,6 +70,10 @@ export const Setting = () => {
     ipcRenderer.send('install-cli');
   };
 
+  const handleOpenLog = () => {
+    ipcRenderer.send('open-log');
+  };
+
   return (
     <div className="setting-wrapper">
       <header>
@@ -203,6 +207,7 @@ export const Setting = () => {
               <Button onClick={handleAddWorkflow}>添加右键菜单</Button>
             </>
           )}
+          <Button onClick={handleOpenLog}>打开日志</Button>
         </Space>
       </footer>
     </div>

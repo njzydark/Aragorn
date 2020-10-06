@@ -70,23 +70,25 @@ export class Setting {
   }
 
   get() {
-    console.log('获取App设置');
+    console.log('get setting configuration');
     return { ...defaultSettingConfigurtion, ...this.configuration };
   }
 
   update(configuration: SettingConfiguration) {
-    console.log('更新App设置');
+    console.log('update setting configuration');
     this.configuration = configuration;
     this.save();
     return this.configuration;
   }
 
   setUrlType(type: SettingConfiguration['urlType']) {
+    console.log('update url type');
     this.configuration.urlType = type;
     this.save();
   }
 
   setDefaultUploaderProfile(id: string, flag = true) {
+    console.log('update default uploader profile');
     if (flag) {
       this.configuration.defaultUploaderProfileId = id;
     } else if (this.configuration.defaultUploaderProfileId === id) {
@@ -97,6 +99,7 @@ export class Setting {
   }
 
   deleteDefaultUploaderProfile(id: string) {
+    console.log('delete default uplpader profile');
     if (this.configuration.defaultUploaderProfileId === id) {
       this.configuration.defaultUploaderProfileId = '';
       this.save();
@@ -104,6 +107,7 @@ export class Setting {
   }
 
   copyDarwinWorkflow() {
+    console.log('copy darwin workflow');
     const appPath = app.getAppPath();
     const destPath = path.join(app.getPath('home'), '/Library/Services/Upload by Aragorn.workflow');
     let workflowPath = '';
@@ -118,6 +122,7 @@ export class Setting {
 
   async installCli() {
     try {
+      console.log('install cli');
       const appPath = app.getAppPath();
       const destPath = '/usr/local/bin/aragorn';
       let cliPath = '';
@@ -137,7 +142,7 @@ export class Setting {
       });
       return res;
     } catch (err) {
-      console.log(err.message);
+      console.error(`install cli error: ${err.message}`);
     }
   }
 

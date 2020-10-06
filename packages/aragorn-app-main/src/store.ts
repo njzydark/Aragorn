@@ -15,7 +15,6 @@ export const settingStore = new ElectronStore({ name: 'setting', cwd });
 
 export const uploaderProfilesStore = new ElectronStore({ name: 'uploaderProfiles', cwd });
 
-// 将项目最开始版本的配置文件迁移到新版
 if (fs.existsSync(`${cwd}/config.json`)) {
   let oldVersionUploaderProfiles = [] as any;
 

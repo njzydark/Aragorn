@@ -60,6 +60,7 @@ export class WebServer {
 
       this.server.on('error', (err: Error & { code: string }) => {
         if (err.code === 'EADDRINUSE') {
+          console.warn('webserver port is used');
           Ipc.sendMessage('web-server-start-reply', err);
         }
         this.server?.close();

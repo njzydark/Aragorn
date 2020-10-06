@@ -86,6 +86,7 @@ export class UploaderManager {
   }
 
   async handleUploadTest(testProfile: UploaderProfile) {
+    console.log('test uploader profile');
     const data: UploadOptions = {
       files: [path.resolve(__dirname, '../assets/icon.png')],
       directoryPath: 'aragorn-upload-test',
@@ -97,6 +98,7 @@ export class UploaderManager {
 
   async upload(uploadOptions: UploadOptions) {
     try {
+      console.log('upload start');
       const { files, customUploaderProfileId, directoryPath, isFromFileManage, testProfile, isTest } = uploadOptions;
       const {
         configuration: { defaultUploaderProfileId, proxy, rename, renameFormat }
@@ -115,8 +117,10 @@ export class UploaderManager {
       if (!uploaderProfile) {
         let notification;
         if (customUploaderProfileId) {
+          console.warn('upload failed: no uploader profile');
           notification = new Notification({ title: '上传操作异常', body: `上传器配置不存在` });
         } else {
+          console.warn('upload failed: no default uploader profile');
           const message = uploaderProfiles.length > 0 ? '请配置默认的上传器' : '请添加上传器配置';
           notification = new Notification({ title: '上传操作异常', body: message });
         }
@@ -127,6 +131,7 @@ export class UploaderManager {
       const uploader = this.core.getUploaderByName(uploaderProfile.uploaderName);
 
       if (!uploader) {
+        console.warn('upload failed: not found uploader');
         const message = `没有找到${uploaderProfile.uploaderName}上传器`;
         const notification = new Notification({ title: '上传操作异常', body: message });
         notification.show();
@@ -197,8 +202,11 @@ export class UploaderManager {
         this.handleSingleUploaded(successRes[0], failRes[0]);
       }
 
+      console.log('upload finish');
+
       return successRes;
     } catch (err) {
+      console.error(`upload error: ${err.message}`);
       if (uploadOptions.isTest) {
         Ipc.sendMessage('uploader-profile-test-reply', false);
       }
@@ -208,6 +216,7 @@ export class UploaderManager {
   }
 
   async getFileList(uploaderProfileId: string, directoryPath?: string) {
+    console.log('get file list');
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.getFileList) {
       const res = await uploader.getFileList(directoryPath);
@@ -218,6 +227,7 @@ export class UploaderManager {
   }
 
   async deleteFile(uploaderProfileId: string, fileNames: string[]) {
+    console.log('delete file');
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.deleteFile) {
       const res = await uploader.deleteFile(fileNames);
@@ -228,6 +238,7 @@ export class UploaderManager {
   }
 
   async createDirectory(uploaderProfileId: string, directoryPath: string) {
+    console.log('create directory');
     const uploader = this.getUploader(uploaderProfileId);
     if (uploader?.createDirectory) {
       const res = await uploader.createDirectory(directoryPath);
@@ -239,6 +250,7 @@ export class UploaderManager {
 
   async download(name: string, url: string) {
     try {
+      console.log('download start');
       const { proxy } = this.setting.configuration;
       await new Promise((resolve, reject) => {
         axios
@@ -263,6 +275,7 @@ export class UploaderManager {
             });
             writer.on('close', () => {
               if (!error) {
+                console.log('download finish');
                 totalLength === undefined && Ipc.sendMessage('file-download-reply');
                 resolve();
               }
@@ -271,6 +284,7 @@ export class UploaderManager {
           .catch(reject);
       });
     } catch (err) {
+      console.error(`download error: ${err.message}`);
       Ipc.sendMessage('file-download-reply', err.message || '下载失败');
     }
   }

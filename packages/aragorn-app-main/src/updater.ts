@@ -31,6 +31,7 @@ export class Updater {
   }
 
   checkUpdate(manul = false, useSystemNotification = false) {
+    console.log('check update');
     if (manul) {
       this.sendMessage(
         {
@@ -92,6 +93,7 @@ export class Updater {
           );
       }
     } catch (err) {
+      console.error(`check update error: ${err.message}`);
       manul &&
         this.sendMessage(
           {

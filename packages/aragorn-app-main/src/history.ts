@@ -18,12 +18,14 @@ export class History {
   }
 
   add(uploadedFiles: UploadedFileInfo[]) {
+    console.log('add uplpad history');
     this.uploadedFiles.unshift(...uploadedFiles);
     historyStore.set('history', this.uploadedFiles);
     return this.uploadedFiles;
   }
 
   clear(ids: string[]) {
+    console.log('clear upload history');
     ids.forEach(id => {
       const index = this.uploadedFiles.findIndex(item => item.id === id);
       if (index > -1) {
@@ -35,6 +37,7 @@ export class History {
   }
 
   get() {
+    console.log('get all upload history');
     return this.uploadedFiles;
   }
 }

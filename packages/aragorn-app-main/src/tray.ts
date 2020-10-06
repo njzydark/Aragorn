@@ -35,16 +35,18 @@ export class Tray {
 
   init() {
     this.tray.addListener('right-click', () => {
+      console.log('tray right click');
       const contextMenu = this.getContextMenu();
       this.tray.popUpContextMenu(contextMenu);
     });
 
     this.tray.addListener('click', () => {
+      console.log('tray click');
       this.windowManager.showWindow();
     });
 
-    // 托盘拖拽上传
     this.tray.addListener('drop-files', (_, files) => {
+      console.log('drop files to tray');
       this.uploadManager.upload({ files });
     });
   }
@@ -62,12 +64,14 @@ export class Tray {
       {
         label: '控制台',
         click: () => {
+          console.log('show dashboard from tray menu');
           this.windowManager.showWindow();
         }
       },
       {
         label: '手动上传',
         click: () => {
+          console.log('upload from tray menu');
           this.windowManager.showWindow();
           if (this.windowManager.mainWindow) {
             dialog
@@ -94,6 +98,7 @@ export class Tray {
             type: 'radio',
             checked: urlType === item,
             click: () => {
+              console.log('change url type from tray menu');
               this.setting.setUrlType(item);
               Ipc.sendMessage('setting-configuration-get-reply', this.setting.configuration);
             }
@@ -110,6 +115,7 @@ export class Tray {
             type: 'checkbox',
             checked: item.id === defaultUploaderProfileId,
             click: () => {
+              console.log('change uplpader profile from tray menu');
               this.setting.setDefaultUploaderProfile(item.id);
               Ipc.sendMessage('setting-configuration-get-reply', this.setting.configuration);
             }
@@ -122,12 +128,14 @@ export class Tray {
       {
         label: '检查更新',
         click: () => {
+          console.log('check update from tray menu');
           this.updater.checkUpdate(true, true);
         }
       },
       {
         label: '退出',
         click: () => {
+          console.log('exit app from tray menu');
           app.exit();
         }
       }
