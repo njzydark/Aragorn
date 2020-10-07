@@ -5,7 +5,9 @@
 [![GitHub](https://img.shields.io/github/license/njzydark/Aragorn)](https://github.com/njzydark/Aragorn/blob/master/LICENSE)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square)](https://lerna.js.org/)
 
-一款基于 `Electron + React + TS` 开发的文件上传及管理工具，可作为图床上传或对象存储文件管理工具使用
+一款基于 `Electron + React + TS` 开发的对象存储管理工具，同时也可作为图床上传工具使用
+
+**PS:** 功能实现主要依靠相关厂商的对象存储 SDK，但是也可自行扩展，只要按规范实现软件的[上传器接口](./packages/aragorn-types/src/uploader.ts)即可
 
 ![aragorn](assets/aragorn.png)
 
@@ -60,8 +62,8 @@ curl http://127.0.0.1:7777 -X POST -H "Content-Type: application/json" -d '{"fil
 
 ```json
 {
-  "url": "第一张图片地址",
-  "urls": ["图片地址"]
+  "url": "urls中的第一个",
+  "urls": ["文件地址"]
 }
 ```
 
