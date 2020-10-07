@@ -22,7 +22,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "react-transition-group": "^4.4.1"
   },
   "devDependencies": {
     "antd-dayjs-webpack-plugin": "^1.0.1",
