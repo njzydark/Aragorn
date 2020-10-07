@@ -54,6 +54,10 @@
     "publish": [
       "github"
     ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
     "win": {
       "target": "nsis",
       "icon": "assets/icon.icns.ico"
