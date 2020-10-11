@@ -3,6 +3,7 @@ const path = require('path');
 const { ContextReplacementPlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { dependencies } = require('./package.json');
 
 const devMode = process.env.NODE_ENV === 'development';
@@ -27,6 +28,10 @@ module.exports = {
     __filename: false
   },
   devtool: devMode ? 'source-map' : 'none',
+  stats: {
+    modules: false,
+    children: false
+  },
   module: {
     rules: [
       {
@@ -42,6 +47,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin(),
     new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [{ from: path.resolve(__dirname, './assets'), to: path.resolve(__dirname, './dist/assets') }]

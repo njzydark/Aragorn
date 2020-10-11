@@ -5,16 +5,16 @@
   "version": "0.2.0",
   "compounds": [
     {
-      "name": "Aragorn App Debug",
+      "name": "App Debug",
       "configurations": [
-        "Aragorn App Main",
-        "Aragorn App Renderer"
-      ]
+        "App Main",
+        "App Renderer"
+      ],
     }
   ],
   "configurations": [
     {
-      "name": "Aragorn App Main",
+      "name": "App Main",
       "program": "${workspaceFolder}/packages/aragorn-app-main/dist/main/index.js",
       "request": "launch",
       "cwd": "${workspaceFolder}/packages/aragorn-app-main",
@@ -25,10 +25,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "type": "node",
+      "type": "pwa-node",
     },
     {
-      "name": "Aragorn App Renderer",
+      "name": "App Renderer",
       "port": 9223,
       "request": "attach",
       "type": "pwa-chrome",
@@ -36,14 +36,14 @@
       "restart": true,
     },
     {
-      "name": "Aragorn Cli",
+      "name": "App Cli",
       "program": "${workspaceFolder}/packages/aragorn-cli/dist/index.js",
       "request": "launch",
       "cwd": "${workspaceFolder}/packages/aragorn-cli",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "type": "node",
+      "type": "pwa-node",
     },
   ]
 }

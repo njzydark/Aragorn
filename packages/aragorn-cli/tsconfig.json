@@ -1,12 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "composite": false
   },
-  "include": [
-    "package.json",
-    "src"
-  ],
   "references": [
     {
       "path": "../aragorn-core"

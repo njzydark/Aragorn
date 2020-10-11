@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 
 const devMode = process.env.NODE_ENV === 'development';
@@ -42,6 +43,10 @@ module.exports = {
     runtimeChunk: {
       name: 'manifest'
     }
+  },
+  stats: {
+    modules: false,
+    children: false
   },
   module: {
     rules: [
@@ -96,6 +101,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin(),
     new CleanWebpackPlugin(),
     new webpack.ProvidePlugin({
       React: 'react'

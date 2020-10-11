@@ -8,27 +8,31 @@
       "dependsOn": [
         "App Main Dev",
         "App Renderer Dev"
-      ]
+      ],
+      "problemMatcher": []
     },
     {
       "type": "npm",
       "script": "dev",
       "path": "packages/aragorn-app-main/",
       "isBackground": true,
-      "label": "App Main Dev"
+      "label": "App Main Dev",
+      "problemMatcher": []
     },
     {
       "type": "npm",
       "script": "dev",
       "path": "packages/aragorn-app-renderer/",
       "isBackground": true,
-      "label": "App Renderer Dev"
+      "label": "App Renderer Dev",
+      "problemMatcher": []
     },
     {
       "type": "npm",
       "script": "dev",
       "path": "packages/aragorn-core/",
       "isBackground": true,
+      "problemMatcher": "$tsc-watch",
       "label": "App Core Dev"
     },
     {
@@ -36,7 +40,8 @@
       "script": "dev",
       "path": "packages/aragorn-cli/",
       "isBackground": true,
-      "label": "App Cli Dev"
+      "label": "App Cli Dev",
+      "problemMatcher": []
     }
   ]
 }

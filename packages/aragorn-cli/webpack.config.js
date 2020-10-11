@@ -2,6 +2,7 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { ContextReplacementPlugin } = require('webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const devMode = process.env.NODE_ENV === 'development';
 
@@ -22,6 +23,10 @@ module.exports = {
     __filename: false
   },
   devtool: devMode ? 'source-map' : 'none',
+  stats: {
+    modules: false,
+    children: false
+  },
   module: {
     rules: [
       {
@@ -36,5 +41,5 @@ module.exports = {
       }
     ]
   },
-  plugins: [new CleanWebpackPlugin(), new ContextReplacementPlugin(/any-promise/)]
+  plugins: [new ForkTsCheckerWebpackPlugin(), new CleanWebpackPlugin(), new ContextReplacementPlugin(/any-promise/)]
 };
