@@ -10,7 +10,7 @@ const devMode = process.env.NODE_ENV === 'development';
 
 module.exports = {
   target: 'electron-main',
-  externals: [...Object.keys(dependencies || {})],
+  externals: [...Object.keys(dependencies || {}), { fsevents: "require('fsevents')" }],
   entry: {
     index: path.resolve(__dirname, 'src/index.ts'),
     preload: path.resolve(__dirname, 'src/preload.ts')

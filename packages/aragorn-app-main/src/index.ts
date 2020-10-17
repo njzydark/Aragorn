@@ -1,10 +1,20 @@
 import { config as dotenvConfig } from 'dotenv';
 import { app } from 'electron';
+import reloader from 'electron-reloader';
 import { Logger } from './logger';
 import { Tray } from './tray';
 import { WindowManager } from './windowManager';
 import { WebServer } from './webServer';
 import { Ipc } from './ipc';
+
+try {
+  module.filename = __filename;
+  reloader(module, {
+    watchRenderer: false
+  });
+} catch (err) {
+  console.error(err);
+}
 
 Logger.getInstance().init();
 

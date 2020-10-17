@@ -4,6 +4,15 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "App",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "App Dev",
+        "App Start"
+      ],
+      "problemMatcher": []
+    },
+    {
       "label": "App Dev",
       "dependsOn": [
         "App Main Dev",
@@ -15,17 +24,52 @@
       "type": "npm",
       "script": "dev",
       "path": "packages/aragorn-app-main/",
-      "isBackground": true,
       "label": "App Main Dev",
-      "problemMatcher": []
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "base": "$tsc-watch",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".",
+            "endsPattern": "No issues found"
+          }
+        },
+      ]
     },
     {
       "type": "npm",
       "script": "dev",
       "path": "packages/aragorn-app-renderer/",
-      "isBackground": true,
       "label": "App Renderer Dev",
-      "problemMatcher": []
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "base": "$tsc-watch",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".",
+            "endsPattern": "No issues found"
+          }
+        },
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "packages/aragorn-app-main/",
+      "label": "App Start",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "base": "$tsc-watch",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "Debugger listening on",
+            "endsPattern": "For help"
+          }
+        },
+      ]
     },
     {
       "type": "npm",

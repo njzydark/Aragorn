@@ -6,26 +6,34 @@
   "compounds": [
     {
       "name": "App Debug",
+      "preLaunchTask": "App",
       "configurations": [
         "App Main",
         "App Renderer"
       ],
+      "presentation": {
+        "hidden": false,
+        "group": "App",
+        "order": 1
+      }
     }
   ],
   "configurations": [
     {
       "name": "App Main",
-      "program": "${workspaceFolder}/packages/aragorn-app-main/dist/main/index.js",
-      "request": "launch",
+      "port": 9224,
+      "request": "attach",
       "cwd": "${workspaceFolder}/packages/aragorn-app-main",
-      "runtimeExecutable": "${workspaceFolder}/packages/aragorn-app-main/node_modules/.bin/electron",
-      "runtimeArgs": [
-        "--remote-debugging-port=9223"
-      ],
+      "restart": true,
       "skipFiles": [
         "<node_internals>/**"
       ],
       "type": "pwa-node",
+      "presentation": {
+        "hidden": false,
+        "group": "",
+        "order": 2
+      }
     },
     {
       "name": "App Renderer",
@@ -34,6 +42,11 @@
       "type": "pwa-chrome",
       "webRoot": "${workspaceFolder}/packages/aragorn-app-renderer",
       "restart": true,
+      "presentation": {
+        "hidden": false,
+        "group": "",
+        "order": 3
+      }
     },
     {
       "name": "App Cli",
@@ -44,6 +57,11 @@
         "<node_internals>/**"
       ],
       "type": "pwa-node",
+      "presentation": {
+        "hidden": false,
+        "group": "",
+        "order": 4
+      }
     },
   ]
 }
