@@ -4,11 +4,10 @@
       "@babel/preset-env",
       {
         "targets": {
-          "node": true
+          "electron": 10
         }
       }
     ],
-    "@babel/preset-react",
     "@babel/preset-typescript"
   ],
   "plugins": [
@@ -22,13 +21,5 @@
       }
     ],
     "@babel/plugin-proposal-class-properties",
-    [
-      "babel-plugin-import",
-      {
-        "libraryName": "antd",
-        "libraryDirectory": "es",
-        "style": "css"
-      }
-    ]
   ]
 }

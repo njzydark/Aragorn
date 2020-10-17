@@ -22,7 +22,7 @@ module.exports = {
     __dirname: false,
     __filename: false
   },
-  devtool: devMode ? 'source-map' : 'none',
+  devtool: devMode ? 'source-map' : false,
   stats: {
     modules: false,
     children: false

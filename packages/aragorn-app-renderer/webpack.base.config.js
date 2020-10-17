@@ -51,9 +51,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /(node_modules)/,
-        enforce: 'pre',
         use: [
           {
             loader: 'babel-loader'
