@@ -37,12 +37,9 @@ export class GithubUploader implements Uploader {
   changeOptions(newOptions: UploaderOptions, proxy?: string) {
     this.options = newOptions;
     this.config = this.getConfig();
-    if (proxy) {
-      this.agent = new HttpsProxyAgent(proxy);
-    } else {
-      this.agent = null;
-    }
-    let { owner, repo, token } = this.config;
+    this.agent = proxy ? new HttpsProxyAgent(proxy) : null;
+    const { owner, repo, token } = this.config;
+
     this.axiosInstance = axios.create({
       baseURL: `https://api.github.com/repos/${owner}/${repo}/contents`,
       headers: {
@@ -56,13 +53,14 @@ export class GithubUploader implements Uploader {
   async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
-      let { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
+      const { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
       let url = '';
       if (isFromFileManage) {
         url = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
       } else {
         url = path ? `/${path}/${fileName}` : `/${fileName}`;
       }
+
       const content = Buffer.isBuffer(file) ? file.toString('base64') : fs.readFileSync(file, { encoding: 'base64' });
       const res = await this.axiosInstance.request({
         url,
@@ -70,7 +68,7 @@ export class GithubUploader implements Uploader {
         data: { message, branch, content }
       });
       if (res.status === 201) {
-        let url = customDomain
+        const url = customDomain
           ? res.data.content.download_url.replace(
               `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
               customDomain
@@ -115,8 +113,7 @@ export class GithubUploader implements Uploader {
           if (cur.type === 'dir') {
             cur.type = 'directory';
             directoryData.push(cur);
-          }
-          if (cur.type === 'file') {
+          } else if (cur.type === 'file') {
             cur.url = cur.download_url;
             cur.url = customDomain
               ? cur.download_url.replace(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`, customDomain)
