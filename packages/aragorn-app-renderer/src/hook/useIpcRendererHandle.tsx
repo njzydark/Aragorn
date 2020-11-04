@@ -92,22 +92,3 @@ export const useFileDownloadHandle = () => {
     });
   }, []);
 };
-
-export const useWebServerHandle = () => {
-  useEffect(() => {
-    ipcRenderer.on('web-server-start-reply', (_, err?: Error) => {
-      if (err) {
-        message.error(`WebServer 启动失败: ${err.message}`);
-      } else {
-        message.success(`WebServer 启动成功`);
-      }
-    });
-    ipcRenderer.on('web-server-close-reply', (_, err?: Error) => {
-      if (err) {
-        message.error(`WebServer 关闭失败: ${err.message}`);
-      } else {
-        message.success(`WebServer 已关闭`);
-      }
-    });
-  }, []);
-};

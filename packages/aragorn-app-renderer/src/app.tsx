@@ -1,15 +1,10 @@
 import React from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { routes } from './routes';
 import { SideBar } from '@renderer/components/SideBar';
 import { WindowButton } from '@renderer/components/WindowButton';
-import {
-  useAppStateHandle,
-  useAppUpdateHandle,
-  useFileDownloadHandle,
-  useWebServerHandle
-} from '@renderer/hook/useIpcRendererHandle';
+import { useAppStateHandle, useAppUpdateHandle, useFileDownloadHandle } from '@renderer/hook/useIpcRendererHandle';
 import { usePlatform } from '@renderer/hook/usePlatform';
 import './app.less';
 
@@ -17,7 +12,6 @@ const App = () => {
   useAppStateHandle();
   useAppUpdateHandle();
   useFileDownloadHandle();
-  useWebServerHandle();
   const platform = usePlatform();
 
   return (
@@ -39,7 +33,7 @@ const App = () => {
                             : 'app-main-content-wrapper'
                         }
                       >
-                        {route.component && <route.component />}{' '}
+                        {route.component && <route.component />}
                       </div>
                     </div>
                   </CSSTransition>

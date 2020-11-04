@@ -50,9 +50,7 @@ const initialState: State = {
 
 const AppContext = React.createContext<{ state: State; dispatch: React.Dispatch<{ type: ActionType; data: any }> }>({
   state: initialState,
-  dispatch: () => {
-    console.log(1);
-  }
+  dispatch: () => {}
 });
 
 export const AppContextProvider = props => {

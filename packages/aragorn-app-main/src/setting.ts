@@ -188,7 +188,7 @@ export class Setting {
     }
   }
 
-  protected save() {
+  save() {
     settingStore.set('setting', this.configuration);
   }
 }

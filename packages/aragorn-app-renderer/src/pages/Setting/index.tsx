@@ -45,6 +45,14 @@ export const Setting = () => {
       }
     }
 
+    function handleToggleWebServerReply(_, res: { toggle: boolean; success: boolean; message?: string }) {
+      if (res.success) {
+        message.success(res.toggle ? 'WebServer 开启成功' : 'WebServer 关闭成功');
+      } else {
+        message.error(res.toggle ? `WebServer 开启失败${message || ''}` : 'WebServer 关闭失败');
+      }
+    }
+
     function handleToggleUploadShortcutKeyReply(_, res: { toggle: boolean; success: boolean }) {
       if (res.success) {
         message.success(res.toggle ? '上传快捷键设置成功' : '上传快捷键关闭成功');
@@ -55,10 +63,12 @@ export const Setting = () => {
 
     ipcRenderer.on('copy-darwin-workflow-reply', handleWorkflowCopyReply);
     ipcRenderer.on('install-cli-reply', handleInstallCliReply);
+    ipcRenderer.on('toggle-webserver-reply', handleToggleWebServerReply);
     ipcRenderer.on('toggle-upload-shortcut-key-reply', handleToggleUploadShortcutKeyReply);
     return () => {
       ipcRenderer.removeListener('copy-darwin-workflow-reply', handleWorkflowCopyReply);
       ipcRenderer.removeListener('install-cli-reply', handleInstallCliReply);
+      ipcRenderer.removeListener('toggle-webserver-reply', handleToggleWebServerReply);
       ipcRenderer.removeListener('toggle-upload-shortcut-key-reply', handleToggleUploadShortcutKeyReply);
     };
   }, []);
@@ -114,6 +124,15 @@ export const Setting = () => {
 
     if (res.length > 0) {
       form.setFieldsValue({ uploadShortcutKey: res.join('+') });
+    }
+  };
+
+  const handleToggleWebServer = () => {
+    const webServerPort = form.getFieldValue('webServerPort');
+    if (webServerPort) {
+      ipcRenderer.send('toggle-webserver', webServerPort);
+    } else {
+      console.error('webServerPort is not exists');
     }
   };
 
@@ -245,14 +264,26 @@ export const Setting = () => {
             </Col>
           </Row>
           <Row>
-            <Col xs={12}>
-              <Form.Item name="openWebServer" label="WebServer" valuePropName="checked">
-                <Switch />
-              </Form.Item>
-            </Col>
-            <Col xs={12}>
-              <Form.Item name="webServerPort" label="WebServer 端口">
-                <InputNumber min={3001} max={65535} />
+            <Col xs={24}>
+              <Form.Item label="WebServer" {...inputItemLayout} wrapperCol={{ span: 8 }}>
+                <Row gutter={8}>
+                  <Col xs={18}>
+                    <Form.Item name="webServerPort">
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        min={3001}
+                        max={65535}
+                        disabled={configuration.openWebServer}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={6}>
+                    <Form.Item name="openWebServer" valuePropName="checked" hidden>
+                      <Switch />
+                    </Form.Item>
+                    <Button onClick={handleToggleWebServer}>{configuration.openWebServer ? '关闭' : '开启'}</Button>
+                  </Col>
+                </Row>
               </Form.Item>
             </Col>
           </Row>

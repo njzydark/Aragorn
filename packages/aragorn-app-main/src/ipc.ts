@@ -96,7 +96,6 @@ export class Ipc {
     ipcMain.on('setting-configuration-update', (event, newConfiguration) => {
       const configuration = this.setting.update(newConfiguration);
       if (configuration) {
-        this.webServer.init();
         event.reply('setting-configuration-update-reply', configuration);
       }
     });
@@ -104,6 +103,10 @@ export class Ipc {
     ipcMain.on('set-default-uploader-profile', (event, id) => {
       const configuration = this.setting.setDefaultUploaderProfile(id);
       event.reply('setting-configuration-get-reply', configuration);
+    });
+
+    ipcMain.on('toggle-webserver', async (_, webServerPort: number) => {
+      this.webServer.toggleWebServer(webServerPort);
     });
 
     ipcMain.on('toggle-upload-shortcut-key', async (event, shortcutKey: string) => {
