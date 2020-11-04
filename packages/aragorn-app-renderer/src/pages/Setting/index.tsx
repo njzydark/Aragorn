@@ -25,6 +25,10 @@ export const Setting = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
+    form.setFieldsValue(configuration);
+  }, [configuration]);
+
+  useEffect(() => {
     function handleWorkflowCopyReply(_, res) {
       if (res) {
         message.success('右键菜单添加成功');
@@ -41,11 +45,21 @@ export const Setting = () => {
       }
     }
 
+    function handleToggleUploadShortcutKeyReply(_, res: { toggle: boolean; success: boolean }) {
+      if (res.success) {
+        message.success(res.toggle ? '上传快捷键设置成功' : '上传快捷键关闭成功');
+      } else {
+        message.error(res.toggle ? '上传快捷键设置失败' : '上传快捷键关闭失败');
+      }
+    }
+
     ipcRenderer.on('copy-darwin-workflow-reply', handleWorkflowCopyReply);
     ipcRenderer.on('install-cli-reply', handleInstallCliReply);
+    ipcRenderer.on('toggle-upload-shortcut-key-reply', handleToggleUploadShortcutKeyReply);
     return () => {
       ipcRenderer.removeListener('copy-darwin-workflow-reply', handleWorkflowCopyReply);
       ipcRenderer.removeListener('install-cli-reply', handleInstallCliReply);
+      ipcRenderer.removeListener('toggle-upload-shortcut-key-reply', handleToggleUploadShortcutKeyReply);
     };
   }, []);
 
@@ -60,6 +74,56 @@ export const Setting = () => {
   const handleFinish = values => {
     console.log(values);
     ipcRenderer.send('setting-configuration-update', values);
+  };
+
+  /**
+   * Shortcut key recording only contains modifier key numbers and letters
+   */
+  const handleShortcutKeyRecord = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.persist();
+    event.preventDefault();
+
+    const { shiftKey, ctrlKey, altKey, metaKey, keyCode } = event;
+
+    const res = [] as string[];
+
+    if (metaKey) {
+      res.push(process.platform === 'darwin' ? 'Command' : 'Super');
+    }
+
+    if (shiftKey) {
+      res.push('Shift');
+    }
+
+    if (ctrlKey) {
+      res.push('Control');
+    }
+
+    if (altKey) {
+      res.push('Alt');
+    }
+
+    const modifierKeyCodeArr = [91, 93, 18, 17, 16];
+
+    if (!modifierKeyCodeArr.includes(keyCode)) {
+      const keyName = String.fromCharCode(keyCode).toUpperCase();
+      if (/^[0-9A-Z]$/.test(keyName)) {
+        res.push(keyName);
+      }
+    }
+
+    if (res.length > 0) {
+      form.setFieldsValue({ uploadShortcutKey: res.join('+') });
+    }
+  };
+
+  const handleToggleUploadShortcutKey = () => {
+    const uploadShortcutKey = form.getFieldValue('uploadShortcutKey');
+    if (uploadShortcutKey) {
+      ipcRenderer.send('toggle-upload-shortcut-key', uploadShortcutKey);
+    } else {
+      console.error('upload shortcut key is not exists');
+    }
   };
 
   const handleAddWorkflow = () => {
@@ -189,6 +253,27 @@ export const Setting = () => {
             <Col xs={12}>
               <Form.Item name="webServerPort" label="WebServer 端口">
                 <InputNumber min={3001} max={65535} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={24}>
+              <Form.Item label="上传快捷键" {...inputItemLayout} wrapperCol={{ span: 8 }}>
+                <Row gutter={8}>
+                  <Col xs={18}>
+                    <Form.Item name="uploadShortcutKey">
+                      <Input onKeyDown={handleShortcutKeyRecord} disabled={configuration.openUploadShortcutKey} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={6}>
+                    <Form.Item name="openUploadShortcutKey" valuePropName="checked" hidden>
+                      <Switch />
+                    </Form.Item>
+                    <Button onClick={handleToggleUploadShortcutKey}>
+                      {configuration.openUploadShortcutKey ? '关闭' : '开启'}
+                    </Button>
+                  </Col>
+                </Row>
               </Form.Item>
             </Col>
           </Row>

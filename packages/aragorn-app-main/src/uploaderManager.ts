@@ -33,10 +33,10 @@ export interface UploadedFileInfo {
 export interface FileFormData {
   originalname: string;
   mimetype: string;
-  encoding: string;
+  encoding?: string;
   buffer: Buffer;
-  size: number;
-  fieldname: string;
+  size?: number;
+  fieldname?: string;
 }
 
 interface UploadOptions {
@@ -83,6 +83,82 @@ export class UploaderManager {
     newData.forEach(item => {
       this.upload({ files: item.filesPath, customUploaderProfileId: item.id });
     });
+  }
+
+  async uploadFromClipboard() {
+    console.log('upload from clipboard');
+    let filePath: (string | FileFormData)[] = [];
+    if (process.platform === 'darwin') {
+      // https://github.com/electron/electron/issues/9035#issuecomment-359554116
+      if (clipboard.has('NSFilenamesPboardType')) {
+        filePath =
+          clipboard
+            .read('NSFilenamesPboardType')
+            .match(/<string>.*<\/string>/g)
+            ?.map(item => item.replace(/<string>|<\/string>/g, '')) || [];
+      } else {
+        const clipboardImage = clipboard.readImage('clipboard');
+        if (!clipboardImage.isEmpty()) {
+          console.log('upload image from clipboard');
+          const png = clipboardImage.toPNG();
+          const fileInfo: FileFormData = {
+            buffer: png,
+            mimetype: 'image/png',
+            originalname: uuidv4() + '.png'
+          };
+          filePath = [fileInfo];
+        } else {
+          filePath = [clipboard.read('public.file-url').replace('file://', '')].filter(item => item);
+        }
+      }
+    } else {
+      // https://github.com/electron/electron/issues/9035#issuecomment-536135202
+      // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
+      // https://www.codeproject.com/Reference/1091137/Windows-Clipboard-Formats
+      if (clipboard.has('CF_HDROP')) {
+        const rawFilePathStr = clipboard.read('CF_HDROP') || '';
+        let formatFilePathStr = [...rawFilePathStr]
+          .filter((_, index) => rawFilePathStr.charCodeAt(index) !== 0)
+          .join('')
+          .replace(/\\/g, '\\');
+
+        const drivePrefix = formatFilePathStr.match(/[a-zA-Z]:\\/);
+
+        if (drivePrefix) {
+          const drivePrefixIndex = formatFilePathStr.indexOf(drivePrefix[0]);
+          if (drivePrefixIndex !== 0) {
+            formatFilePathStr = formatFilePathStr.substring(drivePrefixIndex);
+          }
+          filePath = formatFilePathStr
+            .split(drivePrefix[0])
+            .filter(item => item)
+            .map(item => drivePrefix + item);
+        }
+      } else {
+        const clipboardImage = clipboard.readImage('clipboard');
+        if (!clipboardImage.isEmpty()) {
+          console.log('upload image from clipboard');
+          const png = clipboardImage.toPNG();
+          const fileInfo: FileFormData = {
+            buffer: png,
+            mimetype: 'image/png',
+            originalname: uuidv4() + '.png'
+          };
+          filePath = [fileInfo];
+        } else {
+          filePath = [
+            clipboard
+              .readBuffer('FileNameW')
+              .toString('ucs2')
+              .replace(RegExp(String.fromCharCode(0), 'g'), '')
+          ].filter(item => item);
+        }
+      }
+    }
+    console.log(`get file path from clipboard: ${filePath}`);
+    if (filePath.length > 0) {
+      this.upload({ files: filePath });
+    }
   }
 
   async handleUploadTest(testProfile: UploaderProfile) {

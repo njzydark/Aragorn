@@ -106,6 +106,12 @@ export class Ipc {
       event.reply('setting-configuration-get-reply', configuration);
     });
 
+    ipcMain.on('toggle-upload-shortcut-key', async (event, shortcutKey: string) => {
+      const res = await this.setting.toggleUploadShortcutKey(shortcutKey);
+      event.reply('setting-configuration-get-reply', this.setting.configuration);
+      event.reply('toggle-upload-shortcut-key-reply', res);
+    });
+
     ipcMain.on('copy-darwin-workflow', event => {
       const res = this.setting.copyDarwinWorkflow();
       event.reply('copy-darwin-workflow-reply', res);

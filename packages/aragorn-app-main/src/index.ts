@@ -5,6 +5,7 @@ import { Logger } from './logger';
 import { Tray } from './tray';
 import { WindowManager } from './windowManager';
 import { WebServer } from './webServer';
+import { Setting } from './setting';
 import { Ipc } from './ipc';
 
 try {
@@ -30,6 +31,7 @@ if (gotTheLock) {
     Ipc.getInstance();
     Tray.getInstance().init();
     windowManager.showWindow();
+    Setting.getInstance().registerUploadShortcutKey();
     WebServer.getInstance().init();
   });
   app.on('window-all-closed', function () {

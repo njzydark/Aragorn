@@ -1,8 +1,9 @@
-import { app } from 'electron';
+import { app, globalShortcut } from 'electron';
 import path from 'path';
 import fs from 'fs-extra';
 import { exec } from 'child_process';
 import { settingStore } from './store';
+import { UploaderManager } from './uploaderManager';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -35,6 +36,8 @@ export interface SettingConfiguration {
   openWebServer: boolean;
   /** webserver port */
   webServerPort: number;
+  openUploadShortcutKey: boolean;
+  uploadShortcutKey: string;
 }
 
 // 默认设置
@@ -50,7 +53,9 @@ const defaultSettingConfigurtion: SettingConfiguration = {
   rename: true,
   renameFormat: '{fileName}-{uuid:6}',
   openWebServer: false,
-  webServerPort: 7777
+  webServerPort: 7777,
+  openUploadShortcutKey: false,
+  uploadShortcutKey: process.platform === 'darwin' ? 'Command+Shift+U' : 'Ctrl+Shift+U'
 };
 
 export class Setting {
@@ -103,6 +108,43 @@ export class Setting {
     if (this.configuration.defaultUploaderProfileId === id) {
       this.configuration.defaultUploaderProfileId = '';
       this.save();
+    }
+  }
+
+  toggleUploadShortcutKey(shortcutKey: string) {
+    console.log(`toggle upload shortcut key: ${shortcutKey}`);
+    const isOpened = this.configuration.openUploadShortcutKey;
+    if (isOpened) {
+      globalShortcut.unregister(shortcutKey);
+      this.configuration.openUploadShortcutKey = false;
+      this.configuration.uploadShortcutKey = shortcutKey;
+      this.save();
+      return { toggle: false, success: true };
+    } else {
+      const res = globalShortcut.register(shortcutKey, () => {
+        UploaderManager.getInstance().uploadFromClipboard();
+      });
+      if (res) {
+        this.configuration.openUploadShortcutKey = true;
+        this.configuration.uploadShortcutKey = shortcutKey;
+        this.save();
+      } else {
+        globalShortcut.unregister(shortcutKey);
+      }
+      return { toggle: true, success: res };
+    }
+  }
+
+  registerUploadShortcutKey() {
+    if (this.configuration.openUploadShortcutKey) {
+      const res = globalShortcut.register(this.configuration.uploadShortcutKey, () => {
+        UploaderManager.getInstance().uploadFromClipboard();
+      });
+      if (res) {
+        console.log('init register upload shortcut key success');
+      } else {
+        console.error('init register upload shortcut key failed');
+      }
     }
   }
 
