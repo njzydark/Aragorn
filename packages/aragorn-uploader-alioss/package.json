@@ -22,7 +22,7 @@
     "url": "https://github.com/njzydark/Aragorn/issues"
   },
   "dependencies": {
-    "ali-oss": "^6.10.0",
+    "ali-oss": "^6.11.2",
     "aragorn-types": "^1.0.0"
   },
   "devDependencies": {

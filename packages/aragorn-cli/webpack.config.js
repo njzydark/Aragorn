@@ -22,6 +22,12 @@ module.exports = {
     __dirname: false,
     __filename: false
   },
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename]
+    }
+  },
   devtool: devMode ? 'source-map' : false,
   stats: {
     modules: false,

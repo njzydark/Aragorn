@@ -23,6 +23,12 @@ module.exports = {
       '@renderer': path.resolve(__dirname, 'src')
     }
   },
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename]
+    }
+  },
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -106,16 +112,16 @@ module.exports = {
     ]
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin(),
     new CleanWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin(),
     new webpack.ProvidePlugin({
       React: 'react'
     }),
+    new AntdDayjsWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: devMode ? 'css/[name].css' : 'css/[name]-[contenthash:6].css',
       ignoreOrder: true
     }),
-    new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/public/index.html')
     })

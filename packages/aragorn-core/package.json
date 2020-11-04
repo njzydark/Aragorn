@@ -30,7 +30,7 @@
     "aragorn-uploader-tencentcos": "^1.0.0",
     "aragorn-uploader-ucloud": "^1.0.0",
     "aragorn-uploader-upyun": "^1.0.0",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

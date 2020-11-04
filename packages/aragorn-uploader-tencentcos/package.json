@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "aragorn-types": "^1.0.0",
-    "cos-nodejs-sdk-v5": "^2.8.2"
+    "cos-nodejs-sdk-v5": "^2.8.3"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
