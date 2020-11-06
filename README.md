@@ -112,8 +112,7 @@ git clone https://github.com/njzydark/Aragorn.git
 ### 安装依赖
 
 ```bash
-npm i
-npm run setup
+npm i && npm run setup
 ```
 
 #### 注意

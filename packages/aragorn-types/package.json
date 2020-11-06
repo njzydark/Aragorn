@@ -12,5 +12,8 @@
   },
   "bugs": {
     "url": "https://github.com/njzydark/Aragorn/issues"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.5"
   }
 }
