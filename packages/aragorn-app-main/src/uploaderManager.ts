@@ -86,8 +86,22 @@ export class UploaderManager {
   }
 
   async uploadFromClipboard() {
+    // https://github.com/njzydark/electron-clipboard-demo
     console.log('upload from clipboard');
     let filePath: (string | FileFormData)[] = [];
+
+    const clipboardImage = clipboard.readImage('clipboard');
+    if (!clipboardImage.isEmpty()) {
+      console.log('upload image from clipboard');
+      const png = clipboardImage.toPNG();
+      const fileInfo: FileFormData = {
+        buffer: png,
+        mimetype: 'image/png',
+        originalname: uuidv4() + '.png'
+      };
+      filePath = [fileInfo];
+    }
+
     if (process.platform === 'darwin') {
       // https://github.com/electron/electron/issues/9035#issuecomment-359554116
       if (clipboard.has('NSFilenamesPboardType')) {
@@ -97,17 +111,7 @@ export class UploaderManager {
             .match(/<string>.*<\/string>/g)
             ?.map(item => item.replace(/<string>|<\/string>/g, '')) || [];
       } else {
-        const clipboardImage = clipboard.readImage('clipboard');
-        if (!clipboardImage.isEmpty()) {
-          console.log('upload image from clipboard');
-          const png = clipboardImage.toPNG();
-          const fileInfo: FileFormData = {
-            buffer: png,
-            mimetype: 'image/png',
-            originalname: uuidv4() + '.png'
-          };
-          filePath = [fileInfo];
-        } else {
+        if (filePath.length === 0) {
           filePath = [clipboard.read('public.file-url').replace('file://', '')].filter(item => item);
         }
       }
@@ -116,7 +120,7 @@ export class UploaderManager {
       // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
       // https://www.codeproject.com/Reference/1091137/Windows-Clipboard-Formats
       if (clipboard.has('CF_HDROP')) {
-        const rawFilePathStr = clipboard.read('CF_HDROP') || '';
+        const rawFilePathStr = clipboard.readBuffer('CF_HDROP').toString('ucs2');
         let formatFilePathStr = [...rawFilePathStr]
           .filter((_, index) => rawFilePathStr.charCodeAt(index) !== 0)
           .join('')
@@ -135,17 +139,7 @@ export class UploaderManager {
             .map(item => drivePrefix + item);
         }
       } else {
-        const clipboardImage = clipboard.readImage('clipboard');
-        if (!clipboardImage.isEmpty()) {
-          console.log('upload image from clipboard');
-          const png = clipboardImage.toPNG();
-          const fileInfo: FileFormData = {
-            buffer: png,
-            mimetype: 'image/png',
-            originalname: uuidv4() + '.png'
-          };
-          filePath = [fileInfo];
-        } else {
+        if (filePath.length === 0) {
           filePath = [
             clipboard
               .readBuffer('FileNameW')
