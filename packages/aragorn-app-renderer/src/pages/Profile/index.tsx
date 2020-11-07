@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Button, Divider, Select, Space } from 'antd';
 import { useAppContext } from '@renderer/context/app';
 import { UploaderProfileForm, UploaderProfileFormHandle } from '@renderer/components/UploaderProfileForm';
-import './index.less';
 
 export const Profile = () => {
   const {

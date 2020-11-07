@@ -6,7 +6,9 @@ import { SideBar } from '@renderer/components/SideBar';
 import { WindowButton } from '@renderer/components/WindowButton';
 import { useAppStateHandle, useAppUpdateHandle, useFileDownloadHandle } from '@renderer/hook/useIpcRendererHandle';
 import { usePlatform } from '@renderer/hook/usePlatform';
-import './app.less';
+import lightTheme from './style/light.lazy.less';
+
+lightTheme.use();
 
 const App = () => {
   useAppStateHandle();

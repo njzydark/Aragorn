@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Space, Divider } from 'antd';
 import { useAppContext } from '@renderer/context/app';
 import { UploaderProfileForm, UploaderProfileFormHandle } from '@renderer/components/UploaderProfileForm';
-import './index.less';
 
 export const Uploader = () => {
   const {

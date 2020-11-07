@@ -4,5 +4,14 @@
   .table-wrapper {
     flex: auto;
     // overflow: auto;
+    .table-filename {
+      color: @text-color;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    .ant-table-placeholder td {
+      border-bottom: none;
+    }
   }
 }

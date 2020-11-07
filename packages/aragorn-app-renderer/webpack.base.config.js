@@ -73,6 +73,7 @@ module.exports = {
       },
       {
         test: /\.(le|c)ss$/,
+        exclude: /\.lazy\.(le|c)ss$/i,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -82,7 +83,29 @@ module.exports = {
           },
           'css-loader',
           'postcss-loader',
-          'less-loader'
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+          }
+        ]
+      },
+      {
+        test: /\.lazy\.(le|c)ss$/i,
+        use: [
+          { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
+          'css-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+          }
         ]
       },
       {

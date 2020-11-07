@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { clipboard, shell, ipcRenderer } from 'electron';
-import { Table, message, Popover, Space, Button, Badge, Divider } from 'antd';
+import { Table, message, Popover, Space, Button, Badge, Divider, Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAppContext } from '@renderer/context/app';
 import { Plus, Box } from 'react-feather';
 import { UploadedFileInfo } from '@main/uploaderManager';
-import './index.less';
+import { CopyOutlined, DeleteOutlined, EllipsisOutlined, UploadOutlined } from '@ant-design/icons';
+import { ColumnsType } from 'antd/lib/table/interface';
 
 export const Dashboard = () => {
   const {
@@ -62,32 +63,17 @@ export const Dashboard = () => {
     setRowKeys([]);
   };
 
-  const columns = [
+  const columns: ColumnsType<UploadedFileInfo> = [
     {
       title: '文件名',
       dataIndex: 'name',
-      ellipsis: true
-    },
-    {
-      title: 'URL',
-      dataIndex: 'url',
       ellipsis: true,
-      render: val => (
-        <Popover placement="topLeft" content={() => <img style={{ maxWidth: 500 }} src={val} />} trigger="hover">
-          <span onClick={() => handleCopy(val)} className="row-item">
+      render: (val, record) => (
+        <Popover placement="topLeft" content={() => <img style={{ maxWidth: 500 }} src={record.url} />} trigger="hover">
+          <span onClick={() => handleCopy(record.url)} className="row-item">
             {val}
           </span>
         </Popover>
-      )
-    },
-    {
-      title: '路径',
-      dataIndex: 'path',
-      ellipsis: true,
-      render: val => (
-        <span onClick={() => handleOpen(val)} className="row-item">
-          {val}
-        </span>
       )
     },
     {
@@ -122,9 +108,31 @@ export const Dashboard = () => {
     {
       title: '上传时间',
       dataIndex: 'date',
-      width: 200,
+      width: 180,
       ellipsis: true,
       render: val => dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+    },
+    {
+      title: '操作',
+      width: 80,
+      render: (_, record) => (
+        <Space>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item disabled={!record.path} icon={<DeleteOutlined />} onClick={() => handleOpen(record.path)}>
+                  打开
+                </Menu.Item>
+                <Menu.Item disabled={!record.url} icon={<CopyOutlined />} onClick={() => handleCopy(record.url)}>
+                  复制链接
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <EllipsisOutlined />
+          </Dropdown>
+        </Space>
+      )
     }
   ];
 
@@ -156,14 +164,16 @@ export const Dashboard = () => {
         <div className="history-wrapper">
           <div className="title">最近上传</div>
           <div className="card-wrapper">
-            <Space style={{ marginBottom: 10 }}>
-              <Button disabled={selectRowKeys.length === 0} onClick={handleClear}>
-                清除
-              </Button>
-              <Button disabled={selectRowKeys.length === 0} onClick={handleReUpload}>
-                重新上传
-              </Button>
-            </Space>
+            {selectRowKeys.length > 0 && (
+              <Space style={{ marginBottom: 10 }}>
+                <Button icon={<DeleteOutlined />} onClick={handleClear}>
+                  清除
+                </Button>
+                <Button icon={<UploadOutlined />} onClick={handleReUpload}>
+                  重新上传
+                </Button>
+              </Space>
+            )}
             <Table
               size="small"
               rowKey="id"

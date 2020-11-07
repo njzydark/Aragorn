@@ -1,15 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { clipboard, ipcRenderer } from 'electron';
-import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider } from 'antd';
-import { FileOutlined, FolderOutlined } from '@ant-design/icons';
+import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider, Dropdown, Menu } from 'antd';
+import {
+  FileOutlined,
+  FolderFilled,
+  DeleteOutlined,
+  DownloadOutlined,
+  CopyOutlined,
+  EllipsisOutlined,
+  ReloadOutlined,
+  FolderAddOutlined,
+  UploadOutlined
+} from '@ant-design/icons';
 import filesize from 'filesize';
 import dayjs from 'dayjs';
 import { useAppContext } from '@renderer/context/app';
 import { domainPathRegExp } from '@renderer/utils/validationRule';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 import { ListFile, FileListResponse, DeleteFileResponse, CreateDirectoryResponse } from 'aragorn-types';
-import './index.less';
+import { ColumnsType } from 'antd/lib/table/interface';
 
 export const FileManage = () => {
   const {
@@ -81,10 +91,10 @@ export const FileManage = () => {
         return;
       }
       if (res.success) {
-        message.success('文件删除成功');
+        message.success({ content: '文件删除成功', key: 'file-manage-delete' });
         getList(dirPath.join('/'));
       } else {
-        message.error(`文件删除失败 ${res.desc || ''}`);
+        message.error({ content: `文件删除失败 ${res.desc || ''}`, key: 'file-manage-delete' });
       }
     }
 
@@ -169,7 +179,7 @@ export const FileManage = () => {
 
   const handleBatchDelete = () => {
     const names = selectRows.map(item => [...dirPath, formatFileName(item.name)].join('/'));
-    message.info('正在删除，请稍后...');
+    message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
     ipcRenderer.send('file-delete', uploaderProfile.id, names);
   };
 
@@ -180,7 +190,7 @@ export const FileManage = () => {
     } else {
       name = [...dirPath, formatFileName(record.name)].join('/');
     }
-    message.info('正在删除，请稍后...');
+    message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
     ipcRenderer.send('file-delete', uploaderProfile.id, [name]);
   };
 
@@ -208,17 +218,22 @@ export const FileManage = () => {
     ipcRenderer.send('file-download', record.name, record.url);
   };
 
-  const columns = [
+  const columns: ColumnsType<ListFile> = [
     {
       title: '文件名',
       dataIndex: 'name',
       ellipsis: true,
       render: (val: string, record: ListFile) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {record.type === 'directory' ? <FolderOutlined /> : <FileOutlined />}
+          {record.type === 'directory' ? (
+            <FolderFilled style={{ fontSize: 16 }} />
+          ) : (
+            <FileOutlined style={{ fontSize: 16 }} />
+          )}
           <a
             title={val}
             onClick={() => handleNameClick(record)}
+            className="table-filename"
             style={{ marginLeft: 10, overflow: 'hidden', textOverflow: 'ellipsis' }}
           >
             {formatFileName(val)}
@@ -245,8 +260,35 @@ export const FileManage = () => {
       width: 120,
       render: (_, record) => (
         <Space>
-          <a onClick={() => handleDelete(record)}>删除</a>
-          {record.type !== 'directory' && <a onClick={() => handleDownload(record)}>下载</a>}
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item
+                  disabled={record.type === 'directory'}
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDelete(record)}
+                >
+                  删除
+                </Menu.Item>
+                <Menu.Item
+                  disabled={record.type === 'directory'}
+                  icon={<DownloadOutlined />}
+                  onClick={() => handleDownload(record)}
+                >
+                  下载
+                </Menu.Item>
+                <Menu.Item
+                  disabled={record.type === 'directory'}
+                  icon={<CopyOutlined />}
+                  onClick={() => handleNameClick(record)}
+                >
+                  复制链接
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <EllipsisOutlined />
+          </Dropdown>
         </Space>
       )
     }
@@ -266,28 +308,23 @@ export const FileManage = () => {
             </Select.Option>
           ))}
         </Select>
-        <Button disabled={!hasFileManageFeature} onClick={handleRefresh}>
-          刷新
-        </Button>
         <Button
+          icon={<UploadOutlined />}
           disabled={!hasFileManageFeature}
+          type="primary"
           onClick={() => {
             uploadRef.current?.click();
           }}
-        >
-          上传
-        </Button>
+        />
+        <Button icon={<ReloadOutlined />} disabled={!hasFileManageFeature} onClick={handleRefresh} />
         <Button
+          icon={<FolderAddOutlined />}
           disabled={!hasFileManageFeature}
           onClick={() => {
             setModalVisible(true);
           }}
-        >
-          创建目录
-        </Button>
-        <Button disabled={selectRows.length === 0} onClick={handleBatchDelete}>
-          批量删除
-        </Button>
+        />
+        <Button icon={<DeleteOutlined />} disabled={selectRows.length === 0} onClick={handleBatchDelete} />
       </Space>
       <Breadcrumb style={{ marginBottom: 10 }}>
         <Breadcrumb.Item>
