@@ -60,10 +60,7 @@ export class AliOssUploader implements Uploader {
       if (url) {
         return {
           success: true,
-          data: {
-            name: fileName,
-            url
-          }
+          data: { url }
         };
       } else {
         return {

@@ -63,7 +63,7 @@ export class GithubUploader implements Uploader {
 
       const content = Buffer.isBuffer(file) ? file.toString('base64') : fs.readFileSync(file, { encoding: 'base64' });
       const res = await this.axiosInstance.request({
-        url,
+        url: encodeURI(url),
         method: 'PUT',
         data: { message, branch, content }
       });
@@ -104,7 +104,7 @@ export class GithubUploader implements Uploader {
       let { branch, owner, repo, customDomain, useJsdelivr } = this.config;
       const url = directoryPath ? `/${directoryPath}?ref=${branch}` : `?ref=${branch}`;
       const res = await this.axiosInstance.request({
-        url,
+        url: encodeURI(url),
         method: 'GET'
       });
       if (res.status === 200) {
@@ -160,7 +160,7 @@ export class GithubUploader implements Uploader {
           await deleteSequence[index - 1];
         }
         await this.axiosInstance.request({
-          url: `/${filename}`,
+          url: encodeURI(`/${filename}`),
           method: 'DELETE',
           data: {
             branch,
@@ -188,7 +188,7 @@ export class GithubUploader implements Uploader {
       let { branch } = this.config;
       const content = Buffer.from(`# Directory created by Aragorn`).toString('base64');
       const res = await this.axiosInstance.request({
-        url: `/${directoryPath}/README.md`,
+        url: encodeURI(`/${directoryPath}/README.md`),
         method: 'PUT',
         data: {
           message: '',

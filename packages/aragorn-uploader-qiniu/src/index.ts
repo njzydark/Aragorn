@@ -9,6 +9,7 @@ import {
 } from 'aragorn-types';
 import qiniu from 'qiniu';
 import { ReadStream, createReadStream } from 'fs';
+import nodePath from 'path';
 import { options as defaultOptions } from './options';
 import { Readable } from 'stream';
 
@@ -49,10 +50,7 @@ export class QiniuUploader implements Uploader {
       if (url) {
         return {
           success: true,
-          data: {
-            name: fileName,
-            url
-          }
+          data: { url }
         };
       } else {
         return {
@@ -95,13 +93,10 @@ export class QiniuUploader implements Uploader {
         if (resBody?.items?.length > 0) {
           resBody.items = resBody.items.filter(item => /.*[^\/]$/g.test(item?.key));
           filesData = resBody.items.map(item => {
-            item.name = item.key
-              .split('/')
-              .filter(item => item)
-              .pop();
+            item.name = nodePath.basename(item.key);
             return {
               name: item.name,
-              url: directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`,
+              url: encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`),
               lastModified: item.putTime / 10000,
               size: item.fsize
             };
@@ -111,10 +106,7 @@ export class QiniuUploader implements Uploader {
         if (resBody?.commonPrefixes?.length > 0) {
           directoryData = resBody.commonPrefixes.map(item => {
             return {
-              name: item
-                .split('/')
-                .filter(item => item)
-                .pop(),
+              name: nodePath.basename(item),
               type: 'directory'
             };
           });

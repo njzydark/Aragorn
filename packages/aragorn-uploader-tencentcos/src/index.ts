@@ -10,6 +10,7 @@ import {
 import COS from 'cos-nodejs-sdk-v5';
 import { options as defaultOptions } from './options';
 import { createReadStream } from 'fs';
+import nodePath from 'path';
 import { Readable } from 'stream';
 
 interface Config {
@@ -110,9 +111,7 @@ export class TencentCosUploader implements Uploader {
       if (res?.CommonPrefixes?.length > 0) {
         dirData = res.CommonPrefixes.map(item => {
           return {
-            name: item.Prefix.split('/')
-              .filter(item => item)
-              .pop(),
+            name: nodePath.basename(item.Prefix),
             type: 'directory'
           };
         });
@@ -120,12 +119,10 @@ export class TencentCosUploader implements Uploader {
       res.Contents = res?.Contents.filter(item => /.*[^\/]$/g.test(item?.Key)) || [];
       let filesData = [] as any[];
       filesData = res.Contents.map(item => {
-        item.name = item.Key.split('/')
-          .filter(item => item)
-          .pop();
+        item.name = nodePath.basename(item.Key);
         return {
           name: item.name,
-          url: domain ? `${domain}/${item.Key}` : `https://${Bucket}.cos.${Region}.myqcloud.com/${item.Key}`,
+          url: encodeURI(domain ? `${domain}/${item.Key}` : `https://${Bucket}.cos.${Region}.myqcloud.com/${item.Key}`),
           lastModified: item.LastModified,
           size: item.Size
         };

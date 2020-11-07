@@ -50,7 +50,7 @@ export class UpyunUploader implements Uploader {
         return {
           success: true,
           data: {
-            url: `${domain}${newFileName}`
+            url: encodeURI(`${domain}${newFileName}`)
           }
         };
       } else {
@@ -76,7 +76,7 @@ export class UpyunUploader implements Uploader {
           if (item.type === 'F') {
             item.type = 'directory';
           } else {
-            item.url = directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`;
+            item.url = encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`);
             item.lastModified = item.time ? item.time * 1000 : '';
           }
           return item;
