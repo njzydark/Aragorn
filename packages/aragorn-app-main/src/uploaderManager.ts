@@ -219,7 +219,8 @@ export class UploaderManager {
         const fileName = this.core.getFileNameByFormat(
           typeof file === 'string' ? file : file.originalname,
           rename,
-          renameFormat
+          renameFormat,
+          isFromFileManage
         );
         const fileType = typeof file === 'string' ? mime.lookup(file) || '-' : file.mimetype;
         const baseInfo = {

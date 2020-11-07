@@ -34,7 +34,7 @@ export class AragornCore {
     return this.uploaders;
   }
 
-  getFileNameByFormat(filePath: string, rename = false, renameFormat = '') {
+  getFileNameByFormat(filePath: string, rename = false, renameFormat = '', isFromFileManage = false) {
     const fileExtName = path.extname(filePath);
     const fileName = path.basename(filePath, fileExtName);
     const uuid = uuidv4().replace(/-/g, '');
@@ -70,6 +70,16 @@ export class AragornCore {
         renameFormat = renameFormat.replace(itemReg, data[item.replace(/(\{)|(\})/g, '')] || '');
       }
     });
-    return renameFormat + fileExtName;
+
+    if (isFromFileManage) {
+      return (
+        (renameFormat + fileExtName)
+          .split('/')
+          .filter(item => item)
+          .pop() || ''
+      );
+    } else {
+      return renameFormat + fileExtName;
+    }
   }
 }
