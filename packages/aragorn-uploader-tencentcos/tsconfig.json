@@ -4,7 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "sourceRoot": "../../packages/aragorn-uploader-tencentcos/src"
+    "sourceRoot": "../aragorn-uploader-tencentcos/src"
   },
   "include": [
     "src"

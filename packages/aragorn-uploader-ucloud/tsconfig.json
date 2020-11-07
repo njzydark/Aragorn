@@ -4,7 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "sourceRoot": "../../packages/aragorn-uploader-ucloud/src"
+    "sourceRoot": "../aragorn-uploader-ucloud/src"
   },
   "include": [
     "src"

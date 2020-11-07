@@ -4,7 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "sourceRoot": "../../packages/aragorn-uploader-alioss/src"
+    "sourceRoot": "../aragorn-uploader-alioss/src"
   },
   "include": [
     "src"

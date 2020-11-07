@@ -4,7 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "sourceRoot": "../../packages/aragorn-core/src"
+    "sourceRoot": "../aragorn-core/src"
   },
   "include": [
     "src"
