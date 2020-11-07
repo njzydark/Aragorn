@@ -322,6 +322,7 @@ export class UploaderManager {
   async download(name: string, url: string) {
     try {
       console.log('download start');
+      name = path.basename(name);
       const { proxy } = this.setting.configuration;
       await new Promise((resolve, reject) => {
         axios
