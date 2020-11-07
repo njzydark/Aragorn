@@ -9,6 +9,7 @@ import { QiniuUploader } from 'aragorn-uploader-qiniu';
 import { UCloudUploader } from 'aragorn-uploader-ucloud';
 import { UpyunUploader } from 'aragorn-uploader-upyun';
 import { GithubUploader } from 'aragorn-uploader-github';
+import { GiteeUploader } from 'aragorn-uploader-gitee';
 
 const alioss = new AliOssUploader();
 const tencentcos = new TencentCosUploader();
@@ -16,13 +17,14 @@ const qiniu = new QiniuUploader();
 const ucloud = new UCloudUploader();
 const upyun = new UpyunUploader();
 const github = new GithubUploader();
+const gitee = new GiteeUploader();
 const custom = new CustomUploader();
 
 export class AragornCore {
   protected uploaders: Uploader[];
 
   constructor() {
-    this.uploaders = [alioss, tencentcos, qiniu, ucloud, upyun, github, custom];
+    this.uploaders = [alioss, tencentcos, qiniu, ucloud, upyun, github, gitee, custom];
   }
 
   getUploaderByName(name: string) {
@@ -71,15 +73,12 @@ export class AragornCore {
       }
     });
 
+    let formatfileName = renameFormat + fileExtName;
+
     if (isFromFileManage) {
-      return (
-        (renameFormat + fileExtName)
-          .split('/')
-          .filter(item => item)
-          .pop() || ''
-      );
-    } else {
-      return renameFormat + fileExtName;
+      formatfileName = path.basename(formatfileName);
     }
+
+    return formatfileName;
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "aragorn-core",
+  "name": "aragorn-uploader-gitee",
   "version": "1.0.0",
-  "description": "A core of aragorn to upload and manage file",
+  "description": "gitee uploader",
   "author": "njzy <njzydark@gmail.com>",
   "homepage": "https://github.com/njzydark/Aragorn#readme",
   "license": "MIT",
@@ -10,9 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsc -b -w",
-    "build": "tsc -b",
-    "clean": "tsc -b --clean"
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf -rf ./dist",
+    "compile": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -23,15 +23,9 @@
   },
   "dependencies": {
     "aragorn-types": "^1.0.0",
-    "aragorn-uploader-alioss": "^1.0.0",
-    "aragorn-uploader-custom": "^1.0.0",
-    "aragorn-uploader-gitee": "^1.0.0",
-    "aragorn-uploader-github": "^1.0.0",
-    "aragorn-uploader-qiniu": "^1.0.0",
-    "aragorn-uploader-tencentcos": "^1.0.0",
-    "aragorn-uploader-ucloud": "^1.0.0",
-    "aragorn-uploader-upyun": "^1.0.0",
-    "uuid": "^8.3.1"
+    "axios": "^0.21.0",
+    "form-data": "^3.0.0",
+    "https-proxy-agent": "^5.0.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

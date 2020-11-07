@@ -23,6 +23,9 @@
       "path": "../aragorn-uploader-github"
     },
     {
+      "path": "../aragorn-uploader-gitee"
+    },
+    {
       "path": "../aragorn-uploader-qiniu"
     },
     {
