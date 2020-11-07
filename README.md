@@ -5,7 +5,7 @@
 [![GitHub](https://img.shields.io/github/license/njzydark/Aragorn)](https://github.com/njzydark/Aragorn/blob/master/LICENSE)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square)](https://lerna.js.org/)
 
-一款基于 `Electron + React + TS` 开发的对象存储管理工具，同时也可作为图床上传工具使用
+一款基于 `Electron + React + TS` 开发的对象存储管理工具，同时也可作为图床上传工具使用，支持 macOS 和 Windows
 
 **PS:** 功能实现主要依靠相关厂商的对象存储 SDK，但是也可自行扩展，只要按规范实现软件的[上传器接口](./packages/aragorn-types/src/uploader.ts)即可
 
@@ -16,6 +16,8 @@
 - 同一上传器支持多个配置
 - 文件上传失败可以在控制台重新上传
 - 支持利用魔法变量自定义文件命名格式
+- 支持自定义上传快捷键
+- 通过快捷键不仅可以上传粘贴板中的截图，还可以批量上传在文件管理器中批量选择复制的文件
 - 提供 CLI 和上传 API 接口，方便第三方软件调用，例如：Typora、MWeb
 - CLI 支持模式自动切换，未开启软件的情况下也可以正常使用
 - 支持在 Finder 中通过鼠标右键菜单上传
@@ -33,6 +35,7 @@
 | 腾讯云 | ✅            | ✅           |
 | UCloud | ✅            |              |
 | Github | ✅            | ✅           |
+| Gitee  | ✅            | ✅           |
 | SM.MS  | ✅ 自定义实现 |              |
 
 **PS** 软件还在开发中，后续会支持更多对象存储厂商及图床
