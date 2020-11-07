@@ -225,7 +225,7 @@ export class UploaderManager {
         const fileType = typeof file === 'string' ? mime.lookup(file) || '-' : file.mimetype;
         const baseInfo = {
           id: uuidv4(),
-          name: fileName,
+          name: path.basename(fileName),
           type: fileType,
           path: typeof file === 'string' ? file : '',
           date: new Date().getTime(),
