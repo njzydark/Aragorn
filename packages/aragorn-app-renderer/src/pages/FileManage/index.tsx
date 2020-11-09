@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { clipboard, ipcRenderer } from 'electron';
-import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider, Dropdown, Menu } from 'antd';
+import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider } from 'antd';
 import {
   FileOutlined,
   FolderFilled,
   DeleteOutlined,
   DownloadOutlined,
   CopyOutlined,
-  EllipsisOutlined,
   ReloadOutlined,
   FolderAddOutlined,
   UploadOutlined
@@ -178,20 +177,32 @@ export const FileManage = () => {
   };
 
   const handleBatchDelete = () => {
-    const names = selectRows.map(item => [...dirPath, formatFileName(item.name)].join('/'));
-    message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
-    ipcRenderer.send('file-delete', uploaderProfile.id, names);
+    Modal.confirm({
+      title: '确认删除',
+      onOk: () => {
+        const names = selectRows.map(item => [...dirPath, formatFileName(item.name)].join('/'));
+        message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
+        ipcRenderer.send('file-delete', uploaderProfile.id, names);
+      }
+    });
   };
 
   const handleDelete = (record: ListFile) => {
     let name = record.name;
-    if (record.type === 'directory') {
-      name = `${[...dirPath, record.name].join('/')}/`;
-    } else {
-      name = [...dirPath, formatFileName(record.name)].join('/');
-    }
-    message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
-    ipcRenderer.send('file-delete', uploaderProfile.id, [name]);
+    Modal.confirm({
+      title: '确认删除',
+      content: name,
+      onOk: () => {
+        let name = record.name;
+        if (record.type === 'directory') {
+          name = `${[...dirPath, record.name].join('/')}/`;
+        } else {
+          name = [...dirPath, formatFileName(record.name)].join('/');
+        }
+        message.info({ content: '正在删除，请稍后...', key: 'file-manage-delete' });
+        ipcRenderer.send('file-delete', uploaderProfile.id, [name]);
+      }
+    });
   };
 
   const uploadRef = useRef<HTMLInputElement>(null);
@@ -260,35 +271,13 @@ export const FileManage = () => {
       width: 120,
       render: (_, record) => (
         <Space>
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item
-                  disabled={record.type === 'directory'}
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleDelete(record)}
-                >
-                  删除
-                </Menu.Item>
-                <Menu.Item
-                  disabled={record.type === 'directory'}
-                  icon={<DownloadOutlined />}
-                  onClick={() => handleDownload(record)}
-                >
-                  下载
-                </Menu.Item>
-                <Menu.Item
-                  disabled={record.type === 'directory'}
-                  icon={<CopyOutlined />}
-                  onClick={() => handleNameClick(record)}
-                >
-                  复制链接
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <EllipsisOutlined />
-          </Dropdown>
+          {record.type !== 'directory' && (
+            <>
+              <DownloadOutlined onClick={() => handleDownload(record)} />
+              <CopyOutlined onClick={() => handleNameClick(record)} />
+            </>
+          )}
+          <DeleteOutlined onClick={() => handleDelete(record)} />
         </Space>
       )
     }
@@ -340,10 +329,15 @@ export const FileManage = () => {
         <Table
           size="small"
           rowKey="name"
-          scroll={{ y: windowHeight - 230 }}
+          scroll={{ y: windowHeight - 270 }}
           dataSource={list}
           columns={columns}
-          pagination={false}
+          pagination={{
+            size: 'small',
+            defaultPageSize: 100,
+            pageSizeOptions: ['50', '100', '200'],
+            hideOnSinglePage: true
+          }}
           loading={listLoading}
           rowSelection={{
             onChange: handleTableRowChange,
