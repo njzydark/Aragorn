@@ -26,7 +26,7 @@ const App = () => {
             route.path && (
               <Route key={route.path} path={route.path} exact>
                 {({ match }) => (
-                  <CSSTransition in={match !== null} timeout={300} classNames="page" unmountOnExit>
+                  <CSSTransition in={match !== null} exit={false} timeout={300} classNames="page" unmountOnExit>
                     <div className="page">
                       <div
                         className={
