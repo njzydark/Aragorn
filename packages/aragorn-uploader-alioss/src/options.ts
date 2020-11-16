@@ -29,39 +29,99 @@ export const options: UploaderOptions = [
     name: 'region',
     value: null,
     valueType: 'select',
-    span: UploaderOptionsSpan.small,
+    span: UploaderOptionsSpan.middle,
     options: [
       {
         value: 'oss-cn-hangzhou',
-        label: '中国杭州'
+        label: '华东1（杭州）'
       },
       {
         value: 'oss-cn-shanghai',
-        label: '中国上海'
+        label: '华东2（上海）'
       },
       {
         value: 'oss-cn-qingdao',
-        label: '中国青岛'
+        label: '华北1（青岛）'
       },
       {
         value: 'oss-cn-beijing',
-        label: '中国北京'
+        label: '华北2（北京）'
+      },
+      {
+        value: 'oss-cn-zhangjiakou',
+        label: '华北 3（张家口）'
+      },
+      {
+        value: 'oss-cn-huhehaote',
+        label: '华北5（呼和浩特）'
+      },
+      {
+        value: 'oss-cn-wulanchabu',
+        label: '华北6（乌兰察布）'
       },
       {
         value: 'oss-cn-shenzhen',
-        label: '中国深圳'
+        label: '华南1（深圳）'
+      },
+      {
+        value: 'oss-cn-heyuan',
+        label: '华南2（河源）'
+      },
+      {
+        value: 'oss-cn-guangzhou',
+        label: '华南3（广州）'
+      },
+      {
+        value: 'oss-cn-chengdu',
+        label: '西南1（成都）'
       },
       {
         value: 'oss-cn-hongkong',
-        label: '中国香港'
+        label: '中国（香港）'
       },
       {
         value: 'oss-us-west-1',
-        label: '美国硅谷'
+        label: '美国西部1（硅谷）'
+      },
+      {
+        value: 'oss-us-east-1',
+        label: '美国东部1（弗吉尼亚）'
       },
       {
         value: 'oss-ap-southeast-1',
-        label: '新加坡'
+        label: '亚太东南1（新加坡）'
+      },
+      {
+        value: 'oss-ap-southeast-2',
+        label: '亚太东南2（悉尼）'
+      },
+      {
+        value: 'oss-ap-southeast-3',
+        label: '亚太东南3（吉隆坡）'
+      },
+      {
+        value: 'oss-ap-southeast-5',
+        label: '亚太东南5（雅加达）'
+      },
+      {
+        value: 'oss-ap-northeast-1',
+        label: '亚太东北1（日本）'
+      },
+      {
+        value: 'oss-ap-south-1',
+        label: '亚太南部1（孟买）'
+      },
+      {
+        value: 'oss-eu-central-1',
+        label: '欧洲中部1（法兰克福）'
+      },
+      {
+        value: 'oss-eu-west-1',
+        label: '英国（伦敦）'
+      },
+      {
+        value: 'oss-me-east-1',
+        label: '中东东部1（迪拜）'
       }
     ],
     required: true
