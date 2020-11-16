@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { app, Notification, shell } from 'electron';
 import { lt } from 'semver';
 import { Setting } from './setting';
@@ -45,9 +46,11 @@ export class Updater {
 
   protected async checkUpdateFromGithub(manul: boolean, useSystemNotification: boolean) {
     try {
-      const { useBetaVersion } = this.setting.get();
+      const { useBetaVersion, proxy } = this.setting.get();
+      const agent = proxy ? new HttpsProxyAgent(proxy) : null;
       const res = await axios.get<{ prerelease: boolean; draft: boolean; tag_name: string; html_url: string }[]>(
-        GithubReleaseApi
+        GithubReleaseApi,
+        { httpsAgent: agent }
       );
       if (res.status === 200) {
         const data = res.data;
