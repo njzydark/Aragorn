@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Package, Box, Info, Settings, Upload, Server, Props } from 'react-feather';
+import { Grid, Package, Box, Info, Settings, Upload, Server, IconProps } from 'react-feather';
 import { Dashboard } from '@renderer/pages/Dashboard';
 import { Uploader } from '@renderer/pages/Uploader';
 import { Profile } from '@renderer/pages/Profile';
@@ -11,7 +11,7 @@ export type Routes = {
   name: string;
   path?: string;
   component?: React.FunctionComponent;
-  icon: React.FC<Props>;
+  icon: React.FC<IconProps>;
   isFooter?: boolean;
 }[];
 
