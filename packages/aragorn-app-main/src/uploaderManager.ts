@@ -6,6 +6,7 @@ import axios from 'axios';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fs from 'fs';
 import path from 'path';
+import xlsx from 'xlsx';
 import { Setting } from './setting';
 import { History } from './history';
 import { UploaderProfile, UploaderProfileManager } from './uploaderProfileManager';
@@ -359,6 +360,36 @@ export class UploaderManager {
       console.error(`download error: ${err.message}`);
       Ipc.sendMessage('file-download-reply', err.message || '下载失败');
     }
+  }
+
+  async export(data: { name: string; url: string }[]) {
+    const nameLength = data.map(item => item.name.length);
+    const urlLength = data.map(item => item.url.length);
+    let jsonWorkSheet = xlsx.utils.json_to_sheet(data);
+    jsonWorkSheet['!cols'] = [
+      {
+        wch: Math.max(...nameLength)
+      },
+      {
+        wch: Math.max(...urlLength)
+      }
+    ];
+    let workBook = {
+      SheetNames: ['pic'],
+      Sheets: {
+        pic: jsonWorkSheet
+      }
+    };
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const seconds = date.getSeconds();
+    const filePath = `${app.getPath('downloads')}/pic_${year}${month}${day}${hour}${minute}${seconds}.xlsx`;
+    xlsx.writeFile(workBook, filePath);
+    Ipc.sendMessage('export-reply', filePath);
   }
 
   protected getUploader(id: string) {

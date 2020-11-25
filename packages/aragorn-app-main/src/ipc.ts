@@ -201,5 +201,9 @@ export class Ipc {
     ipcMain.on('file-download', (_, name: string, url: string) => {
       this.uploaderManager.download(name, url);
     });
+
+    ipcMain.on('export', (_, data) => {
+      this.uploaderManager.export(data);
+    });
   }
 }

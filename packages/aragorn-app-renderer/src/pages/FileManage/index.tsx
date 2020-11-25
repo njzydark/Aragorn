@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { clipboard, ipcRenderer } from 'electron';
+import { clipboard, ipcRenderer, shell } from 'electron';
 import { Select, Table, message, Space, Button, Breadcrumb, Modal, Form, Input, Divider } from 'antd';
 import {
   FileOutlined,
@@ -10,7 +10,8 @@ import {
   CopyOutlined,
   ReloadOutlined,
   FolderAddOutlined,
-  UploadOutlined
+  UploadOutlined,
+  ExportOutlined
 } from '@ant-design/icons';
 import filesize from 'filesize';
 import dayjs from 'dayjs';
@@ -114,16 +115,27 @@ export const FileManage = () => {
       }
     }
 
+    function handleExportReplay(_, res) {
+      setExportLoading(false);
+      if (res) {
+        shell.showItemInFolder(res);
+        setRowKeys([]);
+        setSelectRows([]);
+      }
+    }
+
     ipcRenderer.on('file-list-get-reply', handleListGetReply);
     ipcRenderer.on('file-delete-reply', handleFileDeleteReply);
     ipcRenderer.on('file-upload-reply', handleFileUploadReply);
     ipcRenderer.on('directory-create-reply', handleDirectoryCreateReply);
+    ipcRenderer.on('export-reply', handleExportReplay);
 
     return () => {
       ipcRenderer.removeListener('file-list-get-reply', handleListGetReply);
       ipcRenderer.removeListener('file-delete-reply', handleFileDeleteReply);
       ipcRenderer.removeListener('file-upload-reply', handleFileUploadReply);
       ipcRenderer.removeListener('directory-create-reply', handleDirectoryCreateReply);
+      ipcRenderer.removeListener('export-reply', handleExportReplay);
     };
   }, [uploaderProfile, dirPath]);
 
@@ -229,6 +241,21 @@ export const FileManage = () => {
     ipcRenderer.send('file-download', record.name, record.url);
   };
 
+  const [exportLoading, setExportLoading] = useState(false);
+
+  const handleExport = () => {
+    const data = selectRows.map(item => {
+      const fileNameArr = item.name.split('.');
+      fileNameArr.pop();
+      return {
+        name: fileNameArr.join('.'),
+        url: item.url
+      };
+    });
+    setExportLoading(true);
+    ipcRenderer.send('export', data);
+  };
+
   const columns: ColumnsType<ListFile> = [
     {
       title: '文件名',
@@ -298,6 +325,7 @@ export const FileManage = () => {
           ))}
         </Select>
         <Button
+          title="上传"
           icon={<UploadOutlined />}
           disabled={!hasFileManageFeature}
           type="primary"
@@ -305,15 +333,23 @@ export const FileManage = () => {
             uploadRef.current?.click();
           }}
         />
-        <Button icon={<ReloadOutlined />} disabled={!hasFileManageFeature} onClick={handleRefresh} />
+        <Button title="刷新" icon={<ReloadOutlined />} disabled={!hasFileManageFeature} onClick={handleRefresh} />
         <Button
+          title="创建文件夹"
           icon={<FolderAddOutlined />}
           disabled={!hasFileManageFeature}
           onClick={() => {
             setModalVisible(true);
           }}
         />
-        <Button icon={<DeleteOutlined />} disabled={selectRows.length === 0} onClick={handleBatchDelete} />
+        <Button
+          title="导出"
+          icon={<ExportOutlined />}
+          disabled={selectRows.length === 0}
+          onClick={handleExport}
+          loading={exportLoading}
+        />
+        <Button title="删除" icon={<DeleteOutlined />} disabled={selectRows.length === 0} onClick={handleBatchDelete} />
       </Space>
       <Breadcrumb style={{ marginBottom: 10 }}>
         <Breadcrumb.Item>

@@ -42,7 +42,8 @@
     "webpack": "^5.4.0",
     "webpack-bundle-analyzer": "^4.0.0",
     "webpack-cli": "^4.2.0",
-    "webpack-merge": "^5.3.0"
+    "webpack-merge": "^5.3.0",
+    "xlsx": "^0.16.9"
   },
   "build": {
     "appId": "com.njzydark.aragorn",
