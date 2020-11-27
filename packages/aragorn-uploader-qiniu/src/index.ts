@@ -169,7 +169,7 @@ export class QiniuUploader implements Uploader {
           if (respErr) {
             reject(respErr);
           }
-          resolve();
+          resolve(true);
         });
       });
       return { success: true };

@@ -350,7 +350,7 @@ export class UploaderManager {
               if (!error) {
                 console.log('download finish');
                 totalLength === undefined && Ipc.sendMessage('file-download-reply');
-                resolve();
+                resolve(true);
               }
             });
           })
