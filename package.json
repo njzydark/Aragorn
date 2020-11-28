@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "npm run setup && npm run app:build",
-    "setup": "lerna bootstrap && npm run core:build && npm run cli:build",
+    "setup": "npx lerna bootstrap && npm run core:build && npm run cli:build",
     "core:dev": "lerna run dev --scope aragorn-core",
     "core:build": "lerna run build --scope aragorn-core",
     "core:clean": "lerna run clean --scope aragorn-core",

@@ -114,15 +114,15 @@ git clone https://github.com/njzydark/Aragorn.git
 
 ### 安装依赖
 
+不需要执行 `npm i` 直接执行以下指令即可
+
 ```bash
-npm i && npm run setup
+npm run setup
 ```
 
 #### 注意
 
 1. 项目是使用 [lerna](https://lerna.js.org/) 进行管理的，根目录的 `package.json` 只是公共开发依赖，不包含项目所有依赖
-
-   `npm i` 只是把公共开发依赖装上
 
    `npm run setup` 会把所有 `packages` 里的依赖全部装上
 
@@ -136,12 +136,17 @@ npm i && npm run setup
 
 ### 开发模式
 
+方式一
+
 ```bash
 npm run app:dev
+# 新开命令行窗口执行
 npm run app:start
 ```
 
-PS: 项目已经配置好了 `task.json` 和 `launch.json` ，可以直接在 vscode 中执行 task ，然后以 debug 模式启动
+方式二（推荐）
+
+在 vscode 中的 debug 窗口中执行 `App Debug`
 
 ### 打包
 
