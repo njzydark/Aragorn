@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { ipcRenderer, shell } from 'electron';
 import { message, notification, Progress } from 'antd';
 import { useAppContext } from '@renderer/context/app';

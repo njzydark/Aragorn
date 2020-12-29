@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContextProvider } from '@renderer/context/app';
 import { ConfigProvider } from 'antd';

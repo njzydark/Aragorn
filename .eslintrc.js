@@ -28,6 +28,8 @@ module.exports = {
     // 自定义你的规则
     'max-params': ['off'],
     'no-invalid-this': ['off'],
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/consistent-type-assertions': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off'

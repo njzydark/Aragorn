@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle, Ref } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle, Ref } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { Form, Input, Select, message, Switch, Space, Tooltip } from 'antd';

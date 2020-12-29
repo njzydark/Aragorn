@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Divider, Select, Space } from 'antd';
 import { useAppContext } from '@renderer/context/app';

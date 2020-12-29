@@ -4,7 +4,7 @@
     "target": "ES2015",
     "module": "CommonJS",
     "noImplicitAny": false,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "baseUrl": "./",
     "composite": true,
     "declaration": true,

@@ -1,5 +1,4 @@
 import { ipcRenderer, remote, shell } from 'electron';
-import React from 'react';
 import { Button, Divider } from 'antd';
 
 const AppUrl = 'https://github.com/njzydark/Aragorn';

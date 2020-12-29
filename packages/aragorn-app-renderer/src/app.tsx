@@ -1,4 +1,3 @@
-import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { routes } from './routes';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Maximize2, Minus } from 'react-feather';
 import { remote } from 'electron';
 import './index.less';

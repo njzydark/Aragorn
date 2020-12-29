@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { clipboard, shell, ipcRenderer } from 'electron';
 import { Table, message, Popover, Space, Button, Badge, Image, Divider } from 'antd';
 import { useHistory } from 'react-router-dom';
