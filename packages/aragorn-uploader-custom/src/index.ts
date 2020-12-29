@@ -14,6 +14,7 @@ interface Config {
   responseMessageName?: string;
   requestParams?: string;
   requestBody?: string;
+  params?: string;
 }
 
 export class CustomUploader implements Uploader {
@@ -65,7 +66,7 @@ export class CustomUploader implements Uploader {
         return {
           success: true,
           data: {
-            url: imageUrl
+            url: imageUrl + uploaderOptions.params || ''
           }
         };
       } else {

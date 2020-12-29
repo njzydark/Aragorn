@@ -13,6 +13,7 @@ interface Config {
   bucket: string;
   domain: string;
   path?: string;
+  params?: string;
 }
 
 export class UCloudUploader implements Uploader {
@@ -28,14 +29,14 @@ export class UCloudUploader implements Uploader {
   async upload(options: UploadOptions): Promise<UploadResponse> {
     const { file, fileName } = options;
     const fileStream = Buffer.isBuffer(file) ? file : createReadStream(file);
-    const { domain } = this.getConfig();
+    const { domain, params = '' } = this.getConfig();
     try {
       const res = await this.postFile(fileName, fileStream);
       if (res.status === 200) {
         return {
           success: true,
           data: {
-            url: domain + '/' + fileName
+            url: domain + '/' + fileName + params
           }
         };
       } else {

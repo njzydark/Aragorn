@@ -20,6 +20,7 @@ interface Config {
   bucket: string;
   domain: string;
   path?: string;
+  params?: string;
 }
 
 export class QiniuUploader implements Uploader {
@@ -71,7 +72,7 @@ export class QiniuUploader implements Uploader {
       const mac = this.getMac();
       const config = this.getQiniuConfig();
       const bucketManager = new qiniu.rs.BucketManager(mac, config);
-      const { bucket, domain } = this.config;
+      const { bucket, domain, params = '' } = this.config;
       const { resInfo, resBody } = await new Promise((resolve, reject) => {
         bucketManager.listPrefix(
           bucket,
@@ -96,7 +97,9 @@ export class QiniuUploader implements Uploader {
             item.name = nodePath.basename(item.key);
             return {
               name: item.name,
-              url: encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`),
+              url:
+                encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`) +
+                params,
               lastModified: item.putTime / 10000,
               size: item.fsize
             };
@@ -196,9 +199,9 @@ export class QiniuUploader implements Uploader {
   protected qiniuDownload(key) {
     const config = this.getQiniuConfig();
     const mac = this.getMac();
-    const { domain } = this.config;
+    const { domain, params = '' } = this.config;
     const bucketManager = new qiniu.rs.BucketManager(mac, config);
-    return bucketManager.publicDownloadUrl(domain, key);
+    return bucketManager.publicDownloadUrl(domain, key) + params;
   }
 
   protected getToken() {

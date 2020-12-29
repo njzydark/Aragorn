@@ -22,6 +22,7 @@ interface Config {
   path?: string;
   customDomain?: string;
   message?: string;
+  params?: string;
 }
 
 export class GiteeUploader implements Uploader {
@@ -50,7 +51,7 @@ export class GiteeUploader implements Uploader {
   async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
-      const { owner, repo, branch, customDomain, path, message, access_token } = this.config;
+      const { owner, repo, branch, customDomain, path, message, access_token, params = '' } = this.config;
       let url = '';
       if (isFromFileManage) {
         url = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
@@ -65,11 +66,12 @@ export class GiteeUploader implements Uploader {
         data: { message, branch, content, access_token }
       });
       if (res.status === 201) {
-        const url = encodeURI(
-          customDomain
-            ? res.data.content.download_url.replace(`https://gitee.com/${owner}/${repo}/raw/${branch}`, customDomain)
-            : res.data.content.download_url
-        );
+        const url =
+          encodeURI(
+            customDomain
+              ? res.data.content.download_url.replace(`https://gitee.com/${owner}/${repo}/raw/${branch}`, customDomain)
+              : res.data.content.download_url
+          ) + params;
         return {
           success: true,
           data: {
@@ -92,7 +94,7 @@ export class GiteeUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      let { branch, owner, repo, customDomain, access_token } = this.config;
+      let { branch, owner, repo, customDomain, access_token, params = '' } = this.config;
       const url = directoryPath ? `/${directoryPath}` : '/';
       const res = await this.axiosInstance.request({
         url: encodeURI(url),
@@ -109,12 +111,12 @@ export class GiteeUploader implements Uploader {
             cur.type = 'directory';
             directoryData.push(cur);
           } else if (cur.type === 'file') {
-            cur.url = cur.download_url;
-            cur.url = encodeURI(
-              customDomain
-                ? cur.download_url.replace(`https://gitee.com/${owner}/${repo}/raw/${branch}`, customDomain)
-                : cur.download_url
-            );
+            cur.url =
+              encodeURI(
+                customDomain
+                  ? cur.download_url.replace(`https://gitee.com/${owner}/${repo}/raw/${branch}`, customDomain)
+                  : cur.download_url
+              ) + params;
             pre.push(cur);
           }
           return pre;

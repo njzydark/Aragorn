@@ -20,6 +20,7 @@ interface Config {
   Region: string;
   domain?: string;
   path?: string;
+  params?: string;
 }
 
 interface GetBucketResponse {
@@ -45,7 +46,7 @@ export class TencentCosUploader implements Uploader {
   async upload({ file, fileName, directoryPath, isFromFileManage }: UploadOptions): Promise<UploadResponse> {
     try {
       const fileStream = this.getStream(file);
-      const { path, Bucket, Region } = this.config;
+      const { path, Bucket, Region, params = '' } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
@@ -65,7 +66,7 @@ export class TencentCosUploader implements Uploader {
         return {
           success: true,
           data: {
-            url: `https://${res.Location}`
+            url: `https://${res.Location}${params}`
           }
         };
       } else {
@@ -84,7 +85,7 @@ export class TencentCosUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      const { Bucket, Region, domain } = this.config;
+      const { Bucket, Region, domain, params = '' } = this.config;
       const res = await new Promise<GetBucketResponse>((resolve, reject) => {
         this.client.getBucket(
           {
@@ -122,7 +123,9 @@ export class TencentCosUploader implements Uploader {
         item.name = nodePath.basename(item.Key);
         return {
           name: item.name,
-          url: encodeURI(domain ? `${domain}/${item.Key}` : `https://${Bucket}.cos.${Region}.myqcloud.com/${item.Key}`),
+          url:
+            encodeURI(domain ? `${domain}/${item.Key}` : `https://${Bucket}.cos.${Region}.myqcloud.com/${item.Key}`) +
+            params,
           lastModified: item.LastModified,
           size: item.Size
         };

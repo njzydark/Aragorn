@@ -22,6 +22,7 @@ interface Config {
   path?: string;
   isRequestPay?: boolean;
   secure?: false;
+  params?: string;
 }
 
 export class AliOssUploader implements Uploader {
@@ -42,7 +43,7 @@ export class AliOssUploader implements Uploader {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
       const fileStream = this.getStream(file);
-      const { path } = this.config;
+      const { path, params = '' } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
@@ -60,7 +61,7 @@ export class AliOssUploader implements Uploader {
       if (url) {
         return {
           success: true,
-          data: { url }
+          data: { url: url + params }
         };
       } else {
         return {
@@ -78,6 +79,7 @@ export class AliOssUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
+      const { params = '' } = this.config;
       const res = await this.client.list({ delimiter: '/', prefix: directoryPath ? directoryPath + '/' : '' });
       let dirData = [];
       if (res?.prefixes?.length > 0) {
@@ -92,7 +94,12 @@ export class AliOssUploader implements Uploader {
         });
       }
       let data = res.objects || [];
-      data = data.filter(item => /.*[^\/]$/g.test(item?.name));
+      data = data
+        .filter(item => /.*[^\/]$/g.test(item?.name))
+        .map(item => {
+          item.url = item.url + params;
+          return item;
+        });
       data.unshift(...dirData);
       return {
         success: true,

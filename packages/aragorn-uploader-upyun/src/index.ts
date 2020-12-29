@@ -18,6 +18,7 @@ interface Config {
   operatorPassword: string;
   domain: string;
   path?: string;
+  params?: string;
 }
 
 export class UpyunUploader implements Uploader {
@@ -38,7 +39,7 @@ export class UpyunUploader implements Uploader {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
       const fileStream = this.getStream(file);
-      const { domain, path } = this.getConfig();
+      const { domain, path, params = '' } = this.getConfig();
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
@@ -50,7 +51,7 @@ export class UpyunUploader implements Uploader {
         return {
           success: true,
           data: {
-            url: encodeURI(`${domain}${newFileName}`)
+            url: encodeURI(`${domain}${newFileName}`) + params
           }
         };
       } else {
@@ -70,13 +71,14 @@ export class UpyunUploader implements Uploader {
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
       const res = await this.client.listDir(directoryPath);
-      const { domain } = this.getConfig();
+      const { domain, params = '' } = this.getConfig();
       if (res?.files?.length > 0) {
         res.files.map(item => {
           if (item.type === 'F') {
             item.type = 'directory';
           } else {
-            item.url = encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`);
+            item.url =
+              encodeURI(directoryPath ? `${domain}/${directoryPath}/${item.name}` : `${domain}/${item.name}`) + params;
             item.lastModified = item.time ? item.time * 1000 : '';
           }
           return item;

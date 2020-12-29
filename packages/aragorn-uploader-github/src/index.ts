@@ -22,6 +22,7 @@ interface Config {
   customDomain?: string;
   useJsdelivr?: boolean;
   message?: string;
+  params?: string;
 }
 
 export class GithubUploader implements Uploader {
@@ -53,7 +54,7 @@ export class GithubUploader implements Uploader {
   async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
-      const { owner, repo, branch, customDomain, path, message, useJsdelivr } = this.config;
+      const { owner, repo, branch, customDomain, path, message, useJsdelivr, params = '' } = this.config;
       let url = '';
       if (isFromFileManage) {
         url = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
@@ -68,7 +69,7 @@ export class GithubUploader implements Uploader {
         data: { message, branch, content }
       });
       if (res.status === 201) {
-        const url = customDomain
+        let url = customDomain
           ? res.data.content.download_url.replace(
               `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`,
               customDomain
@@ -79,6 +80,7 @@ export class GithubUploader implements Uploader {
               `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}`
             )
           : res.data.content.download_url;
+        url += params;
         return {
           success: true,
           data: {
@@ -101,7 +103,7 @@ export class GithubUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      let { branch, owner, repo, customDomain, useJsdelivr } = this.config;
+      let { branch, owner, repo, customDomain, useJsdelivr, params = '' } = this.config;
       const url = directoryPath ? `/${directoryPath}?ref=${branch}` : `?ref=${branch}`;
       const res = await this.axiosInstance.request({
         url: encodeURI(url),
@@ -114,7 +116,6 @@ export class GithubUploader implements Uploader {
             cur.type = 'directory';
             directoryData.push(cur);
           } else if (cur.type === 'file') {
-            cur.url = cur.download_url;
             cur.url = customDomain
               ? cur.download_url.replace(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`, customDomain)
               : useJsdelivr
@@ -123,6 +124,7 @@ export class GithubUploader implements Uploader {
                   `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}`
                 )
               : cur.download_url;
+            cur.url += params;
             pre.push(cur);
           }
           return pre;
