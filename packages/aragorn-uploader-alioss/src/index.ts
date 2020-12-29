@@ -43,7 +43,7 @@ export class AliOssUploader implements Uploader {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
       const fileStream = this.getStream(file);
-      const { path, params = '' } = this.config;
+      const { path, bucket, endpoint = '', params = '' } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `${directoryPath}/${fileName}` : fileName;
@@ -59,6 +59,10 @@ export class AliOssUploader implements Uploader {
       }
       let url = await this.client.generateObjectUrl(newFileName);
       if (url) {
+        const errorDomain = endpoint ? `${bucket}.${endpoint.replace(/(https?:\/\/|www\.)/, '')}` : '';
+        if (errorDomain && url.includes(errorDomain)) {
+          url = url.replace(errorDomain, endpoint.replace(/(https?:\/\/|www\.)/, ''));
+        }
         return {
           success: true,
           data: { url: url + params }
@@ -79,7 +83,7 @@ export class AliOssUploader implements Uploader {
 
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
-      const { params = '' } = this.config;
+      const { endpoint = '', bucket, params = '' } = this.config;
       const res = await this.client.list({ delimiter: '/', prefix: directoryPath ? directoryPath + '/' : '' });
       let dirData = [];
       if (res?.prefixes?.length > 0) {
@@ -97,6 +101,10 @@ export class AliOssUploader implements Uploader {
       data = data
         .filter(item => /.*[^\/]$/g.test(item?.name))
         .map(item => {
+          const errorDomain = endpoint ? `${bucket}.${endpoint.replace(/(https?:\/\/|www\.)/, '')}` : '';
+          if (errorDomain && item.url.includes(errorDomain)) {
+            item.url = item.url.replace(errorDomain, endpoint.replace(/(https?:\/\/|www\.)/, ''));
+          }
           item.url = item.url + params;
           return item;
         });
