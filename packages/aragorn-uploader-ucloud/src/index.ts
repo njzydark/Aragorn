@@ -1,4 +1,5 @@
-import { Uploader, UploaderOptions, UploadOptions, UploadResponse } from 'aragorn-types';
+import { BaseUploader } from 'aragorn-shared';
+import { Uploader, UploaderConfig, UploadOptions, UploadResponse } from 'aragorn-types';
 import { createReadStream, ReadStream } from 'fs';
 import mime from 'mime-types';
 import crypto from 'crypto';
@@ -6,7 +7,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { options as defaultOptions } from './options';
 
-interface Config {
+interface Config extends UploaderConfig {
   public_key: string;
   private_key: string;
   zone: string;
@@ -16,20 +17,15 @@ interface Config {
   params?: string;
 }
 
-export class UCloudUploader implements Uploader {
+export class UCloudUploader extends BaseUploader<Config> implements Uploader {
   name = 'UCloud';
   docUrl = 'https://docs.ucloud.cn/ufile/README';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
-
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-  }
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
 
   async upload(options: UploadOptions): Promise<UploadResponse> {
     const { file, fileName } = options;
     const fileStream = Buffer.isBuffer(file) ? file : createReadStream(file);
-    const { domain, params = '' } = this.getConfig();
+    const { domain, params = '' } = this.config;
     try {
       const res = await this.postFile(fileName, fileStream);
       if (res.status === 200) {
@@ -53,16 +49,8 @@ export class UCloudUploader implements Uploader {
     }
   }
 
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {});
-    return config as Config;
-  }
-
   protected getToken(key: string) {
-    const { public_key, private_key, bucket } = this.getConfig();
+    const { public_key, private_key, bucket } = this.config;
 
     const httpMethod = 'POST';
     const content_md5 = '';
@@ -115,7 +103,7 @@ export class UCloudUploader implements Uploader {
   }
 
   protected postFile(fileName: string, file: ReadStream | Buffer) {
-    const { zone, bucket } = this.getConfig();
+    const { zone, bucket } = this.config;
     const token = this.getToken(fileName);
 
     return new Promise<AxiosResponse>((resolve, reject) => {

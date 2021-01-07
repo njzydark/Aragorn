@@ -209,7 +209,7 @@ export class UploaderManager {
         return false;
       }
 
-      uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
+      uploader.setConfig({ ...uploaderProfile.config, proxy });
 
       const successRes: UploadedFileInfo[] = [];
       const failRes: UploadedFileInfo[] = [];
@@ -401,7 +401,7 @@ export class UploaderManager {
     }
     const uploader = this.core.getUploaderByName(uploaderProfile.uploaderName);
     if (uploader) {
-      uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
+      uploader.setConfig({ ...uploaderProfile.config, proxy });
       return uploader;
     }
   }

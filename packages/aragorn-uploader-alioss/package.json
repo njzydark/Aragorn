@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "ali-oss": "^6.12.0",
+    "aragorn-shared": "^1.0.0",
     "aragorn-types": "^1.0.0"
   },
   "devDependencies": {

@@ -1,18 +1,17 @@
+import { BaseUploader } from 'aragorn-shared';
 import {
   Uploader,
-  UploaderOptions,
   UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
-  CreateDirectoryResponse
+  CreateDirectoryResponse,
+  UploaderConfig
 } from 'aragorn-types';
 import upyun from 'upyun';
-import { createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
-import { Readable } from 'stream';
 
-interface Config {
+interface Config extends UploaderConfig {
   serviceName: string;
   operatorName: string;
   operatorPassword: string;
@@ -21,16 +20,15 @@ interface Config {
   params?: string;
 }
 
-export class UpyunUploader implements Uploader {
+export class UpyunUploader extends BaseUploader<Config> implements Uploader {
   name = '又拍云';
   docUrl = 'https://github.com/upyun/node-sdk';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
   client: any;
 
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-    const { serviceName, operatorName, operatorPassword } = this.getConfig();
+  setConfig(config: Config) {
+    this.config = config;
+    const { serviceName, operatorName, operatorPassword } = config;
     const service = new upyun.Service(serviceName, operatorName, operatorPassword);
     this.client = new upyun.Client(service);
   }
@@ -39,7 +37,7 @@ export class UpyunUploader implements Uploader {
     try {
       const { file, fileName, directoryPath, isFromFileManage } = options;
       const fileStream = this.getStream(file);
-      const { domain, path, params = '' } = this.getConfig();
+      const { domain, path, params = '' } = this.config;
       let newFileName = '';
       if (isFromFileManage) {
         newFileName = directoryPath ? `/${directoryPath}/${fileName}` : `/${fileName}`;
@@ -71,7 +69,7 @@ export class UpyunUploader implements Uploader {
   async getFileList(directoryPath?: string): Promise<FileListResponse> {
     try {
       const res = await this.client.listDir(directoryPath);
-      const { domain, params = '' } = this.getConfig();
+      const { domain, params = '' } = this.config;
       if (res?.files?.length > 0) {
         res.files.map(item => {
           if (item.type === 'F') {
@@ -126,26 +124,5 @@ export class UpyunUploader implements Uploader {
 
   protected async ypyunDownload(fileName: string) {
     return await this.client.getFile(fileName);
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {});
-    return config as Config;
-  }
-
-  protected getStream(file: string | Buffer) {
-    if (Buffer.isBuffer(file)) {
-      return new Readable({
-        read() {
-          this.push(file);
-          this.push(null);
-        }
-      });
-    } else {
-      return createReadStream(file);
-    }
   }
 }

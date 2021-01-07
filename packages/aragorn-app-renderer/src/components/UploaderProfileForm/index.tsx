@@ -5,7 +5,7 @@ import { Form, Input, Select, message, Switch, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getFormRule } from '@renderer/utils/validationRule';
 import { useAppContext } from '@renderer/context/app';
-import { Uploader as IUploader, UploaderOptionsSpan } from 'aragorn-types';
+import { Uploader as IUploader, UploaderConfig, UploaderOptionsSpan } from 'aragorn-types';
 import { UploaderProfile } from '@main/uploaderProfileManager';
 
 export interface UploaderProfileFormHandle {
@@ -52,19 +52,13 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
       return;
     }
 
-    const formInitalValue = curUploader?.defaultOptions.reduce(
-      (pre, cur) => {
-        const options = uploaderProfile.uploaderOptions.find(item => item.name === cur.name);
-        pre[cur.name] = options?.value;
-        return pre;
-      },
-      {
-        id: uploaderProfile.id,
-        name: uploaderProfile.name,
-        uploaderName: uploaderProfile.uploaderName,
-        isDefault: uploaderProfile.id === defaultUploaderProfileId
-      }
-    );
+    const formInitalValue = {
+      id: uploaderProfile.id,
+      name: uploaderProfile.name,
+      uploaderName: uploaderProfile.uploaderName,
+      isDefault: uploaderProfile.id === defaultUploaderProfileId,
+      ...uploaderProfile.config
+    };
 
     form.setFieldsValue(formInitalValue as any);
 
@@ -111,16 +105,15 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
       return;
     }
 
-    const uploaderOptions = uploader?.defaultOptions?.map(item => {
-      let temp = { ...item };
-      temp.value = values[item.name];
-      return temp;
-    });
+    const uploaderConfig = uploader?.defaultOptions?.reduce((pre, cur) => {
+      pre[cur.name] = values[cur.name];
+      return pre;
+    }, {} as UploaderConfig);
     const uploaderProfile: UploaderProfile = {
       id: values.id,
       name: values.name,
       uploaderName: values.uploaderName,
-      uploaderOptions,
+      config: uploaderConfig,
       isDefault: values.isDefault
     };
 
@@ -199,7 +192,7 @@ export const UploaderProfileForm = forwardRef((_, ref: Ref<UploaderProfileFormHa
       <Form.Item name="uploaderName" style={{ display: 'none' }}>
         <Input />
       </Form.Item>
-      {curUploader?.options?.map(item => (
+      {curUploader?.defaultOptions?.map(item => (
         <Form.Item
           wrapperCol={{ span: item.span || UploaderOptionsSpan.middle }}
           key={item.name}

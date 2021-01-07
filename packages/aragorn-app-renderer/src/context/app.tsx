@@ -2,7 +2,7 @@ import React, { useContext, useReducer } from 'react';
 import { UploadedFileInfo } from '@main/uploaderManager';
 import { SettingConfiguration } from '@main/setting';
 import { UploaderProfile } from '@main/uploaderProfileManager';
-import { Uploader as IUploader } from 'aragorn-types';
+import { Uploader as IUploader, UploaderConfig } from 'aragorn-types';
 
 interface State {
   configuration: SettingConfiguration;

@@ -1,18 +1,17 @@
+import { BaseUploader } from 'aragorn-shared';
 import {
   Uploader,
-  UploaderOptions,
   UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
-  CreateDirectoryResponse
+  CreateDirectoryResponse,
+  UploaderConfig
 } from 'aragorn-types';
 import OSS from 'ali-oss';
 import { options as defaultOptions } from './options';
-import { createReadStream } from 'fs';
-import { Readable } from 'stream';
 
-interface Config {
+interface Config extends UploaderConfig {
   accessKeyId: string;
   accessKeySecret: string;
   bucket: string;
@@ -25,18 +24,18 @@ interface Config {
   params?: string;
 }
 
-export class AliOssUploader implements Uploader {
+export class AliOssUploader extends BaseUploader<Config> implements Uploader {
   name = '阿里云OSS';
   docUrl = 'https://github.com/ali-sdk/ali-oss';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
   client: any;
-  config = {} as Config;
 
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-    this.config = this.getConfig();
-    this.client = new OSS(this.config);
+  setConfig(config: Config) {
+    if (config.endpoint) {
+      config.cname = true;
+    }
+    this.config = config;
+    this.client = new OSS(config);
   }
 
   async upload(options: UploadOptions): Promise<UploadResponse> {
@@ -140,30 +139,6 @@ export class AliOssUploader implements Uploader {
       return { success: true };
     } catch (err) {
       return { success: false, desc: err.message };
-    }
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {} as Config);
-    if (config.endpoint) {
-      config.cname = true;
-    }
-    return config as Config;
-  }
-
-  protected getStream(file: string | Buffer) {
-    if (Buffer.isBuffer(file)) {
-      return new Readable({
-        read() {
-          this.push(file);
-          this.push(null);
-        }
-      });
-    } else {
-      return createReadStream(file);
     }
   }
 }

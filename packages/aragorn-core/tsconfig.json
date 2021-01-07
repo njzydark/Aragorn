@@ -11,6 +11,9 @@
   ],
   "references": [
     {
+      "path": "../aragorn-shared"
+    },
+    {
       "path": "../aragorn-types"
     },
     {

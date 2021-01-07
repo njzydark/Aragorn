@@ -1,12 +1,13 @@
+import { BaseUploader } from 'aragorn-shared';
 import {
   Uploader,
-  UploaderOptions,
   UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
   CreateDirectoryResponse,
-  BatchUploadMode
+  BatchUploadMode,
+  UploaderConfig
 } from 'aragorn-types';
 import fs from 'fs';
 import path from 'path';
@@ -14,7 +15,7 @@ import axios, { AxiosInstance } from 'axios';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { options as defaultOptions } from './options';
 
-interface Config {
+interface Config extends UploaderConfig {
   owner: string;
   repo: string;
   branch: string;
@@ -25,20 +26,17 @@ interface Config {
   params?: string;
 }
 
-export class GiteeUploader implements Uploader {
+export class GiteeUploader extends BaseUploader<Config> implements Uploader {
   name = 'Gitee';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
   batchUploadMode: BatchUploadMode = 'Sequence';
-  config = {} as Config;
   tempFiles = [] as { name: string; sha: string }[];
   agent: HttpsProxyAgent | null = null;
   axiosInstance: AxiosInstance = axios.create();
 
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-    this.config = this.getConfig();
-    const { owner, repo } = this.config;
+  setConfig(config: Config) {
+    this.config = config;
+    const { owner, repo } = config;
 
     this.axiosInstance = axios.create({
       baseURL: `https://gitee.com/api/v5/repos/${owner}/${repo}/contents`,
@@ -205,13 +203,5 @@ export class GiteeUploader implements Uploader {
     } catch (err) {
       return { success: false, desc: err.message };
     }
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {});
-    return config as Config;
   }
 }

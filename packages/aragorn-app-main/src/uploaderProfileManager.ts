@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { uploaderProfilesStore } from './store';
-import { UploaderOptions } from 'aragorn-types';
+import { UploaderOptions, UploaderConfig } from 'aragorn-types';
 
 export interface UploaderProfile {
   id: string;
   name: string;
   uploaderName: string;
-  uploaderOptions: UploaderOptions;
+  uploaderOptions?: UploaderOptions;
+  config: UploaderConfig;
   isDefault?: boolean;
 }
 

@@ -22,6 +22,7 @@
     "url": "https://github.com/njzydark/Aragorn/issues"
   },
   "dependencies": {
+    "aragorn-shared": "^1.0.0",
     "aragorn-types": "^1.0.0",
     "cos-nodejs-sdk-v5": "^2.8.4"
   },

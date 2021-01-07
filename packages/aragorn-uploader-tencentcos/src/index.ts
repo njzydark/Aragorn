@@ -1,19 +1,18 @@
+import { BaseUploader } from 'aragorn-shared';
 import {
   Uploader,
-  UploaderOptions,
   UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
-  CreateDirectoryResponse
+  CreateDirectoryResponse,
+  UploaderConfig
 } from 'aragorn-types';
 import COS from 'cos-nodejs-sdk-v5';
 import { options as defaultOptions } from './options';
-import { createReadStream } from 'fs';
 import nodePath from 'path';
-import { Readable } from 'stream';
 
-interface Config {
+interface Config extends UploaderConfig {
   SecretId: string;
   SecretKey: string;
   Bucket: string;
@@ -29,18 +28,15 @@ interface GetBucketResponse {
   Contents: { Key: string; LastModified: Date; Size: number; name?: string; url?: string; size?: number }[];
 }
 
-export class TencentCosUploader implements Uploader {
+export class TencentCosUploader extends BaseUploader<Config> implements Uploader {
   name = '腾讯云COS';
   docUrl = 'https://github.com/tencentyun/cos-nodejs-sdk-v5';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
   client: any;
-  config = {} as Config;
 
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-    this.config = this.getConfig();
-    this.client = new COS({ ...this.config, Domain: this.config.domain });
+  setConfig(config: Config) {
+    this.config = config;
+    this.client = new COS({ ...config, Domain: config.domain });
   }
 
   async upload({ file, fileName, directoryPath, isFromFileManage }: UploadOptions): Promise<UploadResponse> {
@@ -188,27 +184,6 @@ export class TencentCosUploader implements Uploader {
       }
     } catch (err) {
       return { success: false, desc: err.message };
-    }
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {} as Config);
-    return config;
-  }
-
-  protected getStream(file: string | Buffer) {
-    if (Buffer.isBuffer(file)) {
-      return new Readable({
-        read() {
-          this.push(file);
-          this.push(null);
-        }
-      });
-    } else {
-      return createReadStream(file);
     }
   }
 }

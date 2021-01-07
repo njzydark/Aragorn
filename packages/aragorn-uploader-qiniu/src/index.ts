@@ -1,19 +1,20 @@
+import { BaseUploader } from 'aragorn-shared';
 import {
   Uploader,
-  UploaderOptions,
   UploadOptions,
   UploadResponse,
   FileListResponse,
   DeleteFileResponse,
-  CreateDirectoryResponse
+  CreateDirectoryResponse,
+  UploaderConfig
 } from 'aragorn-types';
 import qiniu from 'qiniu';
-import { ReadStream, createReadStream } from 'fs';
+import { ReadStream } from 'fs';
 import nodePath from 'path';
 import { options as defaultOptions } from './options';
 import { Readable } from 'stream';
 
-interface Config {
+interface Config extends UploaderConfig {
   accessKey: string;
   secretKey: string;
   zone: string;
@@ -23,17 +24,10 @@ interface Config {
   params?: string;
 }
 
-export class QiniuUploader implements Uploader {
+export class QiniuUploader extends BaseUploader<Config> implements Uploader {
   name = '七牛云';
   docUrl = 'https://developer.qiniu.com/kodo/sdk/1289/nodejs';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
-  config = {} as Config;
-
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-    this.config = this.getConfig();
-  }
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.path, this.commonUploaderOptions.params);
 
   async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
@@ -225,26 +219,5 @@ export class QiniuUploader implements Uploader {
       zone: qiniu.zone[zone]
     });
     return config;
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {});
-    return config as Config;
-  }
-
-  protected getStream(file: string | Buffer) {
-    if (Buffer.isBuffer(file)) {
-      return new Readable({
-        read() {
-          this.push(file);
-          this.push(null);
-        }
-      });
-    } else {
-      return createReadStream(file);
-    }
   }
 }

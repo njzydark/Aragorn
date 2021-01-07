@@ -5,12 +5,12 @@ export interface Uploader {
   docUrl?: string;
   /** 默认配置项 */
   defaultOptions: UploaderOptions;
-  /** 配置项 方法调用时需要调用 changeOptions 方法修改 */
-  options: UploaderOptions;
-  /** 改变options */
-  changeOptions: (newOptions: UploaderOptions, proxy?: string) => void;
   /** 批量上传模式 并发和顺序 */
   batchUploadMode?: BatchUploadMode;
+  /** 用户配置 */
+  config: UploaderConfig;
+  /** 设置用户配置 */
+  setConfig: (config: UploaderConfig) => void;
   /** 文件上传 */
   upload: (options: UploadOptions) => Promise<UploadResponse>;
   /** 获取文件列表 */
@@ -46,7 +46,7 @@ export enum UploaderOptionsSpan {
   large = 12
 }
 
-interface UploaderOption {
+export interface UploaderOption {
   /** 表单字段描述 */
   label: string;
   /** 表单字段名 */
@@ -69,6 +69,10 @@ interface UploaderOption {
 }
 
 export type UploaderOptions = UploaderOption[];
+
+export type UploaderConfig = {
+  [propName: string]: any;
+};
 
 export interface UploadResponseData {
   /** 文件名 */

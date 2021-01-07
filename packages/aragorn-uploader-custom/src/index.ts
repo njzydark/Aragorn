@@ -1,10 +1,11 @@
-import { Uploader, UploaderOptions, UploadOptions, UploadResponse } from 'aragorn-types';
+import { BaseUploader } from 'aragorn-shared';
+import { Uploader, UploaderConfig, UploadOptions, UploadResponse } from 'aragorn-types';
 import axios, { AxiosRequestConfig } from 'axios';
 import FormData from 'form-data';
 import { createReadStream } from 'fs';
 import { options as defaultOptions } from './options';
 
-interface Config {
+interface Config extends UploaderConfig {
   url: string;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   contentType: 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'application/json';
@@ -17,22 +18,17 @@ interface Config {
   params?: string;
 }
 
-export class CustomUploader implements Uploader {
+export class CustomUploader extends BaseUploader<Config> implements Uploader {
   name = '自定义';
-  defaultOptions = defaultOptions;
-  options = defaultOptions;
-
-  changeOptions(newOptions: UploaderOptions) {
-    this.options = newOptions;
-  }
+  defaultOptions = defaultOptions.concat(this.commonUploaderOptions.params);
 
   async upload(options: UploadOptions): Promise<UploadResponse> {
     try {
       const { file, fileName } = options;
       const formData = new FormData();
-      const uploaderOptions = this.getConfig();
+      const uploaderConfig = this.config;
       const fileStream = Buffer.isBuffer(file) ? file : createReadStream(file);
-      formData.append(uploaderOptions.fileFieldName, fileStream, { filename: fileName });
+      formData.append(uploaderConfig.fileFieldName, fileStream, { filename: fileName });
       const length = await new Promise((resolve, reject) => {
         formData.getLength(async (err, length) => {
           if (err) {
@@ -43,19 +39,19 @@ export class CustomUploader implements Uploader {
         });
       });
       const requestOpetion: AxiosRequestConfig = {
-        url: uploaderOptions.url,
-        method: uploaderOptions.method,
+        url: uploaderConfig.url,
+        method: uploaderConfig.method,
         headers: {
           ...formData.getHeaders(),
           'Content-Length': length,
-          Authorization: uploaderOptions.token || ''
+          Authorization: uploaderConfig.token || ''
         },
-        params: uploaderOptions.requestParams ? JSON.parse(uploaderOptions.requestParams) : {},
-        data: uploaderOptions.contentType === 'multipart/form-data' ? formData : uploaderOptions.requestBody
+        params: uploaderConfig.requestParams ? JSON.parse(uploaderConfig.requestParams) : {},
+        data: uploaderConfig.contentType === 'multipart/form-data' ? formData : uploaderConfig.requestBody
       };
       // 发起请求
       const { data: res } = await axios(requestOpetion);
-      let imageUrl = uploaderOptions.responseUrlFieldName?.split('.').reduce((pre, cur) => {
+      let imageUrl = uploaderConfig.responseUrlFieldName?.split('.').reduce((pre, cur) => {
         try {
           return pre[cur];
         } catch (err) {
@@ -66,11 +62,11 @@ export class CustomUploader implements Uploader {
         return {
           success: true,
           data: {
-            url: imageUrl + uploaderOptions.params || ''
+            url: imageUrl + uploaderConfig.params || ''
           }
         };
       } else {
-        const message = uploaderOptions?.responseMessageName?.split('.').reduce((pre, cur) => {
+        const message = uploaderConfig?.responseMessageName?.split('.').reduce((pre, cur) => {
           try {
             return pre[cur];
           } catch (err) {
@@ -88,13 +84,5 @@ export class CustomUploader implements Uploader {
         desc: err.message
       };
     }
-  }
-
-  protected getConfig(): Config {
-    const config = this.options.reduce((pre, cur) => {
-      pre[cur.name] = cur.value;
-      return pre;
-    }, {});
-    return config as Config;
   }
 }

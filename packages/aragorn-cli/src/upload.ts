@@ -81,7 +81,7 @@ async function uploadByCli(filesPath: string[], options: Options) {
       return console.log('no uploader found');
     }
 
-    uploader.changeOptions(uploaderProfile.uploaderOptions, proxy);
+    uploader.setConfig({ ...uploaderProfile.config, proxy });
     const successRes = [] as UploadResponseData[];
     const failRes = [] as { errorMessage: string }[];
 
