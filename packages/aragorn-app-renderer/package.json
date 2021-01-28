@@ -31,7 +31,7 @@
     "css-loader": "^5.0.1",
     "css-minimizer-webpack-plugin": "^1.1.5",
     "dotenv": "^8.2.0",
-    "electron": "10.1.5",
+    "electron": "10.2.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.0.0-beta.1",
     "less": "^3.13.1",
